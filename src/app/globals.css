@@ -47,6 +47,8 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -123,4 +125,10 @@
   body {
     @apply bg-background text-foreground;
   }
+
+
+}
+
+  html, body, :root {
+  height: 100%;
 }

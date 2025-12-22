@@ -1,8 +1,8 @@
 import React from 'react'
 import Image from 'next/image'
-import { Button } from './ui/button'
 import MobileNavbar from './MobileNavbar'
 import DesktopNavbar from './DesktopNavbar'
+import Link from 'next/link'
 
 const Header = () => {
   return (
@@ -14,12 +14,14 @@ const Header = () => {
             src="/renderex.png"
             alt='Renderex-Logo'
             width={150}
-            height={150}>
+            height={150}
+            loading='eager'
+            className='w-auto h-auto'>
           </Image>
         </a>
 
         {/* Navbar */}
-        <div className="flex flex-row gap-1">
+        <div className="flex flex-row items-center gap-1">
           <div className="block md:hidden">
             <MobileNavbar />
           </div>
@@ -28,7 +30,7 @@ const Header = () => {
             <DesktopNavbar />
           </div>
           {/* Sign in */}
-          <Button variant="outline">Sign in</Button>
+          <Link href="/sign-in">Sign in</Link>
         </div>
       </div>
     </header>

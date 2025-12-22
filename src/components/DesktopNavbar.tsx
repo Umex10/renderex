@@ -17,14 +17,14 @@ export function DesktopNavbar() {
         <NavigationMenuList>
           {navItems.map((item, index) => (
             <NavigationMenuItem key={index}>
-              <Link
-                href={item.href}
-            
+              <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
               >
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <Link href={item.href}>
                   {item.text}
-                </NavigationMenuLink>
-              </Link>
+                </Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>

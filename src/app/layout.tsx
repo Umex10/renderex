@@ -17,8 +17,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={jetbrainsMono.variable}>
+    <html lang="en" className={`${jetbrainsMono.variable}`}>
       <body className="font-(family-name:--font-jetbrains-mono)">
+        
         {children}
       </body>
     </html>
