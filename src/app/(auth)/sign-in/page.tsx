@@ -26,6 +26,9 @@ import {
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import Link from "next/link"
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useEffect } from "react"
+import Logo from "@/components/Logo"
 
 const formSchema = z
   .object({
@@ -46,8 +49,10 @@ const formSchema = z
  */
 export default function SignIn() {
 
-  const [signInUser, user, loading, error] = useSignInWithEmailAndPassword(auth);
+  const [signInUser, newUser, loading, error] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
+
+  const [user, loadingUser] = useAuthState(auth);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +62,20 @@ export default function SignIn() {
       key: "",
     },
   })
+
+  useEffect(() => {
+    if (!loadingUser && user) {
+      router.replace("/dashboard")
+    }
+  }, [user, loadingUser, router])
+
+  if (loadingUser) {
+    return <div>Checking if logged in...</div>
+  }
+
+  if (user) {
+    return null // oder Loader
+  }
 
   /**
    * Handles the sign-in form submission.
@@ -83,7 +102,7 @@ export default function SignIn() {
     try {
       const res = await signInUser(data.email, data.key);
       if (res) {
-        router.push("/")
+        router.push("/dashboard")
       }
     } catch (err) {
       console.error(err);
@@ -95,14 +114,7 @@ export default function SignIn() {
   return (
     <Card className="w-full sm:max-w-md">
       <CardHeader className="flex flex-col items-center gap-4">
-        <Image
-          src="/renderex.png"
-          alt='Renderex-Logo'
-          width={150}
-          height={150}
-          loading='eager'
-          className='w-60 h-14'>
-        </Image>
+        <Logo classnames="w-60 h-14"></Logo>
         <div className="text-center">
           <CardTitle>Sign in</CardTitle>
           <span>

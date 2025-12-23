@@ -1,27 +1,37 @@
-import React from 'react'
+"use client"
+import React, { useEffect } from 'react'
 import Image from 'next/image'
 import MobileNavbar from './MobileNavbar'
 import DesktopNavbar from './DesktopNavbar'
 import Link from 'next/link'
+import { auth } from "@/lib/firebase/config"
+import { useAuthState } from 'react-firebase-hooks/auth'
+import Logo from './Logo'
 
 /**
  * Application header containing the logo, navigation and sign-in link.
  * Sticks to the top of the viewport with a blurred background.
  */
 const Header = () => {
+
+  const [user, loadingUser] = useAuthState(auth);
+
+  useEffect(() => {
+    if (!loadingUser && user) {
+    }
+  }, [user, loadingUser])
+
+  if (loadingUser) {
+    return <div>Checking if logged in...</div>
+  }
+
+
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
         {/* Logo */}
         <a href='#hero'>
-          <Image
-            src="/renderex.png"
-            alt='Renderex-Logo'
-            width={150}
-            height={150}
-            loading='eager'
-            className='w-auto h-auto'>
-          </Image>
+          <Logo classnames="w-auto h-auto"></Logo>
         </a>
 
         {/* Navbar */}
@@ -33,8 +43,13 @@ const Header = () => {
           <div className="hidden md:block">
             <DesktopNavbar />
           </div>
-          {/* Sign in */}
-          <Link href="/sign-in">Sign in</Link>
+          {!user ? (
+            /* Sign in */
+            <Link href="/sign-in">Sign in</Link>
+          ) : (
+            /* Dashboard */
+            <Link href="/dashboard">Dashboard</Link>
+          )}
         </div>
       </div>
     </header>

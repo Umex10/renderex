@@ -10,7 +10,7 @@ import { auth } from "@/lib/firebase/config"
  * shows a loading state while Firebase auth is initializing.
  */
 const Dashboard = () => {
-   const [user, loading] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,17 +20,20 @@ const Dashboard = () => {
   }, [user, loading, router]);
 
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   if (!user) {
-    return null; 
+    return null;
   }
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <p>Welcome, {user.email}</p>
+      <div>
+        <h1>Dashboard</h1>
+        <p>Welcome, {user.email}</p>
+       
+      </div>
     </div>
   );
 }
