@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import { navItems } from "@/content/header/header";
 
+/**
+ * Desktop navigation bar that renders the primary navigation items.
+ * Only visible on medium and larger screens.
+ */
 export function DesktopNavbar() {
   return (
     <div className="items-center gap-4">

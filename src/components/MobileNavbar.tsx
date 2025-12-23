@@ -7,6 +7,10 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { navItems } from "@/content/header/header";
 
+/**
+ * Mobile navigation menu using a sheet/drawer.
+ * Renders navigation links and closes the sheet when a link is selected.
+ */
 export default function MobileNavbar() {
   const [open, setOpen] = useState(false);
 

@@ -153,6 +153,11 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
+/**
+ * Visual separator between field groups.
+ *
+ * @param children Optional label content rendered on top of the separator line.
+ */
 function FieldSeparator({
   children,
   className,
@@ -183,6 +188,12 @@ function FieldSeparator({
   )
 }
 
+/**
+ * Field error message container.
+ *
+ * @param children Custom error content. If provided, it overrides the generated error list.
+ * @param errors Validation error objects used to render default error messages.
+ */
 function FieldError({
   className,
   children,

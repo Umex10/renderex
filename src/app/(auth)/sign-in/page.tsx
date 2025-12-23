@@ -5,6 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
+import { auth } from "@/lib/firebase/config"
+import { useRouter } from 'next/navigation';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -37,7 +40,15 @@ const formSchema = z
       .max(64, "Key must be at most 64 characters."),
   });
 
+/**
+ * Sign-in page that authenticates a user with email and password
+ * using Firebase Authentication and redirects to the dashboard on success.
+ */
 export default function SignIn() {
+
+  const [signInUser, user, loading, error] = useSignInWithEmailAndPassword(auth);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -47,7 +58,12 @@ export default function SignIn() {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  /**
+   * Handles the sign-in form submission.
+   *
+   * @param data Validated form values containing email and key.
+   */
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     toast("You submitted the following values:", {
       description: (
         <pre className="bg-code text-code-foreground
@@ -62,7 +78,18 @@ export default function SignIn() {
       style: {
         "--border-radius": "calc(var(--radius)  + 4px)",
       } as React.CSSProperties,
-    })
+    });
+
+    try {
+      const res = await signInUser(data.email, data.key);
+      if (res) {
+        router.push("/")
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      form.reset();
+    }
   }
 
   return (
@@ -134,9 +161,14 @@ export default function SignIn() {
       </CardContent>
       <CardFooter>
         <Field orientation="vertical">
-          <Button type="submit" form="sign-in">
-            Sign in
+          <Button type="submit" form="sign-in" disabled={loading}>
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
+          {error && (
+            <p className="text-red-500 text-sm mt-2 text-center">
+              {error.message}
+            </p>
+          )}
           <div className="flex flex-row gap-1 justify-center text-sm text-muted-foreground">
             <span>Don’t have an account?</span>
             <Link href="/sign-up" className="underline 
@@ -144,7 +176,6 @@ export default function SignIn() {
               Sign up
             </Link>
           </div>
-
         </Field>
       </CardFooter>
     </Card>

@@ -15,8 +15,9 @@ const firebaseConfig = {
 };
 
 
-// Initialize Firebase
+// Initialize Firebase app instance (singleton).
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 
+//Firebase Authentication instance derived from the initialized app
 const auth = getAuth(app);
 export {app, auth}

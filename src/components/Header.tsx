@@ -4,6 +4,10 @@ import MobileNavbar from './MobileNavbar'
 import DesktopNavbar from './DesktopNavbar'
 import Link from 'next/link'
 
+/**
+ * Application header containing the logo, navigation and sign-in link.
+ * Sticks to the top of the viewport with a blurred background.
+ */
 const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">

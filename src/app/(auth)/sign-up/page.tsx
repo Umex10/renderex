@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
+import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth'
+import { auth } from "@/lib/firebase/config"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 const formSchema = z
   .object({
@@ -43,12 +46,22 @@ const formSchema = z
 
     confirmKey: z.string(),
   })
+  
+  //Zod will check for us if there are the same
   .refine((data) => data.key === data.confirmKey, {
     message: "Keys do not match.",
     path: ["confirmKey"],
   });
 
+/**
+* Sign-up page that creates a new user with email and password
+* using Firebase Authentication and redirects to the dashboard on success.
+*/
 export default function SignUp() {
+
+  const [createUser, user, loading, error] = useCreateUserWithEmailAndPassword(auth);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -60,7 +73,12 @@ export default function SignUp() {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  /**
+   * Handles the sign-up form submission.
+   *
+   * @param data Validated form values including username, email, key and confirmKey.
+   */
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     toast("You submitted the following values:", {
       description: (
         <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
@@ -74,7 +92,19 @@ export default function SignUp() {
       style: {
         "--border-radius": "calc(var(--radius)  + 4px)",
       } as React.CSSProperties,
-    })
+    });
+
+    try {
+      const res = await createUser(data.email, data.key);
+      if (res) {
+        router.push("/")
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      form.reset();
+    }
+
   }
 
   return (
@@ -188,9 +218,14 @@ export default function SignUp() {
       </CardContent>
       <CardFooter>
         <Field orientation="vertical">
-          <Button type="submit" form="sign-up">
-            Sign up
+          <Button type="submit" form="sign-up" disabled={loading}>
+            {loading ? "Creating account..." : "Sign up"}
           </Button>
+          {error && (
+            <p className="text-red-500 text-sm mt-2 text-center">
+              {error.message}
+            </p>
+          )}
           <div className="flex flex-row gap-1 justify-center text-sm text-muted-foreground">
             <span>Already have an account?</span>
             <Link href="/sign-in" className="underline
