@@ -26,12 +26,14 @@ import { Label } from "@/components/ui/label"
 
 import Logo from "./Logo"
 import Link from "next/link";
-import { LogOut } from 'lucide-react';
+import { LogOut, Trash2 } from 'lucide-react';
 
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
+  CardTitle,
 } from "@/components/ui/card"
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -43,6 +45,10 @@ import { Controller, useForm } from "react-hook-form"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "./ui/field"
+import { AppDispatch, RootState } from "../../redux/store"
+import { addNote, removeNote } from "../../redux/slices/notesSlice"
+import { useDispatch, useSelector } from "react-redux"
+import { Badge } from "./ui/badge"
 
 
 const formSchema = z
@@ -69,12 +75,24 @@ export function AppSidebar() {
     }
   })
 
+  const notes = useSelector((state: RootState) => state.notesState);
+  const dispatch = useDispatch<AppDispatch>();
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
 
     console.log({
       title: data.title,
       tags: data.tags
     })
+
+    const length = notes.length;
+
+    dispatch(addNote({
+      id: length.toString() + 1,
+      title: data.title,
+      date: new Date().toISOString(),
+      tags: data.tags
+    }))
 
     form.reset()
   }
@@ -85,12 +103,11 @@ export function AppSidebar() {
         <Link href="/" onClick={() => router.push("/")}>
           <Logo classnames="w-40 h-10"></Logo>
         </Link>
-
         <SidebarTrigger className="lg:hidden" />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
+          <SidebarGroupLabel className="border-b border-black rounded-none">
             <Dialog>
               <DialogTrigger asChild onClick={() => form.reset()}>
                 <div className="flex items-center gap-2">
@@ -156,7 +173,11 @@ export function AppSidebar() {
                     <DialogClose asChild>
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button type="submit" form="create-note">Create</Button>
+                    <DialogClose asChild>
+                      <Button type="submit" form="create-note">
+                        Create
+                      </Button>
+                    </DialogClose>
                   </DialogFooter>
                 </form>
               </DialogContent>
@@ -164,8 +185,34 @@ export function AppSidebar() {
             </Dialog>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-
+            <SidebarMenu className="flex flex-col gap-4 mt-6">
+              {notes && notes.map(note => (
+                <Card key={note.id} className="flex flex-col gap-2 py-2">
+                  <CardHeader className="px-4 py-0">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="leading-tight">
+                        {note.title}
+                      </CardTitle>
+                      <Button variant="secondary" className="w-8 h-8 p-0
+                      hover:scale-105"
+                      onClick={() => {dispatch(removeNote(note.id));
+                        
+                      }}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="px-4 py-0">
+                    {note.tags.map(tag => (
+                      <Badge key={tag} variant="outline">{tag}</Badge>
+                    ))}
+                  </CardContent>
+                  <CardFooter className="px-4 py-0">
+                    <span className="text-xs text-gray-400">Last edited: <span>
+                      {note.date}</span></span>
+                  </CardFooter>
+                </Card>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

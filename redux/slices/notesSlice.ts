@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 export interface NotesArgs {
   id: string,
   title: string,
-  data: string,
+  date: string,
   tags: string[]
 }
 
@@ -17,10 +17,10 @@ const notesSlice = createSlice({
       state.push(action.payload);
     },
     removeNote: (state, action: PayloadAction<string>) => {
-      state.filter(note => note.id !== action.payload);
+      return state.filter(note => note.id !== action.payload);
     }
   }
 })
 
-export const { addNote } = notesSlice.actions;
+export const { addNote, removeNote } = notesSlice.actions;
 export default notesSlice.reducer;
