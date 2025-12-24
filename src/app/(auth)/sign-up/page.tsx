@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import * as z from "zod"
 import { useAuthState, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import { auth } from "@/lib/firebase/config"
+import { db } from "@/lib/firebase/config"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,6 +29,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import Logo from "@/components/Logo"
+import { doc, serverTimestamp, setDoc } from "firebase/firestore"
 
 const formSchema = z
   .object({
@@ -114,9 +116,22 @@ export default function SignUp() {
 
     try {
       const res = await createUser(data.email, data.key);
-      if (res) {
-        router.push("/dashboard")
+      if (!res?.user) {
+        throw new Error("User creation failed...")
       }
+
+        const firebaseUser = res.user;
+
+        await setDoc(doc(db, "users", firebaseUser.uid), {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          username: data.username,
+          role: "user",
+          createdAt: serverTimestamp()
+        })
+
+         router.push("/dashboard")
+  
     } catch (err) {
       console.error(err);
     } finally {

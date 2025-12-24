@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Content in Sidebar */}
       <AppSidebar />
 
-      <SidebarInset className="transition-all duration-300 ease-in-out"> 
+      <SidebarInset> 
         <header
           className="flex h-16 shrink-0 items-center gap-2 border-b px-4"
         >

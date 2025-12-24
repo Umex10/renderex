@@ -24,7 +24,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import Image from "next/image"
 import Link from "next/link"
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useEffect } from "react"
