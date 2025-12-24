@@ -46,7 +46,7 @@ import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "./ui/field"
 import { AppDispatch, RootState } from "../../redux/store"
-import { addNote, removeNote } from "../../redux/slices/notesSlice"
+import { addNote, removeNote, setActiveNote } from "../../redux/slices/notesSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { Badge } from "./ui/badge"
 
@@ -75,7 +75,7 @@ export function AppSidebar() {
     }
   })
 
-  const notes = useSelector((state: RootState) => state.notesState);
+  const notes = useSelector((state: RootState) => state.notesState.notes);
   const dispatch = useDispatch<AppDispatch>();
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -87,12 +87,18 @@ export function AppSidebar() {
 
     const length = notes.length;
 
-    dispatch(addNote({
+    const newNote = {
+      
       id: length.toString() + 1,
       title: data.title,
+      content: "",
       date: new Date().toISOString(),
       tags: data.tags
-    }))
+    
+    }
+
+    dispatch(addNote(newNote));
+    dispatch(setActiveNote(newNote));
 
     form.reset()
   }
@@ -187,7 +193,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4 mt-6">
               {notes && notes.map(note => (
-                <Card key={note.id} className="flex flex-col gap-2 py-2">
+                <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
+                transform-all ease-out duration-300"
+                onClick={() => dispatch(setActiveNote(note))}>
                   <CardHeader className="px-4 py-0">
                     <div className="flex items-center justify-between">
                       <CardTitle className="leading-tight">
