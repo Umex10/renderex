@@ -1,8 +1,8 @@
 "use client"
 import { useRouter } from 'next/navigation';
-import React, {useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from "@/lib/firebase/config"
+import { auth, db } from "@/lib/firebase/config"
 import {
   Tabs,
   TabsContent,
@@ -12,9 +12,10 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { AppDispatch, RootState } from '../../../redux/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { setContent } from '../../../redux/slices/notesSlice';
+import { RootState } from '../../../redux/store';
+import { useSelector } from 'react-redux';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { NotesArgs } from '../../../redux/slices/notesSlice';
 
 /**
  * Protected dashboard page.
@@ -24,9 +25,11 @@ import { setContent } from '../../../redux/slices/notesSlice';
 const Dashboard = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
+  const [content, setContent] = useState("");
 
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
-  const dispatch = useDispatch<AppDispatch>();
+
+  const [note, setNote] = useState<NotesArgs | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -34,19 +37,51 @@ const Dashboard = () => {
     }
   }, [user, loading, router]);
 
+  useEffect(() => {
+    if (!user || !activeNote) {
+      return;
+    }
+
+    const noteRef = doc(db, "notes", activeNote);
+
+    const unsubscribe = onSnapshot(noteRef, snap => {
+      if (!snap.exists) {
+        return;
+      }
+
+      const noteData = {
+        id: snap.id,
+        ...(snap.data() as Omit<NotesArgs, "id">)
+      };
+
+      setNote(noteData);
+      setContent(noteData.content);
+      return () => unsubscribe();
+    })
+  }, [user, activeNote])
+
+  useEffect(() => {
+    if (!note || !content) return;
+
+    const handler = setTimeout(async () => {
+      await updateDoc(doc(db, "notes", note.id), { content });
+    }, 1500)
+
+    return () => clearTimeout(handler);
+  }, [content, note])
+
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading note...</div>;
   }
 
   if (!user) {
     return null;
   }
 
-  if (!activeNote) {
+  if (!note) {
     return <h2>Create a note to be able to see the markdown text editor</h2>
   }
-
 
   return (
     <div className="w-full flex flex-col justify-center items-center gap-4">
@@ -57,7 +92,7 @@ const Dashboard = () => {
 
 
           <div className="w-full flex items-center gap-2 text-3xl">
-            <h2 className="font-bold">{activeNote.title}</h2>
+            <h2 className="font-bold">{note.title}</h2>
           </div>
 
           {/* TabsList stays on the right and aligned with the header */}
@@ -71,14 +106,13 @@ const Dashboard = () => {
         <div className="w-full mt-4">
           <TabsContent value="markdown" >
             <Textarea className='min-h-[400px]'
-              value={activeNote.content} onChange={e => 
-                dispatch(setContent(e.target.value))
-              }></Textarea>
+              value={content} onChange={e =>
+                setContent(e.target.value)}></Textarea>
           </TabsContent>
           <TabsContent value="live">
             <div className="prose prose-slate dark:prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {activeNote.content || "*Nothing to show yet...*"}
+                {note.content || "*Nothing to show yet...*"}
               </ReactMarkdown>
             </div>
           </TabsContent>

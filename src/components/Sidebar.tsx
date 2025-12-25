@@ -26,23 +26,60 @@ import {
 } from "@/components/ui/card"
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { auth } from "@/lib/firebase/config"
+import { auth, db } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
 import { useRouter } from "next/navigation";
 
-import { AppDispatch, RootState } from "../../redux/store"
-import {removeNote, setActiveNote } from "../../redux/slices/notesSlice"
-import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch } from "../../redux/store"
+import {NotesArgs, setActiveNote } from "../../redux/slices/notesSlice"
+import { useDispatch } from "react-redux"
 import { Badge } from "./ui/badge"
 import DialogForm from "./DialogForm"
+import { useEffect, useState } from "react";
+import { collection, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 
 export function AppSidebar() {
 
   const router = useRouter();
 
-  const notes = useSelector((state: RootState) => state.notesState.notes);
   const dispatch = useDispatch<AppDispatch>();
+
+  const [notes, setNotes] = useState<NotesArgs[]>([])
+  const [user, loading] = useAuthState(auth);
+
+  useEffect(() => {
+  
+    if (loading || !user) return;
+
+    const q = query(
+      collection(db, "notes"),
+      where("userId", "==", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const notesData = snap.docs.map(doc => ({
+        id: doc.id,
+        ...(doc.data() as Omit<NotesArgs, "id">)
+      }));
+      setNotes(notesData)
+    },
+  (error) => {
+    console.error("Firestore error while catching all notes: ", error);
+  })
+
+    return () => unsubscribe()
+  }, [user, loading])
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "notes", id));
+      console.log("Deleted Note!");
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <Sidebar className="hidden lg:flex">
@@ -59,22 +96,27 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4 mt-6">
+
+              {loading && (
+                    <h2>Loading your notes...</h2>
+              )} 
+
               {notes && notes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                 transform-all ease-out duration-300"
-                  onClick={() => dispatch(setActiveNote(note))}>
+                  onClick={() => {
+                    dispatch(setActiveNote(note.id));}}>
                   <CardHeader className="px-4 py-0">
                     <div className="flex items-center justify-between">
                       <CardTitle className="leading-tight">
                         {note.title}
                       </CardTitle>
                       <div className="flex justify-center items-center gap-1">
-                        <DialogForm edit={true} note={note}></DialogForm>
+                        <DialogForm edit={true} noteId={note.id}></DialogForm>
                         <Button variant="secondary" className="w-8 h-8 p-0
                       hover:scale-105"
                           onClick={() => {
-                            dispatch(removeNote(note.id));
-                            
+                            handleDelete(note.id);
                           }}>
                           <Trash2 className="w-4 h-4" />
                         </Button>

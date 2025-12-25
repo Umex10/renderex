@@ -1,15 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
 import z from 'zod'
-import { AppDispatch, RootState } from '../../redux/store'
-import { addNote, editNote, NotesArgs, setActiveNote } from '../../redux/slices/notesSlice'
+import { NotesArgs } from '../../redux/slices/notesSlice'
 import { Button } from './ui/button'
 import { Plus, Syringe, X } from 'lucide-react'
 import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
 import { Badge } from './ui/badge'
+import { auth, db } from "@/lib/firebase/config"
 
 import {
   Dialog,
@@ -20,6 +19,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
+import { addDoc, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const formSchema = z
 
@@ -29,16 +30,44 @@ const formSchema = z
       .min(3, "Title must be at least 3 characters."),
 
     tags: z
-      .array(z.string()).min(1, "Add at least one tag")
+      .array(z.string())
   })
 
 interface DialogFormArgs {
   edit: boolean,
-  note?: NotesArgs
+  noteId?: string
 }
 
 
-const DialogForm = ({ edit, note }: DialogFormArgs) => {
+const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
+
+  const [tagInput, setTagInput] = useState("");
+  const [isEditing] = useState<boolean>(edit ? edit : false);
+  const [user, loading] = useAuthState(auth);
+  const [note, setNote] = useState<NotesArgs | null>(null);
+
+ useEffect(() => {
+  if (!user || !noteId) return;
+
+  const noteRef = doc(db, "notes", noteId);
+
+  const unsubscribe = onSnapshot(noteRef, snap => {
+    if (!snap.exists()) {
+      console.log("Note doesn't exist");
+      return;
+    }
+
+    const noteData = {
+      id: snap.id,
+      ...(snap.data() as Omit<NotesArgs, "id">)
+    };
+
+    setNote(noteData);
+  });
+
+  return () => unsubscribe();
+}, [user, noteId]);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,40 +77,51 @@ const DialogForm = ({ edit, note }: DialogFormArgs) => {
       tags: note ? note.tags : []
     }
   })
-  const notes = useSelector((state: RootState) => state.notesState.notes);
-  const dispatch = useDispatch<AppDispatch>();
 
-  const [tagInput, setTagInput] = useState("");
-  const [isEditing] = useState<boolean>(edit ? edit : false);
+  useEffect(() => {
+  if (note) {
+    form.reset({
+      title: note.title,
+      tags: note.tags
+    });
+  }
+}, [note]);
 
-
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
 
     if (isEditing) {
 
+      console.log(data.tags)
+
       if (!note) return;
       const newNote = {
-        id: note.id,
         title: data.title,
         content: note.content,
         date: new Date().toISOString(),
-        tags: data.tags
+        tags: data.tags,
       }
-      dispatch(editNote(newNote))
+
+      try {
+           await updateDoc(doc(db, "notes", note.id), newNote);
+           console.log("aktualsiierte Note!")
+      } catch (err) {
+        console.error(err);
+      }
+   
+     
     } else {
 
-      const length = notes.length;
       const newNote = {
-
-        id: length.toString() + 1,
         title: data.title,
         content: "",
         date: new Date().toISOString(),
-        tags: data.tags
+        tags: data.tags,
+        userId: user?.uid
       }
 
-      dispatch(addNote(newNote));
-      dispatch(setActiveNote(newNote));
+     //dispatch(addNote(newNote));
+      //dispatch(setActiveNote(newNote));
+      await addDoc(collection(db, "notes"), newNote)
     }
 
     form.reset()
@@ -109,7 +149,7 @@ const DialogForm = ({ edit, note }: DialogFormArgs) => {
         </div>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] mb-5">
         <form id="note" onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader className='mb-5'>
             <DialogTitle>{edit ? "Edit a note" : "Create a note"}</DialogTitle>
