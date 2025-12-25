@@ -11,18 +11,7 @@ import {
   SidebarMenu,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+
 
 import Logo from "./Logo"
 import Link from "next/link";
@@ -40,68 +29,20 @@ import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
 import { useRouter } from "next/navigation";
-import { Plus } from 'lucide-react';
-import { Controller, useForm } from "react-hook-form"
-import z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Field, FieldError, FieldLabel } from "./ui/field"
+
 import { AppDispatch, RootState } from "../../redux/store"
-import { addNote, removeNote, setActiveNote } from "../../redux/slices/notesSlice"
+import {removeNote, setActiveNote } from "../../redux/slices/notesSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { Badge } from "./ui/badge"
+import DialogForm from "./DialogForm"
 
-
-const formSchema = z
-  .object({
-    title: z
-      .string()
-      .min(3, "Title must be at least 3 characters."),
-
-    tags: z
-      .array(z.string()).min(1, "Add at least one tag")
-
-  })
 
 export function AppSidebar() {
 
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    mode: "onTouched",
-    defaultValues: {
-      title: "",
-      tags: []
-    }
-  })
-
   const notes = useSelector((state: RootState) => state.notesState.notes);
   const dispatch = useDispatch<AppDispatch>();
-
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-
-    console.log({
-      title: data.title,
-      tags: data.tags
-    })
-
-    const length = notes.length;
-
-    const newNote = {
-      
-      id: length.toString() + 1,
-      title: data.title,
-      content: "",
-      date: new Date().toISOString(),
-      tags: data.tags
-    
-    }
-
-    dispatch(addNote(newNote));
-    dispatch(setActiveNote(newNote));
-
-    form.reset()
-  }
 
   return (
     <Sidebar className="hidden lg:flex">
@@ -114,105 +55,37 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="border-b border-black rounded-none">
-            <Dialog>
-              <DialogTrigger asChild onClick={() => form.reset()}>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold">Notes</span>
-                  <Button variant="default" className="w-6 h-7">
-                    <Plus />
-                  </Button>
-                </div>
-              </DialogTrigger>
-
-              <DialogContent className="sm:max-w-[425px]">
-                <form id="create-note" onSubmit={form.handleSubmit(onSubmit)}>
-                  <DialogHeader>
-                    <DialogTitle>Add a new Note</DialogTitle>
-                  </DialogHeader>
-
-                  <div className="grid gap-4">
-                    <Controller
-                      name="title"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="title">Title</FieldLabel>
-                          <Input
-                            {...field}
-                            id="title"
-                            placeholder="Title"
-                            aria-invalid={fieldState.invalid}
-                          />
-                          {fieldState.invalid &&
-                            <FieldError errors={[fieldState.error]} />}
-                        </Field>
-                      )}
-                    />
-
-                    <Controller
-                      name="tags"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="tags">Tags</FieldLabel>
-                          <Input
-                            {...field}
-                            id="tags"
-                            placeholder="Java, draw"
-                            onChange={e =>
-                              field.onChange(
-                                e.target.value
-                                  .split(",")
-                                  .map(tag => tag.trim())
-                                  .filter(t => t)
-                              )
-                            }
-                            aria-invalid={fieldState.invalid}
-                          />
-                          {fieldState.invalid &&
-                            <FieldError errors={[fieldState.error]} />}
-                        </Field>
-                      )}
-                    />
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <DialogClose asChild>
-                      <Button type="submit" form="create-note">
-                        Create
-                      </Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-
-            </Dialog>
+            <DialogForm edit={false}></DialogForm>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4 mt-6">
               {notes && notes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                 transform-all ease-out duration-300"
-                onClick={() => dispatch(setActiveNote(note))}>
+                  onClick={() => dispatch(setActiveNote(note))}>
                   <CardHeader className="px-4 py-0">
                     <div className="flex items-center justify-between">
                       <CardTitle className="leading-tight">
                         {note.title}
                       </CardTitle>
-                      <Button variant="secondary" className="w-8 h-8 p-0
+                      <div className="flex justify-center items-center gap-1">
+                        <DialogForm edit={true} note={note}></DialogForm>
+                        <Button variant="secondary" className="w-8 h-8 p-0
                       hover:scale-105"
-                      onClick={() => {dispatch(removeNote(note.id));
-                        
-                      }}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                          onClick={() => {
+                            dispatch(removeNote(note.id));
+                            
+                          }}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+
                     </div>
                   </CardHeader>
-                  <CardContent className="px-4 py-0">
+                  <CardContent className="px-4 py-0 flex gap-1">
                     {note.tags.map(tag => (
-                      <Badge key={tag} variant="outline">{tag}</Badge>
+                      <Badge key={tag} variant="outline">{tag.charAt(0).toUpperCase() + 
+                      tag.slice(1, )}</Badge>
                     ))}
                   </CardContent>
                   <CardFooter className="px-4 py-0">
