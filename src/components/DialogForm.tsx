@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
-import { NotesArgs } from '../../redux/slices/notesSlice'
+import { NotesArgs } from "../types/notesArgs";
 import { Button } from './ui/button'
 import { Plus, Syringe, X } from 'lucide-react'
 import { Field, FieldError, FieldLabel } from './ui/field'
@@ -19,8 +19,9 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
-import { addDoc, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { DialogFormArgs } from '@/types/dialogFormArgs';
 
 const formSchema = z
 
@@ -33,45 +34,48 @@ const formSchema = z
       .array(z.string())
   })
 
-interface DialogFormArgs {
-  edit: boolean,
-  noteId?: string
-  onActionNew?: (data: {title: string, tags: string[]}) => void;
-  onActionEdit?: (data: {title: string, content: string, tags: string[]},
-    noteId: string) => void;
-}
 
+/**
+ * A dialog form component for creating or editing notes.
+ * Uses `react-hook-form` for form handling and validation with `zod`.
+ * Fetches note data from Firestore if in edit mode.
+ * 
+ * @component
+ * @param {DialogFormArgs} data - The props for the component, including edit mode and action handlers.
+ * @returns {JSX.Element} The DialogForm component.
+ */
+const DialogForm = (data: DialogFormArgs) => {
 
-const DialogForm = ({ edit, noteId, onActionNew, onActionEdit }: DialogFormArgs) => {
+  const { edit, noteId, onAction } = data;
 
   const [tagInput, setTagInput] = useState("");
-  const [isEditing] = useState<boolean>(edit ? edit : false);
-  const [user, loading] = useAuthState(auth);
+  const [user] = useAuthState(auth);
   const [note, setNote] = useState<NotesArgs | null>(null);
 
- useEffect(() => {
-  if (!user || !noteId) return;
 
-  const noteRef = doc(db, "notes", noteId);
+  useEffect(() => {
+    if (!user || !data.noteId) return;
 
-  const unsubscribe = onSnapshot(noteRef, (snap) => {
-    if (!snap.exists()) {
-      console.log("Note doesn't exist");
-      return;
-    }
+    const noteRef = doc(db, "notes", data.noteId);
 
-    const noteData = {
-      id: snap.id,
-      ...(snap.data() as Omit<NotesArgs, "id">)
-    };
+    const unsubscribe = onSnapshot(noteRef, (snap) => {
+      if (!snap.exists()) {
+        console.log("Note doesn't exist");
+        return;
+      }
 
-    setNote(noteData);
-  }, (error) => {
-    console.error("Firestore error while getting the active note: ", error);
-  } );
+      const noteData = {
+        id: snap.id,
+        ...(snap.data() as Omit<NotesArgs, "id">)
+      };
 
-  return () => unsubscribe();
-}, [user, noteId]);
+      setNote(noteData);
+    }, (error) => {
+      console.error("Firestore error while getting the active note: ", error);
+    });
+
+    return () => unsubscribe();
+  }, [user, noteId]);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,27 +88,24 @@ const DialogForm = ({ edit, noteId, onActionNew, onActionEdit }: DialogFormArgs)
   })
 
   useEffect(() => {
-  if (note) {
-    form.reset({
-      title: note.title,
-      tags: note.tags
-    });
-  }
-}, [note]);
+    if (note) {
+      form.reset({
+        title: note.title,
+        tags: note.tags
+      });
+    }
+  }, [note]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
 
-    if (isEditing) {
+    if (edit) {
 
       if (!note) return;
-      if (!onActionEdit) return;
-      if(!noteId) return;
+      onAction({ ...data, content: note.content }, noteId);
 
-     onActionEdit({...data, content: note.content}, noteId);
-     
-    }  else {
-      if (!onActionNew) return;
-       onActionNew(data);
+    } else {
+
+      onAction(data);
     }
 
     form.reset()

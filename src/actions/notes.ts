@@ -1,10 +1,18 @@
 "use server"
 
 import { db } from "@/lib/firebase/admin";
-import { NotesArgs, NotesDtoArgs } from "../../redux/slices/notesSlice";
+import { NotesArgs } from "../types/notesArgs";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+/**
+ * Server Action to fetch the initial notes for a specific user.
+ * Retrieves notes from the "notes" collection in Firestore where the userId matches.
+ * 
+ * @async
+ * @param {string} userId - The unique identifier of the user whose notes are to be fetched.
+ * @returns {Promise<{success: boolean, data?: NotesArgs[], error?: string}>} An object containing the success status and either the list of notes or an error message.
+ */
 export async function getInitialNotes(userId: string) {
   try {
     const snapshot = await db.collection("notes")
@@ -22,7 +30,17 @@ export async function getInitialNotes(userId: string) {
   }
 }
 
-export async function createNote(note: NotesDtoArgs) {
+/**
+ * Server Action to create a new note.
+ * Verifies user authentication via cookies before creating the note in Firestore.
+ * Revalidates the root path "/" after successful creation.
+ * 
+ * @async
+ * @param {NotesArgs} note - The note object to be created.
+ * @returns {Promise<{success: boolean, id?: string, error?: unknown}>} An object containing the success status and either the new note ID or an error.
+ * @throws {Error} If the user is not authenticated or if the user ID in the note does not match the authenticated user.
+ */
+export async function createNote(note: NotesArgs) {
   
   try {
     const cookieStore = await cookies();
@@ -36,7 +54,7 @@ export async function createNote(note: NotesDtoArgs) {
       throw new Error("The given user and the user from cookie are not the same!");
     }
 
-    const {id, ...newNote } = note;
+    const {id: _, ...newNote } = note;
 
     const noteRef = await db.collection("notes").add(newNote);
 
@@ -50,7 +68,18 @@ export async function createNote(note: NotesDtoArgs) {
 
 }
 
-export async function editNote(noteId: string, note: Omit<NotesDtoArgs, "userId">) {
+/**
+ * Server Action to edit an existing note.
+ * Verifies user authentication and authorization before updating the note in Firestore.
+ * Revalidates the root path "/" after successful update.
+ * 
+ * @async
+ * @param {string} noteId - The ID of the note to be edited.
+ * @param {Omit<NotesArgs, "id" | "userId">} note - The updated note content (excluding ID and userId).
+ * @returns {Promise<{success: boolean, error?: unknown}>} An object indicating the success or failure of the operation.
+ * @throws {Error} If the user is not authenticated, the note is not found, or the user is not authorized to edit the note.
+ */
+export async function editNote(noteId: string, note: Omit<NotesArgs, "id" | "userId">) {
   try {
 
     const cookieStore = await cookies();
@@ -73,10 +102,7 @@ export async function editNote(noteId: string, note: Omit<NotesDtoArgs, "userId"
       throw new Error("You are not authorized to edit this note!");
     }
 
-    // We dont need userId
-    const {userId, ...editData} = note;
-
-    await noteRef.update(editData);
+    await noteRef.update(note);
 
     revalidatePath("/");
     return { success: true };
@@ -87,13 +113,23 @@ export async function editNote(noteId: string, note: Omit<NotesDtoArgs, "userId"
   }
 }
 
+/**
+ * Server Action to delete a note.
+ * Verifies user authentication and authorization before deleting the note from Firestore.
+ * Revalidates the root path "/" after successful deletion.
+ * 
+ * @async
+ * @param {string} noteId - The ID of the note to be deleted.
+ * @returns {Promise<{success: boolean, error?: unknown}>} An object indicating the success or failure of the operation.
+ * @throws {Error} If the user is not authenticated, the note is not found, or the user is not authorized to delete the note.
+ */
 export async function deleteNote(noteId: string) {
 
   try {
     const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    const userIdCk = cookieStore.get("userId")?.value;
 
-    if (!userId) {
+    if (!userIdCk) {
       throw new Error("User is not authenticated!");
     }
     
@@ -107,7 +143,7 @@ export async function deleteNote(noteId: string) {
 
     const noteData = doc.data();
 
-    if (noteData?.userId !== userId) {
+    if (noteData?.userId !== userIdCk) {
       throw new Error("You are not authorized to use this note!");
     }
 

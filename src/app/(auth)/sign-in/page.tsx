@@ -76,11 +76,6 @@ export default function SignIn() {
     return null // oder Loader
   }
 
-  /**
-   * Handles the sign-in form submission.
-   *
-   * @param data Validated form values containing email and key.
-   */
   async function onSubmit(data: z.infer<typeof formSchema>) {
     toast("You submitted the following values:", {
       description: (

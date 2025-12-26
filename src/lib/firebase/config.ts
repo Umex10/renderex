@@ -2,10 +2,13 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
+
+/**
+ * Firebase configuration object.
+ * Contains public API keys and identifiers loaded from environment variables.
+ * These keys are safe to expose on the client side.
+ */
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -16,10 +19,27 @@ const firebaseConfig = {
 };
 
 
-// Initialize Firebase app instance (singleton).
+/**
+ * Initializes the Firebase Client SDK.
+ * 
+ * This logic ensures that the Firebase app is only initialized once.
+ * It checks `getApps().length` to prevent "Firebase App named '[DEFAULT]' already exists" errors,
+ * which is common in Next.js due to hot reloading and server-side rendering.
+ * 
+ * This instance is intended for **Client-Side** usage (Components, Hooks).
+ */
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 
-//Firebase Authentication instance derived from the initialized app
+
+/**
+ * Firebase Authentication instance.
+ * Used for handling user sign-in, sign-out, and auth state changes on the client.
+ */
 const auth = getAuth(app);
+
+/**
+ * Firestore Database instance.
+ * Used for reading and writing data to Firestore from the client side.
+ */
 const db = getFirestore(app)
 export {app, auth, db}

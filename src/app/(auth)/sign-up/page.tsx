@@ -24,7 +24,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -93,11 +92,6 @@ export default function SignUp() {
       return null // oder Loader
     }
 
-  /**
-   * Handles the sign-up form submission.
-   *
-   * @param data Validated form values including username, email, key and confirmKey.
-   */
   async function onSubmit(data: z.infer<typeof formSchema>) {
     toast("You submitted the following values:", {
       description: (

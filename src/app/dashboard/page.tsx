@@ -15,12 +15,21 @@ import remarkGfm from 'remark-gfm';
 import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { NotesArgs } from '../../../redux/slices/notesSlice';
+import { NotesArgs } from "../../types/notesArgs";
 
 /**
- * Protected dashboard page.
- * Redirects unauthenticated users to the sign-in page and
- * shows a loading state while Firebase auth is initializing.
+ * Protected dashboard page component.
+ * Displays the main workspace where users can view and edit their notes.
+ * Handles authentication checks, real-time note updates, and auto-saving functionality.
+ * 
+ * Features:
+ * - Redirects unauthenticated users to sign-in.
+ * - Fetches the active note from Firestore based on Redux state.
+ * - Provides a Markdown editor and a Live preview tab.
+ * - Auto-saves content changes to Firestore with a debounce delay.
+ * 
+ * @component
+ * @returns {JSX.Element | null} The Dashboard page content or null if redirecting/loading.
  */
 const Dashboard = () => {
   const [user, loading] = useAuthState(auth);
