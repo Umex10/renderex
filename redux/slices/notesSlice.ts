@@ -5,7 +5,15 @@ export interface NotesArgs {
   title: string,
   content: string,
   date: string,
-  tags: string[]
+  tags: string[],
+}
+
+export interface NotesDtoArgs {
+  title: string,
+  content: string,
+  date: string,
+  tags: string[],
+  userId: string
 }
 
 interface NotesState {

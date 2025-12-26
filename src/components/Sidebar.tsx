@@ -36,13 +36,14 @@ import { useDispatch } from "react-redux"
 import { Badge } from "./ui/badge"
 import DialogForm from "./DialogForm"
 import { useEffect, useState } from "react";
-import { collection, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { deleteNote } from "@/actions/notes";
+import { createNote, deleteNote, editNote } from "@/actions/notes";
 
 interface AppSidebarArgs {
   initialNotes: NotesArgs[];
 }
+
 
 export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
@@ -76,21 +77,94 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
     return () => unsubscribe()
   }, [user, loading])
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: React.MouseEvent, noteId: string) => {
+
+    e.stopPropagation();
 
     const oldNotes = [...notes];
-    setNotes(old => old.filter(note => note.id !== id));
+    setNotes(old => old.filter(note => note.id !== noteId));
 
     try {
-      const result = await deleteNote(id);
+      const result = await deleteNote(noteId);
 
       if (!result.success) {
         setNotes(oldNotes);
-        throw new Error("Couldn't delete the note!");
       }
 
     } catch (err) {
       console.error("An error occured while deleting the note: ", err);
+    }
+  }
+
+  const handleNew = async (data: { title: string, tags: string[] }) => {
+
+    if (!user) {
+      throw new Error("User was not defined while handling new Note inside Sidebar");
+    }
+
+    // set newNote with a fake id which we will change later
+    const customId = crypto.randomUUID();
+
+    const newNote = {
+      id: customId,
+      title: data.title,
+      content: "",
+      date: new Date().toISOString(),
+      tags: data.tags,
+      userId: user.uid
+    }
+
+    const oldNotes = [...notes];
+    setNotes(old => [...old, newNote]);
+
+    try {
+      const result = await createNote(newNote);
+
+      if (!result.success) {
+        setNotes(oldNotes);
+      }
+
+      if (result && result.id) {
+
+        // Change id to the id which was given by firebase 
+        setNotes(old => old.map(note => 
+          note.id === result.id ? {...note, id: result.id} : note
+        ))
+        dispatch(setActiveNote(result.id))
+      }
+
+    } catch (err) {
+      console.error("An error occured while calling createNote server action: ", err);
+    }
+  }
+
+  const handleEdit = async (data: { title: string, content: string, tags: string[] },
+    noteId: string
+  ) => {
+
+    const newNote = {
+      title: data.title,
+      content: data.content,
+      date: new Date().toISOString(),
+      tags: data.tags,
+    }
+
+    const oldNotes = [...notes];
+    setNotes(old =>
+      old.map(note =>
+        note.id === noteId ? { ...note, ...newNote } : note
+      )
+    );
+
+    try {
+      const result = await editNote(noteId, newNote);
+
+      if (!result.success) {
+        setNotes(oldNotes);
+      }
+
+    } catch (err) {
+      console.error("An error occured while calling editNote server action: ", err);
     }
   }
 
@@ -105,7 +179,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="border-b border-black rounded-none">
-            <DialogForm edit={false}></DialogForm>
+            <DialogForm edit={false} onActionNew={handleNew}></DialogForm>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4 mt-6">
@@ -126,11 +200,12 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                         {note.title}
                       </CardTitle>
                       <div className="flex justify-center items-center gap-1">
-                        <DialogForm edit={true} noteId={note.id}></DialogForm>
+                        <DialogForm edit={true} noteId={note.id}
+                          onActionEdit={handleEdit}></DialogForm>
                         <Button variant="secondary" className="w-8 h-8 p-0
                       hover:scale-105"
-                          onClick={() => {
-                            handleDelete(note.id);
+                          onClick={(e) => {
+                            handleDelete(e, note.id);
                           }}>
                           <Trash2 className="w-4 h-4" />
                         </Button>

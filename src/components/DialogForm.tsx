@@ -36,10 +36,13 @@ const formSchema = z
 interface DialogFormArgs {
   edit: boolean,
   noteId?: string
+  onActionNew?: (data: {title: string, tags: string[]}) => void;
+  onActionEdit?: (data: {title: string, content: string, tags: string[]},
+    noteId: string) => void;
 }
 
 
-const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
+const DialogForm = ({ edit, noteId, onActionNew, onActionEdit }: DialogFormArgs) => {
 
   const [tagInput, setTagInput] = useState("");
   const [isEditing] = useState<boolean>(edit ? edit : false);
@@ -93,41 +96,15 @@ const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
 
     if (isEditing) {
 
-      console.log(data.tags)
-
       if (!note) return;
-      const newNote = {
-        title: data.title,
-        content: note.content,
-        date: new Date().toISOString(),
-        tags: data.tags,
-      }
+      if (!onActionEdit) return;
+      if(!noteId) return;
 
-      try {
-           await updateDoc(doc(db, "notes", note.id), newNote);
-           console.log("aktualsiierte Note!")
-      } catch (err) {
-        console.error(err);
-      }
-   
+     onActionEdit({...data, content: note.content}, noteId);
      
-    } else {
-
-      console.log("The user: ", user?.uid)
-
-      console.log("Generating newNote...")
-
-      const newNote = {
-        title: data.title,
-        content: "",
-        date: new Date().toISOString(),
-        tags: data.tags,
-        userId: user?.uid
-      }
-
-      console.log(newNote)
-
-      await addDoc(collection(db, "notes"), newNote)
+    }  else {
+      if (!onActionNew) return;
+       onActionNew(data);
     }
 
     form.reset()

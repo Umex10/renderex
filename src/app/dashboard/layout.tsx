@@ -11,13 +11,11 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
 
-  console.log("user inside getting notes: ", userId)
-
   let initialNotes: NotesArgs[] = [];
 
   if (userId) {
     const result = await getInitialNotes(userId);
-    console.log("user inside the getInitialNotes state", userId)
+
     if (result.success && result.data) {
       initialNotes = result.data;
     }
