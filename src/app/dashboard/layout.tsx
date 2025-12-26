@@ -1,18 +1,35 @@
-"use client"
-
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/Sidebar"
 import StoreProvider from "../../../redux/StoreProvider";
+import { cookies } from "next/headers";
+import { getInitialNotes } from "../../actions/notes";
+import { NotesArgs } from "../../../redux/slices/notesSlice";
+import { AuthSetter } from "@/components/AuthSetter";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
 
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value;
+
+  console.log("user inside getting notes: ", userId)
+
+  let initialNotes: NotesArgs[] = [];
+
+  if (userId) {
+    const result = await getInitialNotes(userId);
+    console.log("user inside the getInitialNotes state", userId)
+    if (result.success && result.data) {
+      initialNotes = result.data;
+    }
+  }
 
   return (
     <StoreProvider>
+      <AuthSetter>
       <SidebarProvider>
 
         {/* Content in Sidebar */}
-        <AppSidebar />
+        <AppSidebar initialNotes={initialNotes}/>
 
         <SidebarInset>
           <header
@@ -30,6 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </SidebarInset>
 
       </SidebarProvider>
+      </AuthSetter>
     </StoreProvider>
   );
 }

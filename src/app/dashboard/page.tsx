@@ -56,8 +56,8 @@ const Dashboard = () => {
 
       setNote(noteData);
       setContent(noteData.content);
-      return () => unsubscribe();
     })
+    return () => unsubscribe();
   }, [user, activeNote])
 
   useEffect(() => {

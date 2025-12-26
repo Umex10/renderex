@@ -51,7 +51,7 @@ const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
 
   const noteRef = doc(db, "notes", noteId);
 
-  const unsubscribe = onSnapshot(noteRef, snap => {
+  const unsubscribe = onSnapshot(noteRef, (snap) => {
     if (!snap.exists()) {
       console.log("Note doesn't exist");
       return;
@@ -63,7 +63,9 @@ const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
     };
 
     setNote(noteData);
-  });
+  }, (error) => {
+    console.error("Firestore error while getting the active note: ", error);
+  } );
 
   return () => unsubscribe();
 }, [user, noteId]);
@@ -111,6 +113,10 @@ const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
      
     } else {
 
+      console.log("The user: ", user?.uid)
+
+      console.log("Generating newNote...")
+
       const newNote = {
         title: data.title,
         content: "",
@@ -119,8 +125,8 @@ const DialogForm = ({ edit, noteId }: DialogFormArgs) => {
         userId: user?.uid
       }
 
-     //dispatch(addNote(newNote));
-      //dispatch(setActiveNote(newNote));
+      console.log(newNote)
+
       await addDoc(collection(db, "notes"), newNote)
     }
 

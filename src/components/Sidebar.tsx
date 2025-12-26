@@ -31,26 +31,30 @@ import { signOut } from "firebase/auth"
 import { useRouter } from "next/navigation";
 
 import { AppDispatch } from "../../redux/store"
-import {NotesArgs, setActiveNote } from "../../redux/slices/notesSlice"
+import { NotesArgs, setActiveNote } from "../../redux/slices/notesSlice"
 import { useDispatch } from "react-redux"
 import { Badge } from "./ui/badge"
 import DialogForm from "./DialogForm"
 import { useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { deleteNote } from "@/actions/notes";
 
+interface AppSidebarArgs {
+  initialNotes: NotesArgs[];
+}
 
-export function AppSidebar() {
+export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const router = useRouter();
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const [notes, setNotes] = useState<NotesArgs[]>([])
+  const [notes, setNotes] = useState<NotesArgs[]>(initialNotes)
   const [user, loading] = useAuthState(auth);
 
   useEffect(() => {
-  
+
     if (loading || !user) return;
 
     const q = query(
@@ -65,19 +69,28 @@ export function AppSidebar() {
       }));
       setNotes(notesData)
     },
-  (error) => {
-    console.error("Firestore error while catching all notes: ", error);
-  })
+      (error) => {
+        console.error("Firestore error while catching all notes: ", error);
+      })
 
     return () => unsubscribe()
   }, [user, loading])
 
   const handleDelete = async (id: string) => {
+
+    const oldNotes = [...notes];
+    setNotes(old => old.filter(note => note.id !== id));
+
     try {
-      await deleteDoc(doc(db, "notes", id));
-      console.log("Deleted Note!");
+      const result = await deleteNote(id);
+
+      if (!result.success) {
+        setNotes(oldNotes);
+        throw new Error("Couldn't delete the note!");
+      }
+
     } catch (err) {
-      console.error(err);
+      console.error("An error occured while deleting the note: ", err);
     }
   }
 
@@ -97,15 +110,16 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4 mt-6">
 
-              {loading && (
-                    <h2>Loading your notes...</h2>
-              )} 
+              {loading && notes.length === 0 && (
+                <h2>Loading your notes...</h2>
+              )}
 
               {notes && notes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                 transform-all ease-out duration-300"
                   onClick={() => {
-                    dispatch(setActiveNote(note.id));}}>
+                    dispatch(setActiveNote(note.id));
+                  }}>
                   <CardHeader className="px-4 py-0">
                     <div className="flex items-center justify-between">
                       <CardTitle className="leading-tight">
@@ -126,8 +140,8 @@ export function AppSidebar() {
                   </CardHeader>
                   <CardContent className="px-4 py-0 flex gap-1">
                     {note.tags.map(tag => (
-                      <Badge key={tag} variant="outline">{tag.charAt(0).toUpperCase() + 
-                      tag.slice(1, )}</Badge>
+                      <Badge key={tag} variant="outline">{tag.charAt(0).toUpperCase() +
+                        tag.slice(1,)}</Badge>
                     ))}
                   </CardContent>
                   <CardFooter className="px-4 py-0">
