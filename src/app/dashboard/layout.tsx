@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getInitialNotes } from "../../actions/notes";
 import { NotesArgs } from "../../types/notesArgs";
 import { AuthSetter } from "@/components/AuthSetter";
+import SelectFormat from "@/components/SelectFormat";
 
 /**
  * The main layout for the dashboard section.
@@ -35,27 +36,28 @@ export default async function Layout({ children }: { children: React.ReactNode }
   return (
     <StoreProvider>
       <AuthSetter>
-      <SidebarProvider>
+        <SidebarProvider>
 
-        {/* Content in Sidebar */}
-        <AppSidebar initialNotes={initialNotes}/>
+          {/* Content in Sidebar */}
+          <AppSidebar initialNotes={initialNotes} />
 
-        <SidebarInset>
-          <header
-            className="flex h-16 shrink-0 items-center gap-2 border-b px-4"
-          >
-            <SidebarTrigger className="lg:hidden" />
-            <div className="flex flex-row gap-4 items-center text-lg">
-              Text
-            </div>
-          </header>
+          <SidebarInset>
+            <header
+              className="flex justify-between md:justify-left h-16 shrink-0 items-center gap-2 border-b px-4"
+            >
+              <SidebarTrigger className="lg:hidden" />
 
-          <main className="flex flex-1 flex-col gap-4 p-4">
-            {children}
-          </main>
-        </SidebarInset>
+              <SelectFormat></SelectFormat>
+             
 
-      </SidebarProvider>
+            </header>
+
+            <main className="flex flex-1 flex-col gap-4 p-4">
+              {children}
+            </main>
+          </SidebarInset>
+
+        </SidebarProvider>
       </AuthSetter>
     </StoreProvider>
   );

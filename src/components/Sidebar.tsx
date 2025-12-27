@@ -36,6 +36,8 @@ import { Badge } from "./ui/badge"
 import DialogForm from "./DialogForm"
 import { useNotes } from "@/hooks/use-notes";
 import { setActiveNote } from "../../redux/slices/notesSlice";
+import { formatDate } from "@/utils/formatDate";
+import { useFormat } from "@/hooks/use-format";
 
 /**
  * Args for the AppSidebar component.
@@ -62,6 +64,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
   const dispatch = useDispatch<AppDispatch>();
 
   const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
+
 
   return (
     <Sidebar className="hidden lg:flex">
@@ -95,9 +98,10 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                         {note.title}
                       </CardTitle>
                       <div className="flex justify-center items-center gap-1"
-                      onClick={(e) => e.stopPropagation()}>
+                        onClick={(e) => e.stopPropagation()}>
                         <DialogForm edit={true} noteId={note.id}
                           onAction={handleEdit}></DialogForm>
+
                         <Button variant="secondary" className="w-8 h-8 p-0
                       hover:scale-105"
                           onClick={(e) => {
@@ -116,8 +120,8 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                     ))}
                   </CardContent>
                   <CardFooter className="px-4 py-0">
-                    <span className="text-xs text-gray-400">Last edited: <span>
-                      {note.date}</span></span>
+                    <span className="text-xs text-gray-400">Edited: <span>
+                      {formatDate(note.date)}</span></span>
                   </CardFooter>
                 </Card>
               ))}

@@ -16,6 +16,10 @@ import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NotesArgs } from "../../types/notesArgs";
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useFormat } from '@/hooks/use-format';
+
 
 /**
  * Protected dashboard page component.
@@ -35,6 +39,8 @@ const Dashboard = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [content, setContent] = useState("");
+
+    const {handleDownload} = useFormat();
 
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
@@ -65,6 +71,7 @@ const Dashboard = () => {
 
       setNote(noteData);
       setContent(noteData.content);
+
     })
     return () => unsubscribe();
   }, [user, activeNote])
@@ -78,7 +85,6 @@ const Dashboard = () => {
 
     return () => clearTimeout(handler);
   }, [content, note])
-
 
   if (loading) {
     return <div>Loading note...</div>;
@@ -94,14 +100,31 @@ const Dashboard = () => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center gap-4">
-      {/* HEADER */}
-      <Tabs defaultValue="markdown" className="w-full flex flex-col">
+
+      <div className='w-full hidden 2xl:flex flex-row gap-2'>
+          <div className='w-1/2'>
+          <Textarea className='min-h-[650px]'
+              value={content} onChange={e =>
+                setContent(e.target.value)}></Textarea>
+            <Button className='mt-2' onClick={() => handleDownload(note)}>
+              <span>Download</span>
+              <Download></Download>
+            </Button>
+          </div>
+          <div className="w-1/2 prose prose-slate  max-w-none">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {content !== "" ? content : "Write something down in order to see it live"}
+              </ReactMarkdown>
+            </div>
+      </div>
+    
+      <Tabs defaultValue="markdown" className="2xl:hidden w-full flex flex-col">
         {/* ABOVE TEXT LEFT + TABS LIST RIGHT) */}
         <div className="w-full flex flex-col gap-4 md:flex-row justify-between items-center md:items-end">
 
 
           <div className="w-full flex items-center gap-2 text-3xl">
-            <h2 className="font-bold">{note.title}</h2>
+            <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
           </div>
 
           {/* TabsList stays on the right and aligned with the header */}
@@ -114,17 +137,22 @@ const Dashboard = () => {
         {/* CONTENT SECTION */}
         <div className="w-full mt-4">
           <TabsContent value="markdown" >
-            <Textarea className='min-h-[400px]'
+            <Textarea className='min-h-[650px]'
               value={content} onChange={e =>
                 setContent(e.target.value)}></Textarea>
+            <Button className='mt-2' onClick={() => handleDownload(note)}>
+              <span>Download</span>
+              <Download></Download>
+            </Button>
           </TabsContent>
           <TabsContent value="live">
-            <div className="prose prose-slate dark:prose-invert max-w-none">
+            <div className="prose prose-slate  max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {note.content || "*Nothing to show yet...*"}
+                {content !== "" ? content : "Write something down in order to see it live"}
               </ReactMarkdown>
             </div>
           </TabsContent>
+
         </div>
       </Tabs>
     </div>
