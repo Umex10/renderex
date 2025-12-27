@@ -9,7 +9,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { Textarea } from '@/components/ui/textarea';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { RootState } from '../../../redux/store';
@@ -19,6 +18,7 @@ import { NotesArgs } from "../../types/notesArgs";
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFormat } from '@/hooks/use-format';
+import Editor from '@/components/Editor';
 
 
 /**
@@ -40,7 +40,7 @@ const Dashboard = () => {
   const router = useRouter();
   const [content, setContent] = useState("");
 
-    const {handleDownload} = useFormat();
+  const { handleDownload } = useFormat();
 
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
@@ -101,25 +101,31 @@ const Dashboard = () => {
   return (
     <div className="w-full flex flex-col justify-center items-center gap-4">
 
-      <div className='w-full hidden 2xl:flex flex-row gap-2'>
-          <div className='w-1/2'>
-          <Textarea className='min-h-[650px]'
-              value={content} onChange={e =>
-                setContent(e.target.value)}></Textarea>
-            <Button className='mt-2' onClick={() => handleDownload(note)}>
-              <span>Download</span>
-              <Download></Download>
-            </Button>
-          </div>
-          <div className="w-1/2 prose prose-slate  max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content !== "" ? content : "Write something down in order to see it live"}
-              </ReactMarkdown>
-            </div>
+       <div className="w-full hidden 2xl:flex items-center gap-2 text-3xl">
+            <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
       </div>
-    
+
+      <div className='w-full hidden 2xl:flex flex-row gap-2'>
+        <div className='w-1/2'>
+          <Editor
+            value={content}
+            onChange={(val) => setContent(val)}
+          />
+
+          <Button className='mt-2' onClick={() => handleDownload(note)}>
+            <span>Download</span>
+            <Download></Download>
+          </Button>
+        </div>
+        <div className="w-1/2 prose prose-slate max-w-none h-[650px] overflow-y-auto">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {content !== "" ? content : "Write something down in order to see it live"}
+          </ReactMarkdown>
+        </div>
+      </div>
+
       <Tabs defaultValue="markdown" className="2xl:hidden w-full flex flex-col">
-        {/* ABOVE TEXT LEFT + TABS LIST RIGHT) */}
+       
         <div className="w-full flex flex-col gap-4 md:flex-row justify-between items-center md:items-end">
 
 
@@ -127,26 +133,28 @@ const Dashboard = () => {
             <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
           </div>
 
-          {/* TabsList stays on the right and aligned with the header */}
+ 
           <TabsList className="grid grid-cols-2 w-full md:w-auto max-w-[250px]">
             <TabsTrigger value="markdown">Markdown</TabsTrigger>
             <TabsTrigger value="live">Live</TabsTrigger>
           </TabsList>
         </div>
 
-        {/* CONTENT SECTION */}
+
         <div className="w-full mt-4">
           <TabsContent value="markdown" >
-            <Textarea className='min-h-[650px]'
-              value={content} onChange={e =>
-                setContent(e.target.value)}></Textarea>
+            <Editor
+            value={content}
+            onChange={(val) => setContent(val)}
+          />
             <Button className='mt-2' onClick={() => handleDownload(note)}>
               <span>Download</span>
               <Download></Download>
             </Button>
           </TabsContent>
           <TabsContent value="live">
-            <div className="prose prose-slate  max-w-none">
+            <div className="prose prose-slate  max-w-none
+            min-h-[650px] overflow-y-scroll">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {content !== "" ? content : "Write something down in order to see it live"}
               </ReactMarkdown>
