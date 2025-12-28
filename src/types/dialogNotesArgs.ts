@@ -26,12 +26,12 @@ export type NoteDataForEdit = {
  * Discriminated Union for DialogForm props.
  * Determines the mode (create or edit) and the corresponding action handler.
  * 
- * @typedef {Object} DialogFormArgs
+ * @typedef {Object} DialogNoteArgs
  * @property {boolean} edit - Flag to indicate if the form is in edit mode.
  * @property {Function} onAction - Callback function to handle the form submission.
  * @property {string} [noteId] - The ID of the note to edit (required if edit is true).
  */
-export type DialogFormArgs =
+export type DialogNoteArgs =
   | {
     edit: false;
     onAction: (data: NoteDataForNew) => void;

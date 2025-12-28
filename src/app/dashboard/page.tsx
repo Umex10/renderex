@@ -101,12 +101,12 @@ const Dashboard = () => {
   return (
     <div className="w-full flex flex-col justify-center items-center gap-4">
 
-       <div className="w-full hidden 2xl:flex items-center gap-2 text-3xl">
-            <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
+      <div className="w-full hidden 2xl:flex items-center gap-2 text-3xl">
+        <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
       </div>
 
-      <div className='w-full hidden 2xl:flex flex-row gap-2'>
-        <div className='w-1/2'>
+      <div className='w-full hidden 2xl:grid grid-cols-2 gap-2'>
+        <div className='min-w-0'>
           <Editor
             value={content}
             onChange={(val) => setContent(val)}
@@ -117,7 +117,7 @@ const Dashboard = () => {
             <Download></Download>
           </Button>
         </div>
-        <div className="w-1/2 prose prose-slate max-w-none h-[650px] overflow-y-auto">
+        <div className="prose prose-slate max-w-none h-[650px] overflow-y-auto break-words">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {content !== "" ? content : "Write something down in order to see it live"}
           </ReactMarkdown>
@@ -125,7 +125,7 @@ const Dashboard = () => {
       </div>
 
       <Tabs defaultValue="markdown" className="2xl:hidden w-full flex flex-col">
-       
+
         <div className="w-full flex flex-col gap-4 md:flex-row justify-between items-center md:items-end">
 
 
@@ -133,7 +133,7 @@ const Dashboard = () => {
             <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
           </div>
 
- 
+
           <TabsList className="grid grid-cols-2 w-full md:w-auto max-w-[250px]">
             <TabsTrigger value="markdown">Markdown</TabsTrigger>
             <TabsTrigger value="live">Live</TabsTrigger>
@@ -144,9 +144,9 @@ const Dashboard = () => {
         <div className="w-full mt-4">
           <TabsContent value="markdown" >
             <Editor
-            value={content}
-            onChange={(val) => setContent(val)}
-          />
+              value={content}
+              onChange={(val) => setContent(val)}
+            />
             <Button className='mt-2' onClick={() => handleDownload(note)}>
               <span>Download</span>
               <Download></Download>

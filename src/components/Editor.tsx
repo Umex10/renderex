@@ -5,6 +5,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { useTheme } from 'next-themes';
+import { EditorView } from "@codemirror/view";
 
 interface EditorProps {
   value: string;
@@ -18,8 +19,11 @@ const Editor = ({ value, onChange }: EditorProps) => {
     <CodeMirror
       value={value}
       height="650px"
-      // Hier aktivieren wir Markdown-Support inkl. Syntax Highlighting für Code-Blocks im Markdown
-      extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
+      extensions={[
+        markdown({ base: markdownLanguage, codeLanguages: languages }),
+        EditorView.lineWrapping
+      ]}
+      width="100%"
       onChange={(val) => onChange(val)}
       theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
       className="border rounded-md overflow-hidden"

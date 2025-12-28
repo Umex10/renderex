@@ -15,7 +15,7 @@ import {
 
 import Logo from "./Logo"
 import Link from "next/link";
-import { LogOut, Trash2 } from 'lucide-react';
+import { LogOut, PlusCircle, Trash2 } from 'lucide-react';
 
 import {
   Card,
@@ -29,15 +29,18 @@ import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
 import { useRouter } from "next/navigation";
-import { AppDispatch } from "../../redux/store"
+import { AppDispatch, RootState } from "../../redux/store"
 import { NotesArgs } from "../types/notesArgs";
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Badge } from "./ui/badge"
-import DialogForm from "./DialogForm"
+import DialogNote from "./DialogNote"
 import { useNotes } from "@/hooks/use-notes";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
-import { useFormat } from "@/hooks/use-format";
+import { Input } from "./ui/input";
+import { useState } from "react";
+import { addGlobalTag } from "../../redux/slices/tagsSlice";
+import TagsInfo from "./TagsInfo";
 
 /**
  * Args for the AppSidebar component.
@@ -63,8 +66,11 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
+  const globalTags = useSelector((state: RootState) => state.tagsState.globalTags);
 
+  const [tagInput, setTagInput] = useState("");
+
+  const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
 
   return (
     <Sidebar className="hidden lg:flex">
@@ -77,10 +83,10 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="border-b border-black rounded-none">
-            <DialogForm edit={false} onAction={handleNew}></DialogForm>
+            <DialogNote edit={false} onAction={handleNew}></DialogNote>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="flex flex-col gap-4 mt-6">
+            <SidebarMenu className="flex flex-col gap-4 mt-3">
 
               {loading && notes.length === 0 && (
                 <h2>Loading your notes...</h2>
@@ -99,8 +105,8 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                       </CardTitle>
                       <div className="flex justify-center items-center gap-1"
                         onClick={(e) => e.stopPropagation()}>
-                        <DialogForm edit={true} noteId={note.id}
-                          onAction={handleEdit}></DialogForm>
+                        <DialogNote edit={true} noteId={note.id}
+                          onAction={handleEdit}></DialogNote>
 
                         <Button variant="secondary" className="w-8 h-8 p-0
                       hover:scale-105"
@@ -127,6 +133,53 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="border-b border-black rounded-none">
+            <span className="text-xl font-bold">Tags</span>
+          </SidebarGroupLabel>
+          <div className="flex flex-row gap-1 items-center">
+               <Input
+            value={tagInput}
+            onChange={e => {
+              const value = e.target.value;
+
+              if (value.endsWith(",")) {
+                const newTag = value.slice(0, -1).trim().toLowerCase();
+
+                if (newTag && !globalTags.includes(newTag)) {
+                  dispatch(addGlobalTag(newTag));
+                }
+
+                setTagInput("");
+              } else {
+                setTagInput(value);
+              }
+            }}
+            placeholder="Java, other,"
+            className=" mt-2
+                        font-mono
+                        text-sm
+                        bg-muted/40
+                        border-dashed
+                        border-muted-foreground/30"
+          ></Input>
+
+          <TagsInfo desc="Here you can add tags by seberating them with ','"></TagsInfo>
+          </div>
+         
+
+          <div className="flex flex-wrap gap-1 mt-3">
+            {globalTags.map(tag => (
+              <Badge key={tag} variant="outline" className='flex gap-2'>
+                <span className='text-sm'>{tag.charAt(0).toUpperCase() +
+                  tag.slice(1,)}</span>
+                <Button className="w-4 h-4 p-2 rounded-full">
+                  <PlusCircle className='w-4 h-4'></PlusCircle>
+                </Button>
+              </Badge>
+            ))}
+          </div>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="flex flex-col gap-4 items-center">

@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { NotesArgs } from "../types/notesArgs";
 import { Button } from './ui/button'
-import { Plus, Syringe, X } from 'lucide-react'
+import { Plus, PlusCircle, Syringe, X } from 'lucide-react'
 import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
 import { Badge } from './ui/badge'
@@ -21,7 +21,9 @@ import {
 } from "@/components/ui/dialog"
 import { doc, onSnapshot } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { DialogFormArgs } from '@/types/dialogFormArgs';
+import { DialogNoteArgs } from '@/types/dialogNotesArgs';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
 
 const formSchema = z
 
@@ -41,10 +43,10 @@ const formSchema = z
  * Fetches note data from Firestore if in edit mode.
  * 
  * @component
- * @param {DialogFormArgs} data - The props for the component, including edit mode and action handlers.
+ * @param {DialogNoteArgs} data - The props for the component, including edit mode and action handlers.
  * @returns {JSX.Element} The DialogForm component.
  */
-const DialogForm = (data: DialogFormArgs) => {
+const DialogNote = (data: DialogNoteArgs) => {
 
   const { edit, noteId, onAction } = data;
 
@@ -52,6 +54,8 @@ const DialogForm = (data: DialogFormArgs) => {
   const [user] = useAuthState(auth);
   const [note, setNote] = useState<NotesArgs | null>(null);
 
+  const globalTags = useSelector((state: RootState) => state.tagsState.globalTags);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (!user || !data.noteId) return;
@@ -111,11 +115,32 @@ const DialogForm = (data: DialogFormArgs) => {
     form.reset()
   }
 
+  const activeTags = form.watch("tags");
+
+  const suggestedTags = useMemo(() => {
+    return globalTags.filter(tag => !activeTags.includes(tag));
+  }, [globalTags, activeTags]);
+
   function removeTag(tagToRemove: string) {
     const tags = form.getValues("tags");
 
     const newTags = tags.filter(tag => tag !== tagToRemove);
     form.setValue("tags", newTags);
+
+    if (globalTags.includes(tagToRemove)) return;
+
+    // suggest it again
+    suggestedTags.push(tagToRemove);
+  }
+
+  function addOutsideTag(tagToAdd: string) {
+    const tags = form.getValues("tags");
+    if (tags.includes(tagToAdd)) return;
+
+    form.setValue("tags", [...tags, tagToAdd]);
+
+    // remove the suggested tag
+    suggestedTags.filter(tag => tag !== tagToAdd);
   }
 
   return (
@@ -179,6 +204,10 @@ const DialogForm = (data: DialogFormArgs) => {
                           field.onChange([...field.value, newTag])
                         }
 
+                        if (globalTags.includes(newTag)) {
+                          suggestedTags.filter(tag => tag !== newTag);
+                        }
+
                         setTagInput("");
                       } else {
                         setTagInput(value);
@@ -188,18 +217,38 @@ const DialogForm = (data: DialogFormArgs) => {
                   />
                   {fieldState.invalid &&
                     <FieldError errors={[fieldState.error]} />}
-                  <div className="flex gap-1">
-                    {field.value.map(tag => (
-                      <Badge key={tag} variant="outline" className='flex gap-2'>
-                        <span className='text-sm'>{tag.charAt(0).toUpperCase() +
-                          tag.slice(1,)}</span>
-                        <Button className="w-4 h-4 p-2 rounded-full"
-                          onClick={() => removeTag(tag)}>
-                          <X className='w-4 h-4'></X>
-                        </Button>
-                      </Badge>
-                    ))}
+                  <div className='flex flex-col gap-1'>
+
+                    <div className="flex flex-wrap gap-1">
+                      <span>Active: </span>
+                      {field.value.map(tag => (
+                        <Badge key={tag} variant="outline" className='flex gap-2'>
+                          <span className='text-sm'>{tag.charAt(0).toUpperCase() +
+                            tag.slice(1,)}</span>
+                          <Button className="w-4 h-4 p-2 rounded-full"
+                            onClick={() => removeTag(tag)}>
+                            <X className='w-4 h-4'></X>
+                          </Button>
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-wrap gap-1">
+                      <span>Recommended: </span>
+                      {suggestedTags.map(tag => (
+                        <Badge key={tag + " ss"} variant="outline" className='flex gap-2'>
+                          <span className='text-sm'>{tag.charAt(0).toUpperCase() +
+                            tag.slice(1,)}</span>
+                          <Button className="w-4 h-4 p-2 rounded-full"
+                            onClick={() => addOutsideTag(tag)}>
+                            <PlusCircle className='w-4 h-4'></PlusCircle>
+                          </Button>
+                        </Badge>
+                      ))}
+                    </div>
+
                   </div>
+
                 </Field>
               )}
             />
@@ -221,4 +270,4 @@ const DialogForm = (data: DialogFormArgs) => {
   )
 }
 
-export default DialogForm
+export default DialogNote
