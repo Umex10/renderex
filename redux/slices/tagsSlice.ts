@@ -2,12 +2,10 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface NotesState {
   globalTags: string[],
- //
 }
 
 const initialState: NotesState = {
   globalTags: ["java", "react", "c++", "fut"],
-  //
 }
 
 const tagsSlice = createSlice({
@@ -20,12 +18,6 @@ const tagsSlice = createSlice({
     removeGlobalTag: (state, action: PayloadAction<string>) => {
       state.globalTags = state.globalTags.filter(tag => tag !== action.payload);
     },
-    // addSuggestedTag: (state, action: PayloadAction<string>) => {
-    //   state.suggestedTags.push(action.payload);
-    // },
-    // removeSuggestedTag: (state, action: PayloadAction<string>) => {
-    //   state.suggestedTags = state.suggestedTags.filter(tag => tag !== action.payload);
-    // },
   }
 })
 

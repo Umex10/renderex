@@ -13,7 +13,7 @@ import { AppDispatch } from "../../redux/store";
  * Handles real-time updates from Firestore and provides methods to create, edit, and delete notes.
  * Uses Server Actions for data mutations.
  * 
- * @param {NotesArgs[]} initialNotes - The initial list of notes to display before real-time updates kick in.
+ * @param {NotesArgs[]} initialNotes - The initial list of notes to display before updates kick in.
  * @returns {Object} An object containing the notes list, loading state, and handler functions.
  * @property {NotesArgs[]} notes - The current list of notes.
  * @property {boolean} loading - The loading state of the user authentication.

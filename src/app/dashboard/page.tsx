@@ -20,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import { useFormat } from '@/hooks/use-format';
 import Editor from '@/components/Editor';
 
-
 /**
  * Protected dashboard page component.
  * Displays the main workspace where users can view and edit their notes.
@@ -45,6 +44,7 @@ const Dashboard = () => {
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
   const [note, setNote] = useState<NotesArgs | null>(null);
+
 
   useEffect(() => {
     if (!loading && !user) {
@@ -80,8 +80,13 @@ const Dashboard = () => {
     if (!note || !content) return;
 
     const handler = setTimeout(async () => {
-      await updateDoc(doc(db, "notes", note.id), { content });
-    }, 1500)
+    const noteRef = doc(db, "notes", note.id);
+
+    await updateDoc(noteRef, { 
+      content: content,        
+      date: new Date().toISOString()
+    });
+    }, 500)
 
     return () => clearTimeout(handler);
   }, [content, note])

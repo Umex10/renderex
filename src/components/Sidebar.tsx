@@ -81,7 +81,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
         <SidebarTrigger className="lg:hidden" />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup  className="overflow-y-scroll max-h-[425px]">
           <SidebarGroupLabel className="border-b border-black rounded-none">
             <DialogNote edit={false} onAction={handleNew}></DialogNote>
           </SidebarGroupLabel>
@@ -134,7 +134,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
+        <SidebarGroup className="overflow-y-scroll border-t-3 border-violet-600/50">
           <SidebarGroupLabel className="border-b border-black rounded-none">
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>

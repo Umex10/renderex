@@ -24,6 +24,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { DialogNoteArgs } from '@/types/dialogNotesArgs';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
+import { addGlobalTag } from '../../redux/slices/tagsSlice';
 
 const formSchema = z
 
@@ -101,6 +102,11 @@ const DialogNote = (data: DialogNoteArgs) => {
   }, [note]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+
+    const tags = form.getValues("tags");
+
+    const newTags = tags.filter(tag => !globalTags.includes(tag));
+    newTags.forEach(tag => dispatch(addGlobalTag(tag)));
 
     if (edit) {
 
