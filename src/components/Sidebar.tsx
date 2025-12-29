@@ -15,7 +15,7 @@ import {
 
 import Logo from "./Logo"
 import Link from "next/link";
-import { ArrowDown, ArrowUp, LogOut, PlusCircle, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, LogOut, PlusCircle, Trash2, X } from 'lucide-react';
 
 import {
   Card,
@@ -39,10 +39,12 @@ import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
 import { useMemo, useState } from "react";
-import { addGlobalTag } from "../../redux/slices/tagsSlice";
+import { addGlobalTag, removeGlobalTag, Tag } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
+import { getRandomHexColor } from "@/utils/getRandomHexColor";
+import SingleTag from "./SingleTag";
 
 /**
  * Args for the AppSidebar component.
@@ -72,13 +74,14 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const [tagInput, setTagInput] = useState("");
 
+
   const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
 
   const [sortAfter, setSortAfter] = useState("date");
   const [isDescending, setIsDescending] = useState(true);
   const [isAscending, setIsAscending] = useState(false);
 
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
 
   const newNotes = useMemo(() => {
 
@@ -96,8 +99,8 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
           return [...notes].sort((a, b) => a.title.localeCompare(b.title));
         }
       case "tags":
-        return notes.filter(note => 
-          note.tags.some(noteTag => selectedTags.includes(noteTag))
+        return notes.filter(note =>
+          note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag === noteTag))
         );
       default:
         return notes;
@@ -106,11 +109,15 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
   }, [notes, sortAfter, isDescending, selectedTags])
 
   const sortedGlobalTags = useMemo(() => {
-    return [...globalTags].sort((a, b) => a.localeCompare(b));
+    return [...globalTags].sort((a, b) => a.name.localeCompare(b.name));
   }, [globalTags])
 
-    const handleSelectionChange = (selected: string[]) => {
+  const handleSelectionChange = (selected: Tag[]) => {
     setSelectedTags(selected)
+  }
+
+  function handleGlobalTag(tag: Tag) {
+    dispatch(removeGlobalTag(tag))
   }
 
   return (
@@ -133,7 +140,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
             >
               <DialogNote edit={false} onAction={handleNew}></DialogNote>
               <div className="flex flex-row items-center gap-1">
-              
+
                 <Select
                   defaultValue="date"
                   onValueChange={(value) => setSortAfter(value)}
@@ -188,13 +195,13 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
             </div>
 
             {sortAfter === "tags" && (
-                  <MultiSelect
-                    items={sortedGlobalTags}
-                    selected={selectedTags}
-                    onChange={handleSelectionChange}
-                    placeholder="Tags..."
-                  />
-                )}
+              <MultiSelect
+                items={sortedGlobalTags}
+                selected={selectedTags}
+                onChange={handleSelectionChange}
+                placeholder="Tags..."
+              />
+            )}
 
             <SidebarMenu className="flex flex-col gap-4 mt-2">
 
@@ -231,8 +238,8 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                   </CardHeader>
                   <CardContent className="px-4 py-0 flex gap-1">
                     {note.tags.map(tag => (
-                      <Badge key={tag} variant="outline">{tag.charAt(0).toUpperCase() +
-                        tag.slice(1,)}</Badge>
+                      <Badge key={tag.name} variant="outline">{tag.name.charAt(0).toUpperCase() +
+                        tag.name.slice(1,)}</Badge>
                     ))}
                   </CardContent>
                   <CardFooter className="px-4 py-0">
@@ -257,10 +264,16 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                 const value = e.target.value;
 
                 if (value.endsWith(",")) {
-                  const newTag = value.slice(0, -1).trim().toLowerCase();
+                  const tagName = value.slice(0, -1).trim().toLowerCase();
 
-                  if (newTag && !globalTags.includes(newTag)) {
-                    dispatch(addGlobalTag(newTag));
+                  if (tagName && !globalTags.some(tag => tag.name === tagName)) {
+
+                    const newGlobalTag = {
+                      name: tagName,
+                      color: getRandomHexColor()
+                    }
+
+                    dispatch(addGlobalTag(newGlobalTag));
                   }
 
                   setTagInput("");
@@ -283,13 +296,8 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
           <div className="flex flex-wrap gap-1 mt-3">
             {sortedGlobalTags.map(tag => (
-              <Badge key={tag} variant="outline" className='flex gap-2'>
-                <span className='text-sm'>{tag.charAt(0).toUpperCase() +
-                  tag.slice(1,)}</span>
-                <Button className="w-4 h-4 p-2 rounded-full">
-                  <PlusCircle className='w-4 h-4'></PlusCircle>
-                </Button>
-              </Badge>
+              <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
+              handleTag={handleGlobalTag}></SingleTag>
             ))}
           </div>
         </SidebarGroup>

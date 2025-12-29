@@ -7,6 +7,7 @@ import { createNote, deleteNote, editNote } from "@/actions/notes";
 import { useDispatch } from "react-redux";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { AppDispatch } from "../../redux/store";
+import { Tag } from "../../redux/slices/tags/tagsSlice";
 
 /**
  * Custom hook to manage notes state and interactions.
@@ -86,7 +87,7 @@ export function useNotes(initialNotes: NotesArgs[]) {
    * @param {string} data.title - The title of the new note.
    * @param {string[]} data.tags - The tags associated with the new note.
    */
-  const handleNew = async (data: { title: string, tags: string[] }) => {
+  const handleNew = async (data: { title: string, tags: Tag[] }) => {
 
     if (!user) {
       throw new Error("User was not defined while handling new Note inside Sidebar");
@@ -138,7 +139,7 @@ export function useNotes(initialNotes: NotesArgs[]) {
    * @param {string[]} data.tags - The updated tags.
    * @param {string} noteId - The ID of the note to edit.
    */
-  const handleEdit = async (data: { title: string, content: string, tags: string[] },
+  const handleEdit = async (data: { title: string, content: string, tags: Tag[] },
     noteId: string
   ) => {
 

@@ -1,3 +1,5 @@
+import { Tag } from "../../redux/slices/tags/tagsSlice";
+
 /**
  * Type definition for the data required to create a new note.
  * @typedef {Object} NoteDataForNew
@@ -6,7 +8,7 @@
  */
 export type NoteDataForNew = {
   title: string;
-  tags: string[];
+  tags: Tag[];
 };
 
 /**
@@ -19,7 +21,7 @@ export type NoteDataForNew = {
 export type NoteDataForEdit = {
   title: string;
   content: string
-  tags: string[];
+  tags: Tag[];
 };
 
 /**

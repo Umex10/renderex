@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import notesSlice from "./slices/notesSlice";
 import formatSlice from "./slices/formatSlice";
-import tagsSlice from "./slices/tagsSlice";
+import tagsSlice from "./slices/tags/tagsSlice";
 
 /**
  * The Redux store configuration.

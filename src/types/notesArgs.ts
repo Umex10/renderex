@@ -1,3 +1,4 @@
+import { Tag } from "../../redux/slices/tags/tagsSlice";
 
 /**
  * Represents the structure of a note object.
@@ -14,6 +15,6 @@ export interface NotesArgs {
   title: string,
   content: string,
   date: string,
-  tags: string[],
+  tags: Tag[],
   userId: string
 }

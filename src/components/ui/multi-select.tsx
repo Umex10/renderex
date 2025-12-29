@@ -4,11 +4,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { Tag } from "../../../redux/slices/tags/tagsSlice"
 
 interface MultiSelectProps {
-  items: string[]
-  selected: string[]
-  onChange: (selected: string[]) => void
+  items: Tag[]
+  selected: Tag[]
+  onChange: (selected: Tag[]) => void
   placeholder?: string
   className?: string
 }
@@ -16,17 +17,17 @@ interface MultiSelectProps {
 export function MultiSelect({ items, selected, onChange, placeholder = "Choose...", className }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleUnselect = (value: string) => {
-    const newSelected = selected.filter((s) => s !== value)
+  const handleUnselect = (tag: Tag) => {
+    const newSelected = selected.filter((s) => s.name !== tag.name)
     onChange(newSelected)
   }
 
-  const handleSelect = (value: string) => {
-    let newSelected: string[]
-    if (selected.includes(value)) {
-      newSelected = selected.filter((s) => s !== value)
+  const handleSelect = (tag: Tag) => {
+    let newSelected: Tag[]
+    if (selected.includes(tag)) {
+      newSelected = selected.filter((s) => s.name !== tag.name)
     } else {
-      newSelected = [...selected, value]
+      newSelected = [...selected, tag]
     }
     onChange(newSelected)
   }
@@ -47,12 +48,12 @@ export function MultiSelect({ items, selected, onChange, placeholder = "Choose..
     ">
           {selected.length > 0 && (
             <div className="flex flex-wrap gap-2 p-3 border-b">
-              {selected.map((value) => (
-                <Badge key={value} variant="secondary" className="gap-1">
-                  {value}
+              {selected.map((tag) => (
+                <Badge key={tag.name} variant="secondary" className="gap-1">
+                  {tag.name}
                   <button
                     className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onClick={() => handleUnselect(value)}
+                    onClick={() => handleUnselect(tag)}
                     type="button"
                   >
                     <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
@@ -70,7 +71,7 @@ export function MultiSelect({ items, selected, onChange, placeholder = "Choose..
                 const isSelected = selected.includes(item)
                 return (
                   <label
-                    key={item}
+                    key={item.name}
                     className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-accent transition-colors border-b last:border-b-0"
                   >
                     <div className="flex items-center">
@@ -81,8 +82,8 @@ export function MultiSelect({ items, selected, onChange, placeholder = "Choose..
                         className="h-4 w-4 rounded border-primary text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
                       />
                     </div>
-                    <span className="text-sm">{item.charAt(0).toUpperCase() +
-                  item.slice(1,)}</span>
+                    <span className="text-sm">{item.name.charAt(0).toUpperCase() +
+                  item.name.slice(1,)}</span>
                   </label>
                 )
               })}

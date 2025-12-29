@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { NotesArgs } from "../types/notesArgs";
@@ -7,7 +7,6 @@ import { Button } from './ui/button'
 import { Plus, PlusCircle, Syringe, X } from 'lucide-react'
 import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
-import { Badge } from './ui/badge'
 import { auth, db } from "@/lib/firebase/config"
 
 import {
@@ -24,7 +23,14 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { DialogNoteArgs } from '@/types/dialogNotesArgs';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { addGlobalTag } from '../../redux/slices/tagsSlice';
+import { addGlobalTag, Tag } from '../../redux/slices/tags/tagsSlice';
+import { getRandomHexColor } from '@/utils/getRandomHexColor';
+import SingleTag from './SingleTag';
+
+const tagSchema = z.object({
+  name: z.string(),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/)
+});
 
 const formSchema = z
 
@@ -34,7 +40,7 @@ const formSchema = z
       .min(3, "Title must be at least 3 characters."),
 
     tags: z
-      .array(z.string())
+      .array(tagSchema)
   })
 
 
@@ -105,7 +111,7 @@ const DialogNote = (data: DialogNoteArgs) => {
 
     const tags = form.getValues("tags");
 
-    const newTags = tags.filter(tag => !globalTags.includes(tag));
+    const newTags = tags.filter(tag => !globalTags.some(globalTag => globalTag.name === tag.name));
     newTags.forEach(tag => dispatch(addGlobalTag(tag)));
 
     if (edit) {
@@ -124,26 +130,26 @@ const DialogNote = (data: DialogNoteArgs) => {
   const activeTags = form.watch("tags");
 
   const suggestedTags = useMemo(() => {
-    const newTags =  globalTags.filter(tag => !activeTags.includes(tag));
+    const newTags = globalTags.filter(tag => !activeTags.some(activeTag => activeTag.name === tag.name));
 
-    return newTags.sort((a, b) => a.localeCompare(b));
+    return newTags.sort((a, b) => a.name.localeCompare(b.name));
   }, [globalTags, activeTags]);
 
-  function removeTag(tagToRemove: string) {
+  function removeTag(tagToRemove: Tag) {
     const tags = form.getValues("tags");
 
-    const newTags = tags.filter(tag => tag !== tagToRemove);
+    const newTags = tags.filter(tag => tag.name !== tagToRemove.name);
     form.setValue("tags", newTags);
 
-    if (globalTags.includes(tagToRemove)) return;
+    if (globalTags.some(globalTag => globalTag.name === tagToRemove.name)) return;
 
     // suggest it again
     suggestedTags.push(tagToRemove);
   }
 
-  function addOutsideTag(tagToAdd: string) {
+  function addOutsideTag(tagToAdd: Tag) {
     const tags = form.getValues("tags");
-    if (tags.includes(tagToAdd)) return;
+    if (tags.some(tag => tag.name === tagToAdd.name)) return;
 
     form.setValue("tags", [...tags, tagToAdd]);
 
@@ -206,14 +212,20 @@ const DialogNote = (data: DialogNoteArgs) => {
                       const value = e.target.value;
 
                       if (value.endsWith(",")) {
-                        const newTag = value.slice(0, -1).trim().toLowerCase();
+                        const tagName = value.slice(0, -1).trim().toLowerCase();
 
-                        if (newTag && !field.value.includes(newTag)) {
+                        if (tagName && !field.value.some(tag => tag.name === tagName)) {
+
+                          const newTag = {
+                            name: tagName,
+                            color: getRandomHexColor()
+                          }
+
                           field.onChange([...field.value, newTag])
                         }
 
-                        if (globalTags.includes(newTag)) {
-                          suggestedTags.filter(tag => tag !== newTag);
+                        if (globalTags.some(globalTag => globalTag.name === tagName)) {
+                          suggestedTags.filter(tag => tag.name !== tagName);
                         }
 
                         setTagInput("");
@@ -230,28 +242,16 @@ const DialogNote = (data: DialogNoteArgs) => {
                     <div className="flex flex-wrap gap-1">
                       <span>Active: </span>
                       {field.value.map(tag => (
-                        <Badge key={tag} variant="outline" className='flex gap-2'>
-                          <span className='text-sm'>{tag.charAt(0).toUpperCase() +
-                            tag.slice(1,)}</span>
-                          <Button className="w-4 h-4 p-2 rounded-full"
-                            onClick={() => removeTag(tag)}>
-                            <X className='w-4 h-4'></X>
-                          </Button>
-                        </Badge>
+                        <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
+                        handleTag={removeTag}></SingleTag>
                       ))}
                     </div>
 
                     <div className="flex flex-wrap gap-1">
                       <span>Recommended: </span>
                       {suggestedTags.map(tag => (
-                        <Badge key={tag + " ss"} variant="outline" className='flex gap-2'>
-                          <span className='text-sm'>{tag.charAt(0).toUpperCase() +
-                            tag.slice(1,)}</span>
-                          <Button className="w-4 h-4 p-2 rounded-full"
-                            onClick={() => addOutsideTag(tag)}>
-                            <PlusCircle className='w-4 h-4'></PlusCircle>
-                          </Button>
-                        </Badge>
+                       <SingleTag tag={tag} Icon={PlusCircle} key={tag.name + " container"}
+                       handleTag={addOutsideTag}></SingleTag>
                       ))}
                     </div>
 
