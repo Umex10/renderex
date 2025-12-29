@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from "@/lib/firebase/config"
 import {
@@ -45,6 +45,8 @@ const Dashboard = () => {
 
   const [note, setNote] = useState<NotesArgs | null>(null);
 
+  const lastSavedContent = useRef(note?.content)
+
 
   useEffect(() => {
     if (!loading && !user) {
@@ -79,6 +81,8 @@ const Dashboard = () => {
   useEffect(() => {
     if (!note || !content) return;
 
+    if (content === lastSavedContent.current) return;
+
     const handler = setTimeout(async () => {
     const noteRef = doc(db, "notes", note.id);
 
@@ -86,7 +90,8 @@ const Dashboard = () => {
       content: content,        
       date: new Date().toISOString()
     });
-    }, 500)
+    lastSavedContent.current = content;
+    }, 5000)
 
     return () => clearTimeout(handler);
   }, [content, note])

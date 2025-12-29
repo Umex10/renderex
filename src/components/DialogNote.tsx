@@ -124,7 +124,9 @@ const DialogNote = (data: DialogNoteArgs) => {
   const activeTags = form.watch("tags");
 
   const suggestedTags = useMemo(() => {
-    return globalTags.filter(tag => !activeTags.includes(tag));
+    const newTags =  globalTags.filter(tag => !activeTags.includes(tag));
+
+    return newTags.sort((a, b) => a.localeCompare(b));
   }, [globalTags, activeTags]);
 
   function removeTag(tagToRemove: string) {
@@ -153,7 +155,7 @@ const DialogNote = (data: DialogNoteArgs) => {
     <Dialog>
       <DialogTrigger asChild onClick={() => form.reset()}>
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold">{edit ? "" : "Notes"}</span>
+          <span className="text-lg">{edit ? "" : "Add"}</span>
           <Button variant="default" className={`w-6 h-7`}>
             {edit ? (
               <Syringe></Syringe>

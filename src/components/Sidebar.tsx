@@ -15,7 +15,7 @@ import {
 
 import Logo from "./Logo"
 import Link from "next/link";
-import { LogOut, PlusCircle, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, LogOut, PlusCircle, Trash2 } from 'lucide-react';
 
 import {
   Card,
@@ -38,9 +38,11 @@ import { useNotes } from "@/hooks/use-notes";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { addGlobalTag } from "../../redux/slices/tagsSlice";
 import TagsInfo from "./TagsInfo";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { MultiSelect } from "./ui/multi-select";
 
 /**
  * Args for the AppSidebar component.
@@ -72,6 +74,45 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
 
+  const [sortAfter, setSortAfter] = useState("date");
+  const [isDescending, setIsDescending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+
+  const newNotes = useMemo(() => {
+
+    switch (sortAfter) {
+      case "date":
+        if (isDescending) {
+          return [...notes].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        } else {
+          return [...notes].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        }
+      case "title":
+        if (isDescending) {
+          return [...notes].sort((a, b) => b.title.localeCompare(a.title));
+        } else {
+          return [...notes].sort((a, b) => a.title.localeCompare(b.title));
+        }
+      case "tags":
+        return notes.filter(note => 
+          note.tags.some(noteTag => selectedTags.includes(noteTag))
+        );
+      default:
+        return notes;
+    }
+
+  }, [notes, sortAfter, isDescending, selectedTags])
+
+  const sortedGlobalTags = useMemo(() => {
+    return [...globalTags].sort((a, b) => a.localeCompare(b));
+  }, [globalTags])
+
+    const handleSelectionChange = (selected: string[]) => {
+    setSelectedTags(selected)
+  }
+
   return (
     <Sidebar className="hidden lg:flex">
       <SidebarHeader className="flex flex-row justify-between items-center">
@@ -80,19 +121,88 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
         </Link>
         <SidebarTrigger className="lg:hidden" />
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup  className="overflow-y-scroll max-h-[425px]">
-          <SidebarGroupLabel className="border-b border-black rounded-none">
-            <DialogNote edit={false} onAction={handleNew}></DialogNote>
+      <SidebarContent className="space-y-8">
+        <SidebarGroup className="overflow-y-scroll h-[425px]">
+          <SidebarGroupLabel className="border-b border-black rounded-none px-0">
+            <span className="text-xl font-bold">Notes</span>
           </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="flex flex-col gap-4 mt-3">
+          <SidebarGroupContent className="mt-3">
+            <div
+              className="w-full md:w-auto flex flex-row justify-between
+           items-center md:gap-6"
+            >
+              <DialogNote edit={false} onAction={handleNew}></DialogNote>
+              <div className="flex flex-row items-center gap-1">
+              
+                <Select
+                  defaultValue="date"
+                  onValueChange={(value) => setSortAfter(value)}
+                >
+                  <SelectTrigger
+                    className={`max-w-[70px] px-1 border-2
+                  border-gray-400/50`}
+                    defaultValue="date"
+                  >
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      value="date"
+                      className="md:text-lg"
+                    >
+                      Date
+                    </SelectItem>
+                    <SelectItem
+                      value="title"
+                      className="md:text-lg"
+                    >
+                      Title
+                    </SelectItem>
+
+                    <SelectItem
+                      value="tags"
+                      className="md:text-lg"
+                    >
+                      Tags
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <ArrowDown
+                  className={`w-8 h-8 md:w-10 md:h-10
+               ${isDescending ? "text-violet-400" : ""} `}
+                  onClick={() => {
+                    setIsDescending(!isDescending);
+                    setIsAscending(!isAscending);
+                  }}
+                  data-testid="desc"
+                ></ArrowDown>
+                <ArrowUp
+                  className={`w-8 h-8  md:w-10 md:h-10
+              ${isAscending ? "text-violet-400" : ""} `}
+                  onClick={() => {
+                    setIsAscending(!isAscending);
+                    setIsDescending(!isDescending);
+                  }}
+                  data-testid="asc"
+                ></ArrowUp>
+              </div>
+            </div>
+
+            {sortAfter === "tags" && (
+                  <MultiSelect
+                    items={sortedGlobalTags}
+                    selected={selectedTags}
+                    onChange={handleSelectionChange}
+                    placeholder="Tags..."
+                  />
+                )}
+
+            <SidebarMenu className="flex flex-col gap-4 mt-2">
 
               {loading && notes.length === 0 && (
                 <h2>Loading your notes...</h2>
               )}
 
-              {notes && notes.map(note => (
+              {newNotes && newNotes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                 transform-all ease-out duration-300"
                   onClick={() => {
@@ -133,44 +243,46 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+
+
         </SidebarGroup>
         <SidebarGroup className="overflow-y-scroll border-t-3 border-violet-600/50">
-          <SidebarGroupLabel className="border-b border-black rounded-none">
+          <SidebarGroupLabel className="border-b border-black rounded-none px-0">
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>
           <div className="flex flex-row gap-1 items-center">
-               <Input
-            value={tagInput}
-            onChange={e => {
-              const value = e.target.value;
+            <Input
+              value={tagInput}
+              onChange={e => {
+                const value = e.target.value;
 
-              if (value.endsWith(",")) {
-                const newTag = value.slice(0, -1).trim().toLowerCase();
+                if (value.endsWith(",")) {
+                  const newTag = value.slice(0, -1).trim().toLowerCase();
 
-                if (newTag && !globalTags.includes(newTag)) {
-                  dispatch(addGlobalTag(newTag));
+                  if (newTag && !globalTags.includes(newTag)) {
+                    dispatch(addGlobalTag(newTag));
+                  }
+
+                  setTagInput("");
+                } else {
+                  setTagInput(value);
                 }
-
-                setTagInput("");
-              } else {
-                setTagInput(value);
-              }
-            }}
-            placeholder="Java, other,"
-            className=" mt-2
+              }}
+              placeholder="Java, other,"
+              className=" mt-2
                         font-mono
                         text-sm
                         bg-muted/40
                         border-dashed
                         border-muted-foreground/30"
-          ></Input>
+            ></Input>
 
-          <TagsInfo desc="Here you can add tags by seberating them with ','"></TagsInfo>
+            <TagsInfo desc="Here you can add tags by seberating them with ','"></TagsInfo>
           </div>
-         
+
 
           <div className="flex flex-wrap gap-1 mt-3">
-            {globalTags.map(tag => (
+            {sortedGlobalTags.map(tag => (
               <Badge key={tag} variant="outline" className='flex gap-2'>
                 <span className='text-sm'>{tag.charAt(0).toUpperCase() +
                   tag.slice(1,)}</span>
