@@ -1,5 +1,4 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { flightRouterStateSchema } from "next/dist/server/app-render/types";
 
 export interface Tag {
   name: string,
@@ -11,8 +10,8 @@ interface NotesState {
 }
 
 const initialState: NotesState = {
-  globalTags: [{name: "java", color: ""}, {name: "react", color: ""}, 
-    {name: "c++", color: ""}, {name: "ney", color: ""},
+  globalTags: [{ name: "java", color: "#e74c3c" }, { name: "react", color: "#3498db" },
+  { name: "c++", color: "#f1c40f" }, { name: "ney", color: "#2ecc71" },
   ],
 }
 
@@ -26,7 +25,14 @@ const tagsSlice = createSlice({
     removeGlobalTag: (state, action: PayloadAction<Tag>) => {
       state.globalTags = state.globalTags.filter(tag => tag.name !== action.payload.name);
     },
+    editColor: (state, action: PayloadAction<{ tagName: string, newColor: string }>) => {
+
+      const { tagName, newColor } = action.payload;
+
+      state.globalTags = state.globalTags.map(tag => tag.name === tagName ? {...tag, color: newColor} : tag);
+
+  }
 }})
 
-export const { addGlobalTag, removeGlobalTag } = tagsSlice.actions;
+export const { addGlobalTag, removeGlobalTag, editColor } = tagsSlice.actions;
 export default tagsSlice.reducer;

@@ -15,7 +15,7 @@ import {
 
 import Logo from "./Logo"
 import Link from "next/link";
-import { ArrowDown, ArrowUp, LogOut, PlusCircle, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, LogOut, Trash2, X } from 'lucide-react';
 
 import {
   Card,
@@ -85,28 +85,55 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const newNotes = useMemo(() => {
 
+    console.log("Irgendwas hat sich getan...")
+
+    const matchedNotes = notes.map(note => {
+      const updatedTags = note.tags.map(noteTag => {
+        const globalTag = globalTags.find(
+          globalTag => globalTag.name === noteTag.name
+        );
+
+        if (!globalTag) return noteTag;
+
+        if (globalTag.color === noteTag.color) return noteTag;
+
+        return {
+          ...noteTag,
+          color: globalTag.color,
+        };
+      });
+
+      return {
+        ...note,
+        tags: updatedTags,
+      };
+    });
+
+
+    console.log("New array:", matchedNotes)
+
     switch (sortAfter) {
       case "date":
         if (isDescending) {
-          return [...notes].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          return [...matchedNotes].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         } else {
-          return [...notes].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          return [...matchedNotes].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         }
       case "title":
         if (isDescending) {
-          return [...notes].sort((a, b) => b.title.localeCompare(a.title));
+          return [...matchedNotes].sort((a, b) => b.title.localeCompare(a.title));
         } else {
-          return [...notes].sort((a, b) => a.title.localeCompare(b.title));
+          return [...matchedNotes].sort((a, b) => a.title.localeCompare(b.title));
         }
       case "tags":
-        return notes.filter(note =>
+        return [...matchedNotes].filter(note =>
           note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag === noteTag))
         );
       default:
-        return notes;
+        return matchedNotes;
     }
 
-  }, [notes, sortAfter, isDescending, selectedTags])
+  }, [notes, sortAfter, isDescending, selectedTags, globalTags])
 
   const sortedGlobalTags = useMemo(() => {
     return [...globalTags].sort((a, b) => a.name.localeCompare(b.name));
@@ -238,8 +265,9 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                   </CardHeader>
                   <CardContent className="px-4 py-0 flex gap-1">
                     {note.tags.map(tag => (
-                      <Badge key={tag.name} variant="outline">{tag.name.charAt(0).toUpperCase() +
-                        tag.name.slice(1,)}</Badge>
+                      <Badge key={tag.name} variant="outline"
+                        style={{ backgroundColor: tag.color }}>
+                        {tag.name.charAt(0).toUpperCase() + tag.name.slice(1,)}</Badge>
                     ))}
                   </CardContent>
                   <CardFooter className="px-4 py-0">
@@ -297,7 +325,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
           <div className="flex flex-wrap gap-1 mt-3">
             {sortedGlobalTags.map(tag => (
               <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
-              handleTag={handleGlobalTag}></SingleTag>
+                handleTag={handleGlobalTag}></SingleTag>
             ))}
           </div>
         </SidebarGroup>

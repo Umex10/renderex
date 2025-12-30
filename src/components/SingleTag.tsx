@@ -1,25 +1,40 @@
 "use client"
 
 import { LucideIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import ColorChanger from './ui/colorChanger'
-import { Tag } from '../../redux/slices/tags/tagsSlice'
+import { editColor, Tag } from '../../redux/slices/tags/tagsSlice'
 import { Badge } from './ui/badge'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../redux/store'
 
 interface TagArgs {
   tag: Tag,
   Icon: LucideIcon,
-  handleTag: (tag: Tag) => void;
+  handleTag: (tag: Tag) => void,
+  noColorChange?: boolean
 }
 
-const SingleTag = ({tag, Icon, handleTag}: TagArgs) => {
+const SingleTag = ({tag, Icon, handleTag, noColorChange = false}: TagArgs) => {
 
     const [tagColor, setTagColor] = useState(tag.color);
+    const dispatch = useDispatch<AppDispatch>();
+   
 
     function handleColor(color: string) {
       setTagColor(color)
     }
+
+    useEffect(() => {
+
+      console.log("New Color:", tagColor)
+      const timeout = setTimeout(() => {
+              dispatch(editColor({ tagName: tag.name, newColor: tagColor }));
+      }, 500)
+
+      return () => clearTimeout(timeout);
+    }, [tagColor, tag.name, dispatch])
 
   return (
     <Badge key={tag.name} variant="outline" className={`flex gap-3`}
@@ -30,7 +45,11 @@ const SingleTag = ({tag, Icon, handleTag}: TagArgs) => {
                   onClick={() => handleTag(tag)}>
                   <Icon className='w-4 h-4'></Icon>
                 </Button>
-               <ColorChanger color={tagColor} handleColor={handleColor}></ColorChanger>
+
+                {!noColorChange && (
+                   <ColorChanger color={tagColor} handleColor={handleColor}></ColorChanger>
+                )}
+              
               </Badge>
   )
 }

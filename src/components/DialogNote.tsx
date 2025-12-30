@@ -241,17 +241,21 @@ const DialogNote = (data: DialogNoteArgs) => {
 
                     <div className="flex flex-wrap gap-1">
                       <span>Active: </span>
-                      {field.value.map(tag => (
-                        <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
-                        handleTag={removeTag}></SingleTag>
-                      ))}
+                      {field.value.map(tag => {
+                        if (!globalTags.some(globalTag => globalTag.name === tag.name)) {
+                          return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
+                            handleTag={removeTag}></SingleTag>
+                        }
+                          return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
+                            handleTag={removeTag} noColorChange={true}></SingleTag>
+                      })}
                     </div>
 
                     <div className="flex flex-wrap gap-1">
                       <span>Recommended: </span>
                       {suggestedTags.map(tag => (
-                       <SingleTag tag={tag} Icon={PlusCircle} key={tag.name + " container"}
-                       handleTag={addOutsideTag}></SingleTag>
+                        <SingleTag tag={tag} Icon={PlusCircle} key={tag.name + " container"}
+                          handleTag={addOutsideTag} noColorChange={true}></SingleTag>
                       ))}
                     </div>
 
