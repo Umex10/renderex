@@ -5,34 +5,40 @@ export interface Tag {
   color: string
 }
 
-interface NotesState {
-  globalTags: Tag[],
+export interface GlobalTags {
+  userId: string | null
+  tags: Tag[],
+
 }
 
-const initialState: NotesState = {
-  globalTags: [{ name: "java", color: "#e74c3c" }, { name: "react", color: "#3498db" },
-  { name: "c++", color: "#f1c40f" }, { name: "ney", color: "#2ecc71" },
-  ],
+const initialState: GlobalTags = {
+  tags: [],
+  userId: null
 }
 
 const tagsSlice = createSlice({
-  name: "notes",
+  name: "tags",
   initialState,
   reducers: {
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
+    },
+    setWholeArray: (state, action: PayloadAction<Tag[]>) => {
+      state.tags = [...action.payload];
+    },
     addGlobalTag: (state, action: PayloadAction<Tag>) => {
-      state.globalTags.push(action.payload);
+      state.tags.push(action.payload);
     },
     removeGlobalTag: (state, action: PayloadAction<Tag>) => {
-      state.globalTags = state.globalTags.filter(tag => tag.name !== action.payload.name);
+      state.tags = state.tags.filter(tag => tag.name !== action.payload.name);
     },
     editColor: (state, action: PayloadAction<{ tagName: string, newColor: string }>) => {
 
       const { tagName, newColor } = action.payload;
 
-      state.globalTags = state.globalTags.map(tag => tag.name === tagName ? {...tag, color: newColor} : tag);
-
+      state.tags = state.tags.map(tag => tag.name === tagName ? {...tag, color: newColor} : tag);
   }
 }})
 
-export const { addGlobalTag, removeGlobalTag, editColor } = tagsSlice.actions;
+export const { setWholeArray,setUserId, addGlobalTag, removeGlobalTag, editColor } = tagsSlice.actions;
 export default tagsSlice.reducer;

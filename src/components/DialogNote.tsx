@@ -61,7 +61,7 @@ const DialogNote = (data: DialogNoteArgs) => {
   const [user] = useAuthState(auth);
   const [note, setNote] = useState<NotesArgs | null>(null);
 
-  const globalTags = useSelector((state: RootState) => state.tagsState.globalTags);
+  const globalTags = useSelector((state: RootState) => state.tagsState.tags);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -216,16 +216,21 @@ const DialogNote = (data: DialogNoteArgs) => {
 
                         if (tagName && !field.value.some(tag => tag.name === tagName)) {
 
-                          const newTag = {
+                        // If found, we must not create an extra tag with a new color
+                        const found = globalTags.find(globalTag => globalTag.name === tagName);
+
+                        if (found) {
+                              suggestedTags.filter(tag => tag.name !== tagName);
+                              field.onChange([...field.value, found])
+                        } else {
+                            const newTag = {
                             name: tagName,
                             color: getRandomHexColor()
                           }
-
+                          
                           field.onChange([...field.value, newTag])
                         }
-
-                        if (globalTags.some(globalTag => globalTag.name === tagName)) {
-                          suggestedTags.filter(tag => tag.name !== tagName);
+        
                         }
 
                         setTagInput("");

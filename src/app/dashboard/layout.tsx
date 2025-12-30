@@ -6,6 +6,8 @@ import { getInitialNotes } from "../../actions/notes";
 import { NotesArgs } from "../../types/notesArgs";
 import { AuthSetter } from "@/components/AuthSetter";
 import SelectFormat from "@/components/SelectFormat";
+import { getInitialGlobalTags } from "@/actions/tags";
+import { Tag, GlobalTags } from "../../../redux/slices/tags/tagsSlice";
 
 /**
  * The main layout for the dashboard section.
@@ -24,12 +26,19 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const userId = cookieStore.get("userId")?.value;
 
   let initialNotes: NotesArgs[] = [];
+  let initialGlobalTags: GlobalTags = {tags: [], userId: userId ?? null};
 
   if (userId) {
-    const result = await getInitialNotes(userId);
+    const notesResult = await getInitialNotes(userId);
+    const globalTagsResult = await getInitialGlobalTags(userId);
 
-    if (result.success && result.data) {
-      initialNotes = result.data;
+    if (notesResult.success && notesResult.data) {
+      initialNotes = notesResult.data;
+    }
+    
+    if (globalTagsResult &&  globalTagsResult.data) {
+      initialGlobalTags = globalTagsResult.data;
+
     }
   }
 
@@ -39,7 +48,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <SidebarProvider>
 
           {/* Content in Sidebar */}
-          <AppSidebar initialNotes={initialNotes} />
+          <AppSidebar initialNotes={initialNotes} initialGlobalTags={initialGlobalTags} />
 
           <SidebarInset>
             <header

@@ -38,13 +38,14 @@ import { useNotes } from "@/hooks/use-notes";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
-import { useMemo, useState } from "react";
-import { addGlobalTag, removeGlobalTag, Tag } from "../../redux/slices/tags/tagsSlice";
+import { useEffect, useMemo, useState } from "react";
+import { addGlobalTag, removeGlobalTag, Tag, GlobalTags } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { getRandomHexColor } from "@/utils/getRandomHexColor";
 import SingleTag from "./SingleTag";
+import { useGlobalTags } from "@/hooks/use-globalTags";
 
 /**
  * Args for the AppSidebar component.
@@ -52,7 +53,8 @@ import SingleTag from "./SingleTag";
  * @property {NotesArgs[]} initialNotes - The initial list of notes to be displayed in the sidebar.
  */
 interface AppSidebarArgs {
-  initialNotes: NotesArgs[];
+  initialNotes: NotesArgs[],
+  initialGlobalTags: GlobalTags
 }
 
 /**
@@ -64,18 +66,18 @@ interface AppSidebarArgs {
  * @param {AppSidebarArgs} args - The component arguments.
  * @returns {JSX.Element} The AppSidebar component.
  */
-export function AppSidebar({ initialNotes }: AppSidebarArgs) {
+export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) {
 
   const router = useRouter();
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const globalTags = useSelector((state: RootState) => state.tagsState.globalTags);
-
   const [tagInput, setTagInput] = useState("");
 
-
   const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
+  const { handleNewGlobalTag, handleRemoveGlobalTag } = useGlobalTags(initialGlobalTags);
+
+  const globalTags = useSelector((state: RootState) => state.tagsState.tags);
 
   const [sortAfter, setSortAfter] = useState("date");
   const [isDescending, setIsDescending] = useState(true);
@@ -83,18 +85,44 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
 
+  // This will ensure, that a note doesn't contain tags, that are not in global tags.
+  const matchedTagsNotes = useMemo(() => {
+    return notes.map(note => {
+      const updatedTags = note.tags.filter(noteTag =>
+        globalTags.some(globalTag => globalTag.name === noteTag.name)
+      );
+
+      return {
+        ...note,
+        tags: updatedTags,
+      };
+    });
+  }, [notes, globalTags]);
+
+  // If matchesTagNotes changed, call the server action to actually set the new tags object 
+  // in firebase
+  useEffect(() => {
+    matchedTagsNotes.forEach((note, index) => {
+      if (notes[index].tags.length !== note.tags.length) {
+        handleEdit(note, note.id);
+      }
+    });
+  }, [matchedTagsNotes]);
+
   const newNotes = useMemo(() => {
 
-    console.log("Irgendwas hat sich getan...")
-
-    const matchedNotes = notes.map(note => {
+    // This will ensure, that each tag inside the note will have the same color as 
+    // the globalTag one
+    const matchedColorsNotes = [...matchedTagsNotes].map(note => {
       const updatedTags = note.tags.map(noteTag => {
         const globalTag = globalTags.find(
           globalTag => globalTag.name === noteTag.name
         );
 
+        // New Tag, ignore it
         if (!globalTag) return noteTag;
 
+        // Set the same color as in globalTag
         if (globalTag.color === noteTag.color) return noteTag;
 
         return {
@@ -109,31 +137,28 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
       };
     });
 
-
-    console.log("New array:", matchedNotes)
-
     switch (sortAfter) {
       case "date":
         if (isDescending) {
-          return [...matchedNotes].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          return [...matchedColorsNotes].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         } else {
-          return [...matchedNotes].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          return [...matchedColorsNotes].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         }
       case "title":
         if (isDescending) {
-          return [...matchedNotes].sort((a, b) => b.title.localeCompare(a.title));
+          return [...matchedColorsNotes].sort((a, b) => b.title.localeCompare(a.title));
         } else {
-          return [...matchedNotes].sort((a, b) => a.title.localeCompare(b.title));
+          return [...matchedColorsNotes].sort((a, b) => a.title.localeCompare(b.title));
         }
       case "tags":
-        return [...matchedNotes].filter(note =>
+        return [...matchedColorsNotes].filter(note =>
           note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag === noteTag))
         );
       default:
-        return matchedNotes;
+        return matchedColorsNotes;
     }
 
-  }, [notes, sortAfter, isDescending, selectedTags, globalTags])
+  }, [sortAfter, isDescending, selectedTags, globalTags, matchedTagsNotes])
 
   const sortedGlobalTags = useMemo(() => {
     return [...globalTags].sort((a, b) => a.name.localeCompare(b.name));
@@ -141,10 +166,6 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
 
   const handleSelectionChange = (selected: Tag[]) => {
     setSelectedTags(selected)
-  }
-
-  function handleGlobalTag(tag: Tag) {
-    dispatch(removeGlobalTag(tag))
   }
 
   return (
@@ -301,7 +322,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
                       color: getRandomHexColor()
                     }
 
-                    dispatch(addGlobalTag(newGlobalTag));
+                    handleNewGlobalTag(newGlobalTag)
                   }
 
                   setTagInput("");
@@ -325,7 +346,7 @@ export function AppSidebar({ initialNotes }: AppSidebarArgs) {
           <div className="flex flex-wrap gap-1 mt-3">
             {sortedGlobalTags.map(tag => (
               <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
-                handleTag={handleGlobalTag}></SingleTag>
+                handleTag={handleRemoveGlobalTag}></SingleTag>
             ))}
           </div>
         </SidebarGroup>
