@@ -191,7 +191,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                     </SelectContent>
                   </Select>
                   <ArrowDown
-                    className={`w-8 h-8 md:w-10 md:h-10
+                    className={`w-8 h-8
                 ${isDescending ? "text-violet-400" : ""} `}
                     onClick={() => {
                       setIsDescending(!isDescending);
@@ -200,7 +200,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                     data-testid="desc"
                   ></ArrowDown>
                   <ArrowUp
-                    className={`w-8 h-8  md:w-10 md:h-10
+                    className={`w-8 h-8
                 ${isAscending ? "text-violet-400" : ""} `}
                     onClick={() => {
                       setIsAscending(!isAscending);

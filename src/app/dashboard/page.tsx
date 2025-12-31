@@ -9,16 +9,16 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NotesArgs } from "../../types/notesArgs";
-import { Download } from 'lucide-react';
+import { Download, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFormat } from '@/hooks/use-format';
 import Editor from '@/components/Editor';
+import LiveRenderer from '@/components/LiveRenderer';
+import EditorActions from '@/components/EditorActions';
 
 /**
  * Protected dashboard page component.
@@ -42,6 +42,10 @@ const Dashboard = () => {
 
   const [note, setNote] = useState<NotesArgs | null>(null);
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
+
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
 
   const [content, setContent] = useState("");
 
@@ -89,15 +93,28 @@ const Dashboard = () => {
 
     if (content === lastSavedContent.current) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSaveState(last =>
+      last === "saving" ? last : "saving"
+    );
+
     // Ensures that after 5 seconds the current content is written into firebase
     const handler = setTimeout(async () => {
-    const noteRef = doc(db, "notes", note.id);
+      try {
+        const noteRef = doc(db, "notes", note.id);
 
-    await updateDoc(noteRef, { 
-      content: content,        
-      date: new Date().toISOString()
-    });
-    lastSavedContent.current = content;
+        await updateDoc(noteRef, {
+          content: content,
+          date: new Date().toISOString()
+        });
+        lastSavedContent.current = content;
+
+        setSaveState("saved");
+
+        setTimeout(() => setSaveState("idle"), 1500);
+      } catch (err) {
+        console.error("An error occured while editing the content field in firebase: ", err);
+      }
     }, 5000)
 
     return () => clearTimeout(handler);
@@ -127,24 +144,12 @@ const Dashboard = () => {
       <div className='w-full hidden 2xl:grid grid-cols-2 gap-2'>
 
         {/* EDITOR */}
-        <div className='min-w-0'>
-          <Editor
-            value={content}
-            onChange={(val) => setContent(val)}
-          />
+        <EditorActions content={content} setContent={setContent}
+          saveState={saveState} handleDownload={handleDownload}
+          note={note}></EditorActions>
 
-          <Button className='mt-2' onClick={() => handleDownload(note)}>
-            <span>Download</span>
-            <Download></Download>
-          </Button>
-        </div>
-
-         {/* LIVE */}
-        <div className="prose prose-slate max-w-none h-[650px] overflow-y-auto break-words">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {content !== "" ? content : "Write something down in order to see it live"}
-          </ReactMarkdown>
-        </div>
+        {/* LIVE */}
+        <LiveRenderer content={content}></LiveRenderer>
       </div>
 
       {/* TABS - MOBILE ONLY */}
@@ -166,25 +171,17 @@ const Dashboard = () => {
 
 
         <div className="w-full mt-4">
-           {/* EDITOR VIEW */}
+          {/* EDITOR VIEW */}
           <TabsContent value="markdown" >
-            <Editor
-              value={content}
-              onChange={(val) => setContent(val)}
-            />
-            <Button className='mt-2' onClick={() => handleDownload(note)}>
-              <span>Download</span>
-              <Download></Download>
-            </Button>
+            
+            <EditorActions content={content} setContent={setContent}
+              saveState={saveState} handleDownload={handleDownload}
+              note={note}></EditorActions>
+
           </TabsContent>
-           {/* LIVE VIEW */}
+          {/* LIVE VIEW */}
           <TabsContent value="live">
-            <div className="prose prose-slate  max-w-none
-            min-h-[650px] overflow-y-scroll">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content !== "" ? content : "Write something down in order to see it live"}
-              </ReactMarkdown>
-            </div>
+            <LiveRenderer content={content}></LiveRenderer>
           </TabsContent>
 
         </div>

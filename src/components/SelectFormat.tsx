@@ -17,7 +17,7 @@ const SelectFormat = () => {
 
   const [format, setFormat] = useState<string>(FORMAT.MD);
   const dispatch = useDispatch<AppDispatch>();
-
+  
   useEffect(() => {
     dispatch(setFormatState(format));
   }, [format])
