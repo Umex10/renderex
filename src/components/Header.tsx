@@ -1,12 +1,12 @@
 "use client"
 import React, { useEffect } from 'react'
-import Image from 'next/image'
 import MobileNavbar from './MobileNavbar'
 import DesktopNavbar from './DesktopNavbar'
 import Link from 'next/link'
 import { auth } from "@/lib/firebase/config"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import Logo from './Logo'
+import { Button } from "./ui/moving-border";
 
 /**
  * Application header containing the logo, navigation and sign-in link.
@@ -48,7 +48,13 @@ const Header = () => {
             <Link href="/sign-in">Sign in</Link>
           ) : (
             /* Dashboard */
-            <Link href="/dashboard">Dashboard</Link>
+            /*<Link href="/dashboard">Dashboard</Link> */
+            <Button
+              borderRadius="1.5rem"
+              className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200 dark:border-slate-800"
+            >
+              Dashboard
+            </Button>
           )}
         </div>
       </div>
@@ -57,5 +63,4 @@ const Header = () => {
 }
 
 export default Header
-
 

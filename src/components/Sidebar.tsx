@@ -36,7 +36,7 @@ import { useNotes } from "@/hooks/use-notes";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
-import {useState } from "react";
+import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
 import { Tag, GlobalTags } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
@@ -56,12 +56,19 @@ interface AppSidebarArgs {
   initialGlobalTags: GlobalTags
 }
 
+// Trenner-Komponente für das Resizing
+const ResizeHandle = ({ onMouseDown }: { onMouseDown: () => void }) => (
+  <div
+    className="h-1.5 cursor-row-resize bg-gray-200 hover:bg-violet-400 transition-colors duration-150"
+    onMouseDown={onMouseDown}
+  />
+);
+
 /**
  * The main sidebar component for the application.
  * Displays a list of notes, allows creating new notes, and handles navigation.
  * Uses the `useNotes` hook to manage note state and interactions.
- * 
- * @component
+ * * @component
  * @param {AppSidebarArgs} args - The component arguments.
  * @returns {JSX.Element} The AppSidebar component.
  */
@@ -72,6 +79,31 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
   const dispatch = useDispatch<AppDispatch>();
 
   const [tagInput, setTagInput] = useState("");
+
+  // --- RESIZE LOGIC ---
+  const [topHeight, setTopHeight] = useState(425); // start-hight for notes
+  const isDragging = useRef(false);
+
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      // Ensures that no section easy below or above 190 height
+      setTopHeight((prev) => Math.max(190, prev + e.movementY));
+    };
+
+    const onMouseUp = () => {
+      isDragging.current = false;
+      document.body.style.cursor = "default";
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
 
   // This will hold the last deleted Global tag, to ensure notes have also deleted that tag
   const [deletedGlobalTag, setDeletedGlobalTag] = useState<Tag | null>(null);
@@ -108,139 +140,152 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
         </Link>
         <SidebarTrigger className="lg:hidden" />
       </SidebarHeader>
-      <SidebarContent className="space-y-8">
-          {/* ADD + | SORT SECTION */}
-        <SidebarGroup className="overflow-y-scroll h-[425px]">
-          <SidebarGroupLabel className="border-b border-black rounded-none px-0">
-            <span className="text-xl font-bold">Notes</span>
-          </SidebarGroupLabel>
-            <div
-              className="w-full mt-3 md:w-auto flex flex-row justify-between
-           items-center md:gap-6"
-            >
-              {/* ADD + */}
-              <DialogNote edit={false} onAction={handleNew} handleNewGlobalTag={handleNewGlobalTag}></DialogNote>
+      <SidebarContent className="flex flex-col h-full overflow-hidden">
+        
+        {/* ADD + | SORT SECTION - Jetzt mit dynamischer Höhe */}
+        <div style={{ height: topHeight, minHeight: '190px' }} className="flex flex-col">
+          <SidebarGroup className="overflow-y-auto flex-1">
+            <SidebarGroupLabel className="border-b border-black rounded-none px-0">
+              <span className="text-xl font-bold">Notes</span>
+            </SidebarGroupLabel>
+              <div
+                className="w-full mt-3 md:w-auto flex flex-row justify-between
+            items-center md:gap-6"
+              >
+                {/* ADD + */}
+                <DialogNote edit={false} onAction={handleNew} handleNewGlobalTag={handleNewGlobalTag}></DialogNote>
 
-              {/* SORT */}
-              <div className="flex flex-row items-center gap-1">
+                {/* SORT */}
+                <div className="flex flex-row items-center gap-1">
 
-                <Select
-                  defaultValue="date"
-                  onValueChange={(value) => setSortAfter(value)}
-                >
-                  <SelectTrigger
-                    className={`max-w-[70px] px-1 border-2
-                  border-gray-400/50`}
+                  <Select
                     defaultValue="date"
+                    onValueChange={(value) => setSortAfter(value)}
                   >
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      value="date"
-                      className="md:text-lg"
+                    <SelectTrigger
+                      className={`max-w-[70px] px-1 border-2
+                    border-gray-400/50`}
+                      defaultValue="date"
                     >
-                      Date
-                    </SelectItem>
-                    <SelectItem
-                      value="title"
-                      className="md:text-lg"
-                    >
-                      Title
-                    </SelectItem>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value="date"
+                        className="md:text-lg"
+                      >
+                        Date
+                      </SelectItem>
+                      <SelectItem
+                        value="title"
+                        className="md:text-lg"
+                      >
+                        Title
+                      </SelectItem>
 
-                    <SelectItem
-                      value="tags"
-                      className="md:text-lg"
-                    >
-                      Tags
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <ArrowDown
-                  className={`w-8 h-8 md:w-10 md:h-10
-               ${isDescending ? "text-violet-400" : ""} `}
-                  onClick={() => {
-                    setIsDescending(!isDescending);
-                    setIsAscending(!isAscending);
-                  }}
-                  data-testid="desc"
-                ></ArrowDown>
-                <ArrowUp
-                  className={`w-8 h-8  md:w-10 md:h-10
-              ${isAscending ? "text-violet-400" : ""} `}
-                  onClick={() => {
-                    setIsAscending(!isAscending);
-                    setIsDescending(!isDescending);
-                  }}
-                  data-testid="asc"
-                ></ArrowUp>
+                      <SelectItem
+                        value="tags"
+                        className="md:text-lg"
+                      >
+                        Tags
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <ArrowDown
+                    className={`w-8 h-8 md:w-10 md:h-10
+                ${isDescending ? "text-violet-400" : ""} `}
+                    onClick={() => {
+                      setIsDescending(!isDescending);
+                      setIsAscending(!isAscending);
+                    }}
+                    data-testid="desc"
+                  ></ArrowDown>
+                  <ArrowUp
+                    className={`w-8 h-8  md:w-10 md:h-10
+                ${isAscending ? "text-violet-400" : ""} `}
+                    onClick={() => {
+                      setIsAscending(!isAscending);
+                      setIsDescending(!isDescending);
+                    }}
+                    data-testid="asc"
+                  ></ArrowUp>
+                </div>
               </div>
-            </div>
 
-            {/* If user sorts the notes after tags, a new UI element will show */}
-            {/* to sort more accurately */}
-            {sortAfter === "tags" && (
-              <MultiSelect
-                items={sortedGlobalTags}
-                selected={selectedTags}
-                onChange={handleSelectionChange}
-                placeholder="Tags..."
-              />
-            )}
-
-            {/* NOTES SECTION */}
-            <div className="flex flex-col gap-4 mt-2">
-
-              {loading && notes.length === 0 && (
-                <h2>Loading your notes...</h2>
+              {/* If user sorts the notes after tags, a new UI element will show */}
+              {/* to sort more accurately */}
+              {sortAfter === "tags" && (
+                <div className="mt-2">
+                  <MultiSelect
+                    items={sortedGlobalTags}
+                    selected={selectedTags}
+                    onChange={handleSelectionChange}
+                    placeholder="Tags..."
+                  />
+                </div>
               )}
 
-              {refactoredNotes && refactoredNotes.map(note => (
-                <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
-                transform-all ease-out duration-300"
-                  onClick={() => {
-                    dispatch(setActiveNote(note.id));
-                  }}>
-                  <CardHeader className="px-4 py-0">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="leading-tight">
-                        {note.title}
-                      </CardTitle>
-                      <div className="flex justify-center items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}>
-                          {/* EDIT NOTE DIALOG BUTTON */}
-                        <DialogNote edit={true} noteId={note.id}
-                          onAction={handleEdit} handleNewGlobalTag={handleNewGlobalTag}></DialogNote>
-                          {/* DELETE NOTE */}
-                        <Button variant="secondary" className="w-8 h-8 p-0
-                      hover:scale-105"
-                          onClick={(e) => {
-                            handleDelete(e, note.id);
-                          }}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+              {/* NOTES SECTION */}
+              <div className="flex flex-col gap-4 mt-2">
 
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-4 py-0 flex gap-1">
-                    {/* ALL ACTIVE TAGS OF A NOTE */}
-                    {note.tags.map(tag => (
-                      <Badge key={tag.name} variant="outline"
-                        style={{ backgroundColor: tag.color }}>
-                        {tag.name.charAt(0).toUpperCase() + tag.name.slice(1,)}</Badge>
-                    ))}
-                  </CardContent>
-                  <CardFooter className="px-4 py-0">
-                    <span className="text-xs text-gray-400">Edited: <span>
-                      {formatDate(note.date)}</span></span>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-        </SidebarGroup>
+                {loading && notes.length === 0 && (
+                  <h2>Loading your notes...</h2>
+                )}
+
+                {refactoredNotes && refactoredNotes.map(note => (
+                  <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
+                  transform-all ease-out duration-300 cursor-pointer"
+                    onClick={() => {
+                      dispatch(setActiveNote(note.id));
+                    }}>
+                    <CardHeader className="px-4 py-0">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="leading-tight">
+                          {note.title.charAt(0).toUpperCase() + 
+                          note.title.slice(1,)}
+                        </CardTitle>
+                        <div className="flex justify-center items-center gap-1"
+                          onClick={(e) => e.stopPropagation()}>
+                            {/* EDIT NOTE DIALOG BUTTON */}
+                          <DialogNote edit={true} noteId={note.id}
+                            onAction={handleEdit} handleNewGlobalTag={handleNewGlobalTag}></DialogNote>
+                            {/* DELETE NOTE */}
+                          <Button variant="secondary" className="w-8 h-8 p-0
+                        hover:scale-105"
+                            onClick={(e) => {
+                              handleDelete(e, note.id);
+                            }}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                      </div>
+                    </CardHeader>
+                    <CardContent className="px-4 py-0 flex gap-1 flex-wrap">
+                      {/* ALL ACTIVE TAGS OF A NOTE */}
+                      {note.tags.map(tag => (
+                        <Badge key={tag.name} variant="outline"
+                          style={{ backgroundColor: tag.color }}>
+                          {tag.name.charAt(0).toUpperCase() + tag.name.slice(1,)}</Badge>
+                      ))}
+                    </CardContent>
+                    <CardFooter className="px-4 py-0">
+                      <span className="text-xs text-gray-400">Edited: <span>
+                        {formatDate(note.date)}</span></span>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+          </SidebarGroup>
+        </div>
+
+        {/* RESIZE HANDLE */}
+        <ResizeHandle onMouseDown={() => {
+          isDragging.current = true;
+          document.body.style.cursor = "row-resize";
+        }} />
+
         {/* GLOBAL-TAGS SECTION */}
-        <SidebarGroup className="overflow-y-scroll border-t-3 border-violet-600/50">
+        <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden">
           <SidebarGroupLabel className="border-b border-black rounded-none px-0">
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>
@@ -295,7 +340,8 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
       <SidebarFooter className="flex flex-col gap-4 items-center">
         {/* ACCOUNT */}
         <Card className="w-full flex flex-row items-center justify-start
-           gap-2 px-4 py-4">
+           gap-2 px-4 py-4"
+           onClick={() => router.push("/dashboard/account")}>
 
           <CardHeader className="p-0">
             <Image
