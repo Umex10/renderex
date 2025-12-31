@@ -39,7 +39,7 @@ import { Input } from "./ui/input";
 import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
 import { Tag, GlobalTags } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { getRandomHexColor } from "@/utils/getRandomHexColor";
 import SingleTag from "./SingleTag";
@@ -166,7 +166,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                       className={`max-w-[70px] px-1 border-2
                     border-gray-400/50`}
                       defaultValue="date"
-                    >
+                    ><SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem

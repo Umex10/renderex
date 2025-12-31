@@ -99,7 +99,7 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
         }
       case "tags":
         return [...matchedColorsNotes].filter(note =>
-          note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag === noteTag))
+          note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag.name === noteTag.name))
         );
       default:
         return matchedColorsNotes;
