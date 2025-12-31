@@ -1,3 +1,5 @@
+"use server"
+
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/Sidebar"
 import StoreProvider from "../../../redux/StoreProvider";
@@ -7,7 +9,7 @@ import { NotesArgs } from "../../types/notesArgs";
 import { AuthSetter } from "@/components/AuthSetter";
 import SelectFormat from "@/components/SelectFormat";
 import { getInitialGlobalTags } from "@/actions/tags";
-import { Tag, GlobalTags } from "../../../redux/slices/tags/tagsSlice";
+import { GlobalTags } from "../../../redux/slices/tags/tagsSlice";
 
 /**
  * The main layout for the dashboard section.
@@ -22,23 +24,24 @@ import { Tag, GlobalTags } from "../../../redux/slices/tags/tagsSlice";
  */
 export default async function Layout({ children }: { children: React.ReactNode }) {
 
+  // This will tell us if the user is actually logged in
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
 
   let initialNotes: NotesArgs[] = [];
-  let initialGlobalTags: GlobalTags = {tags: [], userId: userId ?? null};
+  let initialGlobalTags: GlobalTags = { tags: [], userId: userId ?? null };
 
   if (userId) {
+    // Load the notes and global tags when the server starts
     const notesResult = await getInitialNotes(userId);
     const globalTagsResult = await getInitialGlobalTags(userId);
 
     if (notesResult.success && notesResult.data) {
       initialNotes = notesResult.data;
     }
-    
-    if (globalTagsResult &&  globalTagsResult.data) {
-      initialGlobalTags = globalTagsResult.data;
 
+    if (globalTagsResult && globalTagsResult.data) {
+      initialGlobalTags = globalTagsResult.data;
     }
   }
 
@@ -47,17 +50,18 @@ export default async function Layout({ children }: { children: React.ReactNode }
       <AuthSetter>
         <SidebarProvider>
 
-          {/* Content in Sidebar */}
+          {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
           <AppSidebar initialNotes={initialNotes} initialGlobalTags={initialGlobalTags} />
 
+          {/* UNDERNEATH SIDEBAR (RIGHT SIDE) - Content of a note */}
           <SidebarInset>
             <header
               className="flex justify-between md:justify-left h-16 shrink-0 items-center gap-2 border-b px-4"
             >
               <SidebarTrigger className="lg:hidden" />
 
+              {/* DOWNLOAD FORMAT */}
               <SelectFormat></SelectFormat>
-             
 
             </header>
 

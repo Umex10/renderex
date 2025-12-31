@@ -33,14 +33,16 @@ export function useNotes(initialNotes: NotesArgs[]) {
 
     if (loading || !user) return;
 
+    // Gets all notes related to the user
     const q = query(
       collection(db, "notes"),
       where("userId", "==", user.uid)
     );
 
+    // Triggers fetching the current data, if something changes on firebase
     const unsubscribe = onSnapshot(q, (snap) => {
       const notesData = snap.docs.map(doc => ({
-        id: doc.id,
+        id: doc.id, //Given by firebase
         ...(doc.data() as Omit<NotesArgs, "id">)
       }));
       setNotes(notesData)
@@ -63,10 +65,14 @@ export function useNotes(initialNotes: NotesArgs[]) {
 
     e.stopPropagation();
 
+    // fallback array
     const oldNotes = [...notes];
+
+    // This will give the user immediate feedback!
     setNotes(old => old.filter(note => note.id !== noteId));
 
     try {
+      // Calling firebase
       const result = await deleteNote(noteId);
 
       if (!result.success) {
@@ -105,10 +111,14 @@ export function useNotes(initialNotes: NotesArgs[]) {
       userId: user.uid
     }
 
+     // fallback array
     const oldNotes = [...notes];
+
+     // This will give the user immediate feedback!
     setNotes(old => [...old, newNote]);
 
     try {
+      // Calling firebase
       const result = await createNote(newNote);
 
       if (!result.success) {
@@ -150,7 +160,10 @@ export function useNotes(initialNotes: NotesArgs[]) {
       tags: data.tags,
     }
 
+     // fallback array
     const oldNotes = [...notes];
+
+     // This will give the user immediate feedback!
     setNotes(old =>
       old.map(note =>
         note.id === noteId ? { ...note, ...newNote } : note
@@ -158,6 +171,7 @@ export function useNotes(initialNotes: NotesArgs[]) {
     );
 
     try {
+      // Calling firebase
       const result = await editNote(noteId, newNote);
 
       if (!result.success) {

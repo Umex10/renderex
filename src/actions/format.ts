@@ -5,7 +5,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { Packer, Document, Paragraph, TextRun } from "docx";
 import { remark } from 'remark';
 import strip from 'strip-markdown';
-import { MyPdf } from '@/utils/Pdf';
+import { MyPdf } from '@/utils/download/Pdf';
 import React from "react";
 
 export async function getDOCX(note: NotesArgs) {

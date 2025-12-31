@@ -5,10 +5,8 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenu,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
@@ -38,14 +36,15 @@ import { useNotes } from "@/hooks/use-notes";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
-import { useEffect, useMemo, useState } from "react";
-import { addGlobalTag, removeGlobalTag, Tag, GlobalTags } from "../../redux/slices/tags/tagsSlice";
+import {useState } from "react";
+import { Tag, GlobalTags } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { getRandomHexColor } from "@/utils/getRandomHexColor";
 import SingleTag from "./SingleTag";
 import { useGlobalTags } from "@/hooks/use-globalTags";
+import { useMatchedTags } from "@/hooks/use-matchedTags";
 
 /**
  * Args for the AppSidebar component.
@@ -74,96 +73,29 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
 
   const [tagInput, setTagInput] = useState("");
 
+  // This will hold the last deleted Global tag, to ensure notes have also deleted that tag
+  const [deletedGlobalTag, setDeletedGlobalTag] = useState<Tag | null>(null);
+
+  // NOTES, GLOBAL TAGS HOOKS
   const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
-  const { handleNewGlobalTag, handleRemoveGlobalTag } = useGlobalTags(initialGlobalTags);
+  const { handleNewGlobalTag, handleRemoveGlobalTag } = useGlobalTags({initialGlobalTags, setDeletedGlobalTag});
 
   const globalTags = useSelector((state: RootState) => state.tagsState.tags);
 
+  // SORT STATES
   const [sortAfter, setSortAfter] = useState("date");
   const [isDescending, setIsDescending] = useState(true);
   const [isAscending, setIsAscending] = useState(false);
 
+  // Selected Tags to sort more accurately, if the user selected sort after tags.
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
 
-  // This will ensure, that a note doesn't contain tags, that are not in global tags.
-  const matchedTagsNotes = useMemo(() => {
-    return notes.map(note => {
-      const updatedTags = note.tags.filter(noteTag =>
-        globalTags.some(globalTag => globalTag.name === noteTag.name)
-      );
+  // Ensures that these objects are sorted, and matched with other states, to ensure the same data
+  const {refactoredNotes, sortedGlobalTags} = useMatchedTags({notes, globalTags, handleEdit,
+    sortAfter, isDescending, selectedTags, deletedGlobalTag, setDeletedGlobalTag}
+  );
 
-      return {
-        ...note,
-        tags: updatedTags,
-      };
-    });
-  }, [notes, globalTags]);
-
-  // If matchesTagNotes changed, call the server action to actually set the new tags object 
-  // in firebase
-  useEffect(() => {
-    matchedTagsNotes.forEach((note, index) => {
-      if (notes[index].tags.length !== note.tags.length) {
-        handleEdit(note, note.id);
-      }
-    });
-  }, [matchedTagsNotes]);
-
-  const newNotes = useMemo(() => {
-
-    // This will ensure, that each tag inside the note will have the same color as 
-    // the globalTag one
-    const matchedColorsNotes = [...matchedTagsNotes].map(note => {
-      const updatedTags = note.tags.map(noteTag => {
-        const globalTag = globalTags.find(
-          globalTag => globalTag.name === noteTag.name
-        );
-
-        // New Tag, ignore it
-        if (!globalTag) return noteTag;
-
-        // Set the same color as in globalTag
-        if (globalTag.color === noteTag.color) return noteTag;
-
-        return {
-          ...noteTag,
-          color: globalTag.color,
-        };
-      });
-
-      return {
-        ...note,
-        tags: updatedTags,
-      };
-    });
-
-    switch (sortAfter) {
-      case "date":
-        if (isDescending) {
-          return [...matchedColorsNotes].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        } else {
-          return [...matchedColorsNotes].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        }
-      case "title":
-        if (isDescending) {
-          return [...matchedColorsNotes].sort((a, b) => b.title.localeCompare(a.title));
-        } else {
-          return [...matchedColorsNotes].sort((a, b) => a.title.localeCompare(b.title));
-        }
-      case "tags":
-        return [...matchedColorsNotes].filter(note =>
-          note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag === noteTag))
-        );
-      default:
-        return matchedColorsNotes;
-    }
-
-  }, [sortAfter, isDescending, selectedTags, globalTags, matchedTagsNotes])
-
-  const sortedGlobalTags = useMemo(() => {
-    return [...globalTags].sort((a, b) => a.name.localeCompare(b.name));
-  }, [globalTags])
-
+  // This will kee track of the selected items, if the user sorts the notes after tags
   const handleSelectionChange = (selected: Tag[]) => {
     setSelectedTags(selected)
   }
@@ -177,16 +109,19 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
         <SidebarTrigger className="lg:hidden" />
       </SidebarHeader>
       <SidebarContent className="space-y-8">
+          {/* ADD + | SORT SECTION */}
         <SidebarGroup className="overflow-y-scroll h-[425px]">
           <SidebarGroupLabel className="border-b border-black rounded-none px-0">
             <span className="text-xl font-bold">Notes</span>
           </SidebarGroupLabel>
-          <SidebarGroupContent className="mt-3">
             <div
-              className="w-full md:w-auto flex flex-row justify-between
+              className="w-full mt-3 md:w-auto flex flex-row justify-between
            items-center md:gap-6"
             >
-              <DialogNote edit={false} onAction={handleNew}></DialogNote>
+              {/* ADD + */}
+              <DialogNote edit={false} onAction={handleNew} handleNewGlobalTag={handleNewGlobalTag}></DialogNote>
+
+              {/* SORT */}
               <div className="flex flex-row items-center gap-1">
 
                 <Select
@@ -242,6 +177,8 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
               </div>
             </div>
 
+            {/* If user sorts the notes after tags, a new UI element will show */}
+            {/* to sort more accurately */}
             {sortAfter === "tags" && (
               <MultiSelect
                 items={sortedGlobalTags}
@@ -251,13 +188,14 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
               />
             )}
 
-            <SidebarMenu className="flex flex-col gap-4 mt-2">
+            {/* NOTES SECTION */}
+            <div className="flex flex-col gap-4 mt-2">
 
               {loading && notes.length === 0 && (
                 <h2>Loading your notes...</h2>
               )}
 
-              {newNotes && newNotes.map(note => (
+              {refactoredNotes && refactoredNotes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                 transform-all ease-out duration-300"
                   onClick={() => {
@@ -270,9 +208,10 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                       </CardTitle>
                       <div className="flex justify-center items-center gap-1"
                         onClick={(e) => e.stopPropagation()}>
+                          {/* EDIT NOTE DIALOG BUTTON */}
                         <DialogNote edit={true} noteId={note.id}
-                          onAction={handleEdit}></DialogNote>
-
+                          onAction={handleEdit} handleNewGlobalTag={handleNewGlobalTag}></DialogNote>
+                          {/* DELETE NOTE */}
                         <Button variant="secondary" className="w-8 h-8 p-0
                       hover:scale-105"
                           onClick={(e) => {
@@ -285,6 +224,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                     </div>
                   </CardHeader>
                   <CardContent className="px-4 py-0 flex gap-1">
+                    {/* ALL ACTIVE TAGS OF A NOTE */}
                     {note.tags.map(tag => (
                       <Badge key={tag.name} variant="outline"
                         style={{ backgroundColor: tag.color }}>
@@ -297,15 +237,14 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                   </CardFooter>
                 </Card>
               ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-
-
+            </div>
         </SidebarGroup>
+        {/* GLOBAL-TAGS SECTION */}
         <SidebarGroup className="overflow-y-scroll border-t-3 border-violet-600/50">
           <SidebarGroupLabel className="border-b border-black rounded-none px-0">
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>
+          {/* INPUT */}
           <div className="flex flex-row gap-1 items-center">
             <Input
               value={tagInput}
@@ -315,6 +254,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
                 if (value.endsWith(",")) {
                   const tagName = value.slice(0, -1).trim().toLowerCase();
 
+                  
                   if (tagName && !globalTags.some(tag => tag.name === tagName)) {
 
                     const newGlobalTag = {
@@ -342,7 +282,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
             <TagsInfo desc="Here you can add tags by seberating them with ','"></TagsInfo>
           </div>
 
-
+          {/* GLOBALTAGS */}
           <div className="flex flex-wrap gap-1 mt-3">
             {sortedGlobalTags.map(tag => (
               <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
@@ -351,7 +291,9 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
           </div>
         </SidebarGroup>
       </SidebarContent>
+      {/* ACCOUNT | LOG OUT SECTION*/}
       <SidebarFooter className="flex flex-col gap-4 items-center">
+        {/* ACCOUNT */}
         <Card className="w-full flex flex-row items-center justify-start
            gap-2 px-4 py-4">
 
@@ -370,6 +312,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
             <span className="text-xs">s@wasgeht.at</span>
           </CardContent>
         </Card>
+        {/* LOGOUT */}
         <Button className="w-full hover:bg-red-500"
           onClick={() => signOut(auth)}>
           <LogOut></LogOut>

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 import { NotesArgs } from "../types/notesArgs";
@@ -7,7 +7,7 @@ import { Button } from './ui/button'
 import { Plus, PlusCircle, Syringe, X } from 'lucide-react'
 import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
-import { auth, db } from "@/lib/firebase/config"
+import { auth } from "@/lib/firebase/config"
 
 import {
   Dialog,
@@ -18,15 +18,16 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
-import { doc, onSnapshot } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { DialogNoteArgs } from '@/types/dialogNotesArgs';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
-import { addGlobalTag, Tag } from '../../redux/slices/tags/tagsSlice';
+import { useSelector } from 'react-redux';
+import {  RootState } from '../../redux/store';
+
 import { getRandomHexColor } from '@/utils/getRandomHexColor';
 import SingleTag from './SingleTag';
+import { useDialog } from '@/hooks/use-dialog';
 
+// DIALOG FORM SCHEMA
 const tagSchema = z.object({
   name: z.string(),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/)
@@ -43,51 +44,25 @@ const formSchema = z
       .array(tagSchema)
   })
 
-
+export type FormSchema = z.infer<typeof formSchema>;
 /**
  * A dialog form component for creating or editing notes.
  * Uses `react-hook-form` for form handling and validation with `zod`.
  * Fetches note data from Firestore if in edit mode.
  * 
  * @component
- * @param {DialogNoteArgs} data - The props for the component, including edit mode and action handlers.
+ * @param {DialogNoteArgs} data - The args for the component, including edit mode and action handlers.
  * @returns {JSX.Element} The DialogForm component.
  */
 const DialogNote = (data: DialogNoteArgs) => {
 
-  const { edit, noteId, onAction } = data;
+  const { edit, noteId, onAction, handleNewGlobalTag } = data;
 
   const [tagInput, setTagInput] = useState("");
   const [user] = useAuthState(auth);
   const [note, setNote] = useState<NotesArgs | null>(null);
 
   const globalTags = useSelector((state: RootState) => state.tagsState.tags);
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    if (!user || !data.noteId) return;
-
-    const noteRef = doc(db, "notes", data.noteId);
-
-    const unsubscribe = onSnapshot(noteRef, (snap) => {
-      if (!snap.exists()) {
-        console.log("Note doesn't exist");
-        return;
-      }
-
-      const noteData = {
-        id: snap.id,
-        ...(snap.data() as Omit<NotesArgs, "id">)
-      };
-
-      setNote(noteData);
-    }, (error) => {
-      console.error("Firestore error while getting the active note: ", error);
-    });
-
-    return () => unsubscribe();
-  }, [user, noteId]);
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,6 +73,11 @@ const DialogNote = (data: DialogNoteArgs) => {
     }
   })
 
+  // Starts a subscribe listener and is handling the tags in a Dialog
+  const {suggestedTags, removeTag, addSuggestedGlobalTag} = useDialog({form, globalTags, user,
+       noteId, setNote});
+
+  // Load the data of the note while editing
   useEffect(() => {
     if (note) {
       form.reset({
@@ -111,50 +91,23 @@ const DialogNote = (data: DialogNoteArgs) => {
 
     const tags = form.getValues("tags");
 
+    // Will add all new tags to global Tags, that he doesn't contain yet
     const newTags = tags.filter(tag => !globalTags.some(globalTag => globalTag.name === tag.name));
-    newTags.forEach(tag => dispatch(addGlobalTag(tag)));
+    newTags.forEach(tag => handleNewGlobalTag(tag));
 
     if (edit) {
 
       if (!note) return;
+
+      // EDIT the note in firebase
       onAction({ ...data, content: note.content }, noteId);
 
     } else {
-
+      // CREATE the note in firebase
       onAction(data);
     }
 
     form.reset()
-  }
-
-  const activeTags = form.watch("tags");
-
-  const suggestedTags = useMemo(() => {
-    const newTags = globalTags.filter(tag => !activeTags.some(activeTag => activeTag.name === tag.name));
-
-    return newTags.sort((a, b) => a.name.localeCompare(b.name));
-  }, [globalTags, activeTags]);
-
-  function removeTag(tagToRemove: Tag) {
-    const tags = form.getValues("tags");
-
-    const newTags = tags.filter(tag => tag.name !== tagToRemove.name);
-    form.setValue("tags", newTags);
-
-    if (globalTags.some(globalTag => globalTag.name === tagToRemove.name)) return;
-
-    // suggest it again
-    suggestedTags.push(tagToRemove);
-  }
-
-  function addOutsideTag(tagToAdd: Tag) {
-    const tags = form.getValues("tags");
-    if (tags.some(tag => tag.name === tagToAdd.name)) return;
-
-    form.setValue("tags", [...tags, tagToAdd]);
-
-    // remove the suggested tag
-    suggestedTags.filter(tag => tag !== tagToAdd);
   }
 
   return (
@@ -214,6 +167,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                       if (value.endsWith(",")) {
                         const tagName = value.slice(0, -1).trim().toLowerCase();
 
+                        // Is there already a tag with the same name?
                         if (tagName && !field.value.some(tag => tag.name === tagName)) {
 
                         // If found, we must not create an extra tag with a new color
@@ -229,9 +183,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                           }
                           
                           field.onChange([...field.value, newTag])
-                        }
-        
-                        }
+                        }};
 
                         setTagInput("");
                       } else {
@@ -242,8 +194,11 @@ const DialogNote = (data: DialogNoteArgs) => {
                   />
                   {fieldState.invalid &&
                     <FieldError errors={[fieldState.error]} />}
+
+                  {/* ACTIVE | SUGGESTED (GLOBAL) TAGS SECTION */}
                   <div className='flex flex-col gap-1'>
 
+                    {/* ACTIVE TAGS */}
                     <div className="flex flex-wrap gap-1">
                       <span>Active: </span>
                       {field.value.map(tag => {
@@ -251,16 +206,18 @@ const DialogNote = (data: DialogNoteArgs) => {
                           return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
                             handleTag={removeTag}></SingleTag>
                         }
+                        // If it is an Global Tag already, user can't change the color it's color
                           return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
                             handleTag={removeTag} noColorChange={true}></SingleTag>
                       })}
                     </div>
 
+                    {/* SUGGESTED (GLOBAL) TAGS */}
                     <div className="flex flex-wrap gap-1">
                       <span>Recommended: </span>
                       {suggestedTags.map(tag => (
                         <SingleTag tag={tag} Icon={PlusCircle} key={tag.name + " container"}
-                          handleTag={addOutsideTag} noColorChange={true}></SingleTag>
+                          handleTag={addSuggestedGlobalTag} noColorChange={true}></SingleTag>
                       ))}
                     </div>
 

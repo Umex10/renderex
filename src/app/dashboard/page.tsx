@@ -37,24 +37,27 @@ import Editor from '@/components/Editor';
 const Dashboard = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const [content, setContent] = useState("");
 
   const { handleDownload } = useFormat();
 
+  const [note, setNote] = useState<NotesArgs | null>(null);
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
-  const [note, setNote] = useState<NotesArgs | null>(null);
+  const [content, setContent] = useState("");
 
+  // Ensures that content isn't rewritten uneccessarily on firebase
   const lastSavedContent = useRef(note?.content)
 
-
   useEffect(() => {
+
+    // Return the user to sign in if not logged in
     if (!loading && !user) {
       router.push('/sign-in');
     }
   }, [user, loading, router]);
 
   useEffect(() => {
+    // Return if the user hasn't clicked on any note
     if (!user || !activeNote) {
       return;
     }
@@ -71,7 +74,10 @@ const Dashboard = () => {
         ...(snap.data() as Omit<NotesArgs, "id">)
       };
 
+      // initialize state
       setNote(noteData);
+
+      // Enables the markdown editor with the content
       setContent(noteData.content);
 
     })
@@ -83,6 +89,7 @@ const Dashboard = () => {
 
     if (content === lastSavedContent.current) return;
 
+    // Ensures that after 5 seconds the current content is written into firebase
     const handler = setTimeout(async () => {
     const noteRef = doc(db, "notes", note.id);
 
@@ -111,11 +118,15 @@ const Dashboard = () => {
   return (
     <div className="w-full flex flex-col justify-center items-center gap-4">
 
+      {/* TITLE */}
       <div className="w-full hidden 2xl:flex items-center gap-2 text-3xl">
         <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
       </div>
 
+      {/* EDITOR | LIVE */}
       <div className='w-full hidden 2xl:grid grid-cols-2 gap-2'>
+
+        {/* EDITOR */}
         <div className='min-w-0'>
           <Editor
             value={content}
@@ -127,6 +138,8 @@ const Dashboard = () => {
             <Download></Download>
           </Button>
         </div>
+
+         {/* LIVE */}
         <div className="prose prose-slate max-w-none h-[650px] overflow-y-auto break-words">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {content !== "" ? content : "Write something down in order to see it live"}
@@ -134,6 +147,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* TABS - MOBILE ONLY */}
       <Tabs defaultValue="markdown" className="2xl:hidden w-full flex flex-col">
 
         <div className="w-full flex flex-col gap-4 md:flex-row justify-between items-center md:items-end">
@@ -152,6 +166,7 @@ const Dashboard = () => {
 
 
         <div className="w-full mt-4">
+           {/* EDITOR VIEW */}
           <TabsContent value="markdown" >
             <Editor
               value={content}
@@ -162,6 +177,7 @@ const Dashboard = () => {
               <Download></Download>
             </Button>
           </TabsContent>
+           {/* LIVE VIEW */}
           <TabsContent value="live">
             <div className="prose prose-slate  max-w-none
             min-h-[650px] overflow-y-scroll">

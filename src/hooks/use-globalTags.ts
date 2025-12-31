@@ -9,7 +9,14 @@ import { auth, db } from "@/lib/firebase/config";
 import {  doc, onSnapshot } from "firebase/firestore";
 import { createGlobalTag, removeGlobal } from "@/actions/tags";
 
-export function useGlobalTags(initialGlobalTags: GlobalTags) {
+interface UseGlobalTagsArgs {
+  initialGlobalTags: GlobalTags,
+  setDeletedGlobalTag: (globalTag: Tag) => void;
+}
+
+export function useGlobalTags(data: UseGlobalTagsArgs) {
+
+  const {initialGlobalTags, setDeletedGlobalTag} = data;
 
   const dispatch = useDispatch<AppDispatch>();
   const [user, loading] = useAuthState(auth);
@@ -34,7 +41,7 @@ export function useGlobalTags(initialGlobalTags: GlobalTags) {
     // correct values.
     const unsubscribe = onSnapshot(ref, (snap) => {
 
-      // Ignore first iteration to not load data uneccessarily
+      // Ignore first iteration to not load data unnecessarily
       if (firstCall.current) {
         firstCall.current = false;
         return;
@@ -72,6 +79,8 @@ export function useGlobalTags(initialGlobalTags: GlobalTags) {
 
     // The user receives immediate feedback
     dispatch(removeGlobalTag(globalTag));
+
+    setDeletedGlobalTag(globalTag);
 
     try {
       await removeGlobal(globalTag);

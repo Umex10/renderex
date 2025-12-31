@@ -4,15 +4,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { FORMAT } from "../../constants/Format";
 import { getDOCX, getPDF, getTXT } from "@/actions/format";
-import { triggerDownload } from "@/utils/triggerDownload";
+import { triggerDownload } from "@/utils/download/triggerDownload";
 import { NotesArgs } from "@/types/notesArgs";
-import { sanitize } from "@/utils/sanitize";
-import { Packer } from "docx"
+import { sanitize } from "@/utils/download/sanitize";
 
 export function useFormat() {
 
   const format = useSelector((state: RootState) => state.formState.format);
 
+  // This will decide which file will be downloaded
   const handleDownload = async (note: NotesArgs) => {
     const fileName = sanitize(note.title);
 
@@ -34,7 +34,7 @@ export function useFormat() {
         const pdfBuffer = await getPDF(note);
         triggerDownload(
           pdfBuffer,
-          `${sanitize(note.title)}.pdf`,
+          `${fileName}.pdf`,
           "application/pdf"
         );
         break;
