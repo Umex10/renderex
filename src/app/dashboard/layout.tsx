@@ -10,6 +10,8 @@ import { AuthSetter } from "@/components/AuthSetter";
 import SelectFormat from "@/components/SelectFormat";
 import { getInitialGlobalTags } from "@/actions/tags";
 import { GlobalTags } from "../../../redux/slices/tags/tagsSlice";
+import { getInitialUser } from "@/actions/user";
+import { User } from "@/types/user";
 
 /**
  * The main layout for the dashboard section.
@@ -30,11 +32,20 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
   let initialNotes: NotesArgs[] = [];
   let initialGlobalTags: GlobalTags = { tags: [], userId: userId ?? null };
+  let initialUser: User = {
+    createdAt: "",
+    email: "",
+    role: "",
+    uid: "",
+    imageURL: "",
+    username: ""
+  }
 
   if (userId) {
-    // Load the notes and global tags when the server starts
+    // Load the notes global tags and the user when the server starts
     const notesResult = await getInitialNotes(userId);
     const globalTagsResult = await getInitialGlobalTags(userId);
+    const userResult = await getInitialUser(userId);
 
     if (notesResult.success && notesResult.data) {
       initialNotes = notesResult.data;
@@ -42,6 +53,10 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
     if (globalTagsResult && globalTagsResult.data) {
       initialGlobalTags = globalTagsResult.data;
+    }
+
+    if (userResult.success && userResult.data) {
+      initialUser = userResult.data
     }
   }
 
@@ -51,7 +66,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <SidebarProvider>
 
           {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
-          <AppSidebar initialNotes={initialNotes} initialGlobalTags={initialGlobalTags} />
+          <AppSidebar initialNotes={initialNotes} initialGlobalTags={initialGlobalTags}
+          initialUser={initialUser} />
 
           {/* UNDERNEATH SIDEBAR (RIGHT SIDE) - Content of a note */}
           <SidebarInset>

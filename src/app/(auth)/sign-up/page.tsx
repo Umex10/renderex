@@ -34,18 +34,15 @@ const formSchema = z
   .object({
     username: z
       .string()
-      .min(5, "Username must be at least 5 characters.")
-      .max(32, "Username must be at most 32 characters."),
+      .min(3, "Username must be at least 3 characters."),
 
     email: z
       .string()
-      .email("Invalid email address")
-      .max(100, "Email must be at most 100 characters."),
+      .email("Invalid email address"),
 
     key: z
       .string()
-      .min(8, "Key must be at least 8 characters.")
-      .max(64, "Key must be at most 64 characters."),
+      .min(6, "Key must be at least 6 characters."),
 
     confirmKey: z.string(),
   })
@@ -121,6 +118,7 @@ export default function SignUp() {
           email: firebaseUser.email,
           username: data.username,
           role: "user",
+          imageURL: "",
           createdAt: serverTimestamp()
         })
 

@@ -26,7 +26,7 @@ const Editor = ({ value, onChange }: EditorProps) => {
       width="100%"
       onChange={(val) => onChange(val)}
       theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-      className="border rounded-md overflow-hidden"
+      className="border-1 border-violet-400 rounded-md overflow-hidden"
       basicSetup={{
         lineNumbers: true,
         highlightActiveLine: true,

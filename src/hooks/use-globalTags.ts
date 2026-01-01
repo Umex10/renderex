@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import {  doc, onSnapshot } from "firebase/firestore";
-import { createGlobalTag, removeGlobal } from "@/actions/tags";
+import { createGlobalTag, deleteGlobalTag } from "@/actions/tags";
 
 interface UseGlobalTagsArgs {
   initialGlobalTags: GlobalTags,
@@ -83,7 +83,7 @@ export function useGlobalTags(data: UseGlobalTagsArgs) {
     setDeletedGlobalTag(globalTag);
 
     try {
-      await removeGlobal(globalTag);
+      await deleteGlobalTag(globalTag);
     } catch (err) {
       console.error(err);
     }

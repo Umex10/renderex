@@ -2,6 +2,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 
 /**
@@ -42,4 +43,5 @@ const auth = getAuth(app);
  * Used for reading and writing data to Firestore from the client side.
  */
 const db = getFirestore(app)
+
 export {app, auth, db}

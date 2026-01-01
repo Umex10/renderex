@@ -45,6 +45,7 @@ import { getRandomHexColor } from "@/utils/getRandomHexColor";
 import SingleTag from "./SingleTag";
 import { useGlobalTags } from "@/hooks/use-globalTags";
 import { useMatchedTags } from "@/hooks/use-matchedTags";
+import { User } from "@/types/user";
 
 /**
  * Args for the AppSidebar component.
@@ -53,7 +54,8 @@ import { useMatchedTags } from "@/hooks/use-matchedTags";
  */
 interface AppSidebarArgs {
   initialNotes: NotesArgs[],
-  initialGlobalTags: GlobalTags
+  initialGlobalTags: GlobalTags,
+  initialUser: User
 }
 
 // Trenner-Komponente für das Resizing
@@ -72,7 +74,7 @@ const ResizeHandle = ({ onMouseDown }: { onMouseDown: () => void }) => (
  * @param {AppSidebarArgs} args - The component arguments.
  * @returns {JSX.Element} The AppSidebar component.
  */
-export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) {
+export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: AppSidebarArgs) {
 
   const router = useRouter();
 
@@ -354,8 +356,8 @@ export function AppSidebar({ initialNotes, initialGlobalTags }: AppSidebarArgs) 
             </Image>
           </CardHeader>
           <CardContent className="w-full flex flex-col items-start p-0">
-            <span className="text-sm font-bold">shadcn</span>
-            <span className="text-xs">s@wasgeht.at</span>
+            <span className="text-sm font-bold">{initialUser.username}</span>
+            <span className="text-xs">{initialUser.email}</span>
           </CardContent>
         </Card>
         {/* LOGOUT */}

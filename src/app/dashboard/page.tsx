@@ -13,10 +13,7 @@ import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NotesArgs } from "../../types/notesArgs";
-import { Download, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useFormat } from '@/hooks/use-format';
-import Editor from '@/components/Editor';
 import LiveRenderer from '@/components/LiveRenderer';
 import EditorActions from '@/components/EditorActions';
 

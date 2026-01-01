@@ -26,8 +26,8 @@ export async function getInitialGlobalTags(userId: string) {
       }
     };
 
-  } catch (error) {
-    return { success: false, error: "Error while loading the globalTags: " + error };
+  } catch (err) {
+    return { success: false, error: "Error while loading the globalTags: " + err };
   }
 }
 
@@ -58,13 +58,13 @@ export async function createGlobalTag(globalTag: Tag) {
 
     return {success: true};
 
-  } catch (error) {
-    return { success: false, error: "Error while creating new globalTags: " + error};
+  } catch (err) {
+    return { success: false, error: "Error while creating new globalTags: " + err};
   }
 
 }
 
-export async function removeGlobal(globalTag: Tag) {
+export async function deleteGlobalTag(globalTag: Tag) {
 
   try {
 
@@ -102,8 +102,8 @@ export async function removeGlobal(globalTag: Tag) {
 
     return {success: true};
 
-  } catch (error) {
-    return { success: false, error: "Error while creating new globalTags: " + error};
+  } catch (err) {
+    return { success: false, error: "Error while creating new globalTags: " + err};
   }
 
 }
