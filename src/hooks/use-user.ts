@@ -1,9 +1,11 @@
 "use client"
 
 import { editUser } from "@/actions/user";
+import { db } from "@/lib/firebase/config";
 import { User } from "@/types/user";
-import { getAuth, updatePassword } from "firebase/auth";
-import { useState } from "react";
+import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword, verifyBeforeUpdateEmail } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
 
 interface FormData {
   username?: string,
@@ -14,49 +16,106 @@ interface FormData {
 
 export function useUser(initialUser: User) {
 
+  // This will be our fallback, if something is going wrong with firebase
+  const userRef = useRef<User>(initialUser);
+
+  // This is our UI immediate feedback!
   const [user, setUser] = useState(initialUser);
+
+  // This will ensure, that we will not load the globalTags uneccessarily since 
+  // we are getting it from the server action already on mount
+  const firstCall = useRef(true);
+
+  // Needed because the key credentials are handeld differently than other fields
   const auth = getAuth();
+
+  useEffect(() => {
+    if (!userRef.current) return;
+
+    const ref = doc(db, "users", userRef.current.uid);
+
+    const unsubscribe = onSnapshot(ref, (snap) => {
+
+      if (firstCall.current) {
+        firstCall.current = false;
+        return;
+      }
+
+      if (!snap.exists()) {
+        throw new Error("There is no such user!");
+      }
+
+      const data = snap.data();
+
+      const convertedUser = {
+        ...data,
+        createdAt: data.createdAt?.toDate().toISOString()
+      }
+
+      userRef.current = convertedUser as User;
+      setUser(convertedUser as User);
+
+    }, (err) => {
+      console.error("Firestore error occured while catching the user details:", err);
+    })
+
+    return () => unsubscribe();
+  }, [])
+
+
+  const removeImage = () => {
+    setUser(old => ({
+      ...old,
+      imageURL: ""
+    }))
+  }
 
   const handleEdit = async (data: FormData) => {
 
     // fallback array
-    const oldUser = { ...initialUser };
+    const oldUser = { ...userRef.current };
 
     // This will give the user immediate feedback!
 
-    const toEditUser = { ...user }
-    setUser({ ...user, ...data });
+    setUser({ ...userRef.current, ...data });
 
     try {
+      const currentUser = auth.currentUser;
 
-      if (data.key) {
-        const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("User not authenticated");
+      }
 
-        if (!currentUser) {
-          throw new Error("User not authenticated");
-        }
+      // Needed because firebase needs to do the changes
+      if (data.key && !data.email) {
 
-        // Firebase does that
         await updatePassword(currentUser, data.key);
       }
 
-      // No need to send the key to the server
-      const { key, ...necessaryData } = data;
+      if (data.email && data.email !== currentUser.email) {
+        const credential = EmailAuthProvider.credential(
+          currentUser.email!,
+          data.key || "" 
+        );
 
-      // Will sort out undefiend or emty values 
-      const filteredData = Object.fromEntries(
-        Object.entries(necessaryData)
-          .filter(([_, value]) => value !== undefined && value !== "")
-      );
+        await reauthenticateWithCredential(currentUser, credential);
 
-      const merged = { ...toEditUser, ...filteredData };
+        await verifyBeforeUpdateEmail(currentUser, data.email);
+       
+      }
+
+      // We don't need the key anymore, to ensure key is not written onto firebase mistakenly
+      const {key, ...reducedData} = data;
+
+      const merged = { ...oldUser, ...reducedData };
 
       const result = await editUser(merged);
 
-      if (!result.success) {
-        setUser(oldUser);
+      if (result.success) {
+        userRef.current = merged;
+      } else {
+        setUser(oldUser); // Rollback
       }
-
     } catch (err) {
       console.error("An error occured while calling editUser server action:", err);
       setUser(oldUser);
@@ -64,6 +123,6 @@ export function useUser(initialUser: User) {
 
   }
 
-  return { handleEdit };
+  return { user, userRef, removeImage, handleEdit };
 
 }

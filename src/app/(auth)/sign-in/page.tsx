@@ -33,13 +33,11 @@ const formSchema = z
   .object({
     email: z
       .string()
-      .email("Invalid email address")
-      .max(100, "Email must be at most 100 characters."),
+      .email("Invalid email address"),
 
     key: z
       .string()
-      .min(8, "Key must be at least 8 characters.")
-      .max(64, "Key must be at most 64 characters."),
+      .min(6, "Key must be at least 6 characters.")
   });
 
 /**

@@ -56,8 +56,8 @@ export function useGlobalTags(data: UseGlobalTagsArgs) {
       dispatch(setWholeArray(data?.tags ?? []))
      
     },
-      (error) => {
-        console.error("Firestore error while catching globalTags:", error);
+      (err) => {
+        console.error("Firestore error occured while catching globalTags:", err);
       })
 
       return () => unsubscribe();

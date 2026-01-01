@@ -5,8 +5,6 @@ import { User } from "@/types/user";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-
-
 export async function getInitialUser(userId: string) {
   try {
 
@@ -36,6 +34,7 @@ export async function getInitialUser(userId: string) {
     return { success: false, error: "Error while loading the user:" + err };
   }
 }
+
 
 export async function editUser(user: User) {
    try {
