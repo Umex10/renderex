@@ -1,9 +1,10 @@
 "use client"
 
-import { editUser } from "@/actions/user";
+import { deleteU, editUser } from "@/actions/user";
 import { db } from "@/lib/firebase/config";
 import { User } from "@/types/user";
-import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword, verifyBeforeUpdateEmail } from "firebase/auth";
+import { getAuth, EmailAuthProvider, reauthenticateWithCredential, 
+  updatePassword, verifyBeforeUpdateEmail } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 
@@ -20,7 +21,7 @@ export function useUser(initialUser: User) {
   const userRef = useRef<User>(initialUser);
 
   // This is our UI immediate feedback!
-  const [user, setUser] = useState(initialUser);
+  const [user, setUser] = useState<User>(initialUser);
 
   // This will ensure, that we will not load the globalTags uneccessarily since 
   // we are getting it from the server action already on mount
@@ -123,6 +124,34 @@ export function useUser(initialUser: User) {
 
   }
 
-  return { user, userRef, removeImage, handleEdit };
+   const handleDelete = async () => {
+
+    const oldUser = { ...userRef.current };
+
+    setUser({uid: "", username: "", imageURL: "", email: "",
+      role: "", createdAt: ""
+    })
+
+    try {
+
+      const result = await deleteU(oldUser.uid);
+
+      if (result.success) {
+        
+      } else {
+         setUser(oldUser)
+      }
+
+      return true;
+
+    }catch (err) {
+      console.error("An error occured while calling deleteUser server action:", err);
+      setUser(oldUser);
+      return false;
+    }
+
+   }
+
+  return { user, userRef, removeImage, handleEdit, handleDelete };
 
 }

@@ -22,6 +22,7 @@ import {
 import { DialogClose } from '@radix-ui/react-dialog'
 import { User } from '@/types/user'
 import { useUser } from '@/hooks/use-user'
+import { useRouter } from 'next/navigation'
 
 // --- SEPARATE SCHEMAS ---
 const usernameSchema = z.object({
@@ -55,9 +56,10 @@ interface AccountProps {
 }
 
 const Account = ({ initialUser }: AccountProps) => {
-  const { user, userRef, removeImage, handleEdit } = useUser(initialUser);
+  const { user, userRef, removeImage, handleEdit, handleDelete } = useUser(initialUser);
   const [imageView, setImageView] = useState<string | null>(user.imageURL || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   // Initialize 4 separate forms
   const usernameForm = useForm<UsernameData>({
@@ -82,7 +84,7 @@ const Account = ({ initialUser }: AccountProps) => {
   // --- SHARED ON-SUBMIT LOGIC ---
   const onSubmit = async (data: UsernameData | ImageData | EmailWithKeyData | KeyData) => {
     // Extract confirmKey if it exists (for KeyData)
-   const { confirmKey, ...necessaryData } = data;
+    const { confirmKey, ...necessaryData } = data;
 
     // Filter undefined or empty values
     const filteredData = Object.fromEntries(
@@ -151,6 +153,21 @@ const Account = ({ initialUser }: AccountProps) => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const onDelete = async () => {
+
+    try {
+      const result = await handleDelete();
+
+      if (result) {
+        router.replace("/sign-in")
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+
+  }
+
   return (
     <div className='flex flex-col h-full md:justify-center py-8'>
       <div className="max-w-[425px] w-full mx-auto p-6 bg-white rounded-lg shadow-sm border space-y-8">
@@ -180,7 +197,7 @@ const Account = ({ initialUser }: AccountProps) => {
                 <Camera size={20} className="text-white" />
               </div>
             </div>
-            
+
             <div className="flex gap-2">
               {imageView && (
                 <Button type="button" variant="ghost" size="sm"
@@ -223,29 +240,29 @@ const Account = ({ initialUser }: AccountProps) => {
           <h3 className="text-sm font-medium uppercase text-gray-400 tracking-wider">Email Settings</h3>
           <form onSubmit={emailForm.handleSubmit(onSubmit)}>
             <div className='grid gap-4'>
-            <Controller
-              name="email"
-              control={emailForm.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>New Email Address</FieldLabel>
-                  <Input {...field} type="email" placeholder={user.email} />
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
+              <Controller
+                name="email"
+                control={emailForm.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>New Email Address</FieldLabel>
+                    <Input {...field} type="email" placeholder={user.email} />
+                    {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
 
-            <Controller
-              name="key"
-              control={emailForm.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>Current Key</FieldLabel>
-                  <Input {...field} type="password" placeholder="••••••••" />
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
+              <Controller
+                name="key"
+                control={emailForm.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Current Key</FieldLabel>
+                    <Input {...field} type="password" placeholder="••••••••" />
+                    {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
             </div>
             <Button type="submit" variant="outline" className="w-full mt-2">Verify & Change Email</Button>
           </form>
@@ -297,11 +314,12 @@ const Account = ({ initialUser }: AccountProps) => {
               <DialogHeader><DialogTitle>Are you absolutely sure?</DialogTitle></DialogHeader>
               <DialogFooter className="flex flex-col gap-2">
                 <DialogClose asChild>
-                  <Button variant="destructive" className="w-full">Confirm Deletion</Button>
+                  <Button variant="destructive" className="w-full"
+                    onClick={() => onDelete()}>Confirm Deletion</Button>
                 </DialogClose>
                 <DialogClose asChild>
                   <Button variant="outline" className="w-full">Cancel</Button>
-                  </DialogClose>
+                </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>

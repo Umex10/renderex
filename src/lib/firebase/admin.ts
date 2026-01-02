@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { getAuth } from "firebase-admin/auth";
 
 /**
  * Initializes the Firebase Admin SDK.
@@ -26,4 +27,5 @@ if (!admin.apps.length) {
  * Used for performing database operations on the server side with full admin privileges.
  */
 const db = admin.firestore();
-export { db };
+const adminAuth = getAuth();
+export { db, adminAuth };
