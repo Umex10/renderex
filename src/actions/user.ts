@@ -17,7 +17,7 @@ export async function getInitialUser(userId: string) {
 
     const data = snap.data();
 
-    const user = {
+    const user : User = {
       uid: data?.uid,
       email: data?.email,
       username: data?.username,
@@ -25,7 +25,7 @@ export async function getInitialUser(userId: string) {
       imageURL: data?.imageURL,
       createdAt: data?.createdAt?.toDate().toISOString()
     };
-
+    
     return {
       success: true,
       data: user

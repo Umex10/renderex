@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useState, useRef } from 'react'
@@ -56,6 +57,7 @@ interface AccountProps {
 }
 
 const Account = ({ initialUser }: AccountProps) => {
+
   const { user, userRef, removeImage, handleEdit, handleDelete } = useUser(initialUser);
   const [imageView, setImageView] = useState<string | null>(user.imageURL || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,7 +86,14 @@ const Account = ({ initialUser }: AccountProps) => {
   // --- SHARED ON-SUBMIT LOGIC ---
   const onSubmit = async (data: UsernameData | ImageData | EmailWithKeyData | KeyData) => {
     // Extract confirmKey if it exists (for KeyData)
-    const { confirmKey, ...necessaryData } = data;
+    let necessaryData: Omit<typeof data, "confirmKey">;
+
+    if ("confirmKey" in data) {
+      const { confirmKey, ...rest } = data;
+      necessaryData = rest;
+    } else {
+      necessaryData = data;
+    }
 
     // Filter undefined or empty values
     const filteredData = Object.fromEntries(
@@ -164,8 +173,6 @@ const Account = ({ initialUser }: AccountProps) => {
     } catch (err) {
       console.error(err);
     }
-
-
   }
 
   return (
@@ -193,9 +200,9 @@ const Account = ({ initialUser }: AccountProps) => {
               ) : (
                 <Camera size={28} className="text-gray-400" />
               )}
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              {/* <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <Camera size={20} className="text-white" />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex gap-2">

@@ -29,7 +29,6 @@ const page = async () => {
             initialUser = userResult.data
           }
         }
-      
 
   return (
     <Account initialUser={initialUser}></Account>

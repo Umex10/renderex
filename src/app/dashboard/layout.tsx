@@ -32,14 +32,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
   let initialNotes: NotesArgs[] = [];
   let initialGlobalTags: GlobalTags = { tags: [], userId: userId ?? null };
-  let initialUser: User = {
-    createdAt: "",
-    email: "",
-    role: "",
-    uid: "",
-    imageURL: "",
-    username: ""
-  }
+  // Null needed because on fresh registration it may be that the cookie is not set
+  let initialUser: User | null = null;
 
   if (userId) {
     // Load the notes global tags and the user when the server starts
