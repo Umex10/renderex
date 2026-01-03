@@ -4,23 +4,22 @@ import { LucideIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import ColorChanger from './ui/colorChanger'
-import { editColor, Tag } from '../../redux/slices/tags/tagsSlice'
+import { Tag } from '../../redux/slices/tags/tagsSlice'
 import { Badge } from './ui/badge'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '../../redux/store'
 
 interface TagArgs {
   tag: Tag,
   Icon: LucideIcon,
-  handleTag: (tag: Tag) => void,
+  handleRemoveGlobalTag: (tag: Tag) => void,
+  handleEditGlobalTag: (tag: Tag, tagColor: string) => void,
+  handleEditedColorNotes: (tag: Tag, tagColor: string) => void,
   noColorChange?: boolean
 }
 
-const SingleTag = ({tag, Icon, handleTag, noColorChange = false}: TagArgs) => {
+const SingleTag = ({tag, Icon, handleRemoveGlobalTag, handleEditGlobalTag,
+  handleEditedColorNotes, noColorChange = false}: TagArgs) => {
 
-    const [tagColor, setTagColor] = useState(tag.color);
-    const dispatch = useDispatch<AppDispatch>();
-   
+    const [tagColor, setTagColor] = useState<string>(tag.color);
 
     function handleColor(color: string) {
       setTagColor(color)
@@ -28,13 +27,15 @@ const SingleTag = ({tag, Icon, handleTag, noColorChange = false}: TagArgs) => {
 
     useEffect(() => {
 
-      console.log("New Color:", tagColor)
       const timeout = setTimeout(() => {
-              dispatch(editColor({ tagName: tag.name, newColor: tagColor }));
+
+        handleEditGlobalTag(tag, tagColor);
+        handleEditedColorNotes(tag, tagColor);
+
       }, 500)
 
       return () => clearTimeout(timeout);
-    }, [tagColor, tag.name, dispatch])
+    }, [tagColor, tag.name])
 
   return (
     <Badge key={tag.name} variant="outline" className={`flex gap-3`}
@@ -42,7 +43,7 @@ const SingleTag = ({tag, Icon, handleTag, noColorChange = false}: TagArgs) => {
                 <span className='text-sm'>{tag.name.charAt(0).toUpperCase() +
                   tag.name.slice(1,)}</span>
                 <Button className="w-4 h-4 p-2 rounded-full"
-                  onClick={() => handleTag(tag)}>
+                  onClick={() => handleRemoveGlobalTag(tag)}>
                   <Icon className='w-4 h-4'></Icon>
                 </Button>
 

@@ -39,10 +39,14 @@ export type DialogNoteArgs =
     onAction: (data: NoteDataForNew) => void;
     noteId?: never; 
     handleNewGlobalTag: (globalTag: Tag) => void;
+      handleEditGlobalTag: (tag: Tag, tagColor: string) => void,
+  handleEditedColorNotes: (tag: Tag, tagColor: string) => void,
   }
   | {
     edit: true;
     noteId: string; 
     onAction: (data: NoteDataForEdit, id: string) => void;
     handleNewGlobalTag: (globalTag: Tag) => void;
+      handleEditGlobalTag: (tag: Tag, tagColor: string) => void,
+  handleEditedColorNotes: (tag: Tag, tagColor: string) => void,
   };

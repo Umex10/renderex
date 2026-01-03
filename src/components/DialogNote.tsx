@@ -56,7 +56,9 @@ export type FormSchema = z.infer<typeof formSchema>;
  */
 const DialogNote = (data: DialogNoteArgs) => {
 
-  const { edit, noteId, onAction, handleNewGlobalTag } = data;
+  const { edit, noteId, onAction, handleNewGlobalTag,
+    handleEditGlobalTag,handleEditedColorNotes
+   } = data;
 
   const [tagInput, setTagInput] = useState("");
   const [user] = useAuthState(auth);
@@ -204,11 +206,15 @@ const DialogNote = (data: DialogNoteArgs) => {
                       {field.value.map(tag => {
                         if (!globalTags.some(globalTag => globalTag.name === tag.name)) {
                           return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
-                            handleTag={removeTag}></SingleTag>
+                            handleRemoveGlobalTag={removeTag}
+                            handleEditGlobalTag={handleEditGlobalTag}
+                            handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
                         }
                         // If it is an Global Tag already, user can't change the color it's color
                           return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
-                            handleTag={removeTag} noColorChange={true}></SingleTag>
+                            handleRemoveGlobalTag={removeTag} noColorChange={true}
+                            handleEditGlobalTag={handleEditGlobalTag}
+                            handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
                       })}
                     </div>
 
@@ -217,7 +223,9 @@ const DialogNote = (data: DialogNoteArgs) => {
                       <span>Recommended: </span>
                       {suggestedTags.map(tag => (
                         <SingleTag tag={tag} Icon={PlusCircle} key={tag.name + " container"}
-                          handleTag={addSuggestedGlobalTag} noColorChange={true}></SingleTag>
+                          handleRemoveGlobalTag={addSuggestedGlobalTag} noColorChange={true}
+                          handleEditGlobalTag={handleEditGlobalTag}
+                            handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
                       ))}
                     </div>
 

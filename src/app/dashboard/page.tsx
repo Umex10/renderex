@@ -95,7 +95,7 @@ const Dashboard = () => {
       last === "saving" ? last : "saving"
     );
 
-    // Ensures that after 5 seconds the current content is written into firebase
+    // Ensures that after 5 seconds the current content is written onto firebase
     const handler = setTimeout(async () => {
       try {
         const noteRef = doc(db, "notes", note.id);
@@ -118,7 +118,7 @@ const Dashboard = () => {
   }, [content, note])
 
   if (loading) {
-    return <div>Loading note...</div>;
+    return <div>Loading information...</div>;
   }
 
   if (!user) {

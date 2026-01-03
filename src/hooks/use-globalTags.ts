@@ -1,13 +1,13 @@
 "use client"
 
 import { useDispatch } from "react-redux";
-import { addGlobalTag, GlobalTags, removeGlobalTag, setUserId, setWholeArray, Tag } from "../../redux/slices/tags/tagsSlice";
+import { addGlobalTag, editColor, GlobalTags, removeGlobalTag, setUserId, setWholeArray, Tag } from "../../redux/slices/tags/tagsSlice";
 import { AppDispatch } from "../../redux/store";
 import { useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import {  doc, onSnapshot } from "firebase/firestore";
-import { createGlobalTag, deleteGlobalTag } from "@/actions/tags";
+import { createGlobalTag, deleteGlobalTag, editGlobalTag } from "@/actions/tags";
 
 interface UseGlobalTagsArgs {
   initialGlobalTags: GlobalTags,
@@ -89,5 +89,16 @@ export function useGlobalTags(data: UseGlobalTagsArgs) {
     }
   }
 
-  return {handleNewGlobalTag, handleRemoveGlobalTag}
+  const handleEditGlobalTag = async (tag: Tag, tagColor: string) => {
+
+    dispatch(editColor({ tagName: tag.name, newColor: tagColor }));
+
+    try {
+      await editGlobalTag(tag, tagColor);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  return {handleNewGlobalTag, handleRemoveGlobalTag, handleEditGlobalTag}
 }
