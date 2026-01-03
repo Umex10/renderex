@@ -33,13 +33,13 @@ import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
 import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
-import { Tag, GlobalTags } from "../../redux/slices/tags/tagsSlice";
+import { Tag, UserTags } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { getRandomHexColor } from "@/utils/getRandomHexColor";
 import SingleTag from "./SingleTag";
-import { useGlobalTags } from "@/hooks/use-globalTags";
+import { useUserTags } from "@/hooks/use-userTags";
 import { useMatchedTags } from "@/hooks/use-matchedTags";
 import { User } from "@/types/user";
 import { useResize } from "@/hooks/use-resize";
@@ -52,7 +52,7 @@ import { getInitialUser } from "@/actions/user";
  */
 interface AppSidebarArgs {
   initialNotes: NotesArgs[],
-  initialGlobalTags: GlobalTags,
+  initialUserTags: UserTags,
   initialUser: User | null
 }
 
@@ -64,7 +64,7 @@ interface AppSidebarArgs {
  * @param {AppSidebarArgs} args - The component arguments.
  * @returns {JSX.Element} The AppSidebar component.
  */
-export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: AppSidebarArgs) {
+export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSidebarArgs) {
 
   const router = useRouter();
 
@@ -111,19 +111,19 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
   // Selected Tags to sort more accurately, if the user selected sort after tags.
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
 
-  // GLOBAL TAGS HOOKS/STATES
+  // USER-TAGS HOOKS/STATES
 
-  const globalTags = useSelector((state: RootState) => state.tagsState.tags);
+  const userTags = useSelector((state: RootState) => state.tagsState.tags);
 
-  // This will hold the last deleted Global tag, to ensure notes have also deleted that tag
-  const [deletedGlobalTag, setDeletedGlobalTag] = useState<Tag | null>(null);
+  // This will hold the last deleted User tag, to ensure notes have also deleted that tag
+  const [deletedUserTag, setDeletedUserTag] = useState<Tag | null>(null);
 
-  const { handleNewGlobalTag, handleRemoveGlobalTag, handleEditGlobalTag } = useGlobalTags({ initialGlobalTags, setDeletedGlobalTag });
+  const { handleCreateUserTag, handleDeleteUserTag, handleEditUserTag } = useUserTags({ initialUserTags, setDeletedUserTag });
 
   // Ensures that these objects are sorted, and matched with other states, to ensure the same data
-  const { refactoredNotes, sortedGlobalTags } = useMatchedTags({
-    notes, globalTags, handleEdit,
-    sortAfter, isDescending, selectedTags, deletedGlobalTag, setDeletedGlobalTag
+  const { refactoredNotes, sortedUserTags } = useMatchedTags({
+    notes, userTags, handleEdit,
+    sortAfter, isDescending, selectedTags, deletedUserTag, setDeletedUserTag
   }
   );
 
@@ -139,8 +139,6 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
     }));
 
     editedNotes.map(note => note.tags.map(tag => tag.color = tagColor))
-
-    console.log(editedNotes);
 
     editedNotes.forEach(note => {
       const {title, content, tags} = note;  
@@ -169,8 +167,8 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
             items-center md:gap-6"
             >
               {/* ADD + */}
-              <DialogNote edit={false} onAction={handleNew} handleNewGlobalTag={handleNewGlobalTag}
-              handleEditGlobalTag={handleEditGlobalTag} handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
+              <DialogNote edit={false} onAction={handleNew} handleNewUserTag={handleCreateUserTag}
+              handleEditUserTag={handleEditUserTag} handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
 
               {/* SORT */}
               <div className="flex flex-row items-center gap-1">
@@ -233,7 +231,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
             {sortAfter === "tags" && (
               <div className="mt-2">
                 <MultiSelect
-                  items={sortedGlobalTags}
+                  items={sortedUserTags}
                   selected={selectedTags}
                   onChange={handleSelectionChange}
                   placeholder="Tags..."
@@ -264,8 +262,8 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
                         onClick={(e) => e.stopPropagation()}>
                         {/* EDIT NOTE DIALOG BUTTON */}
                         <DialogNote edit={true} noteId={note.id}
-                          onAction={handleEdit} handleNewGlobalTag={handleNewGlobalTag}
-                          handleEditGlobalTag={handleEditGlobalTag}
+                          onAction={handleEdit} handleNewUserTag={handleCreateUserTag}
+                          handleEditUserTag={handleEditUserTag}
                           handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
                         {/* DELETE NOTE */}
                         <Button variant="secondary" className="w-8 h-8 p-0
@@ -307,7 +305,7 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
           }}
         />
 
-        {/* GLOBAL-TAGS SECTION */}
+        {/* USER-TAGS SECTION */}
         <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden">
           <SidebarGroupLabel className="border-b border-black rounded-none px-0">
             <span className="text-xl font-bold">Tags</span>
@@ -323,14 +321,14 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
                   const tagName = value.slice(0, -1).trim().toLowerCase();
 
 
-                  if (tagName && !globalTags.some(tag => tag.name === tagName)) {
+                  if (tagName && !userTags.some(userTag => userTag.name === tagName)) {
 
-                    const newGlobalTag = {
+                    const newUserTag = {
                       name: tagName,
                       color: getRandomHexColor()
                     }
 
-                    handleNewGlobalTag(newGlobalTag)
+                    handleCreateUserTag(newUserTag)
                   }
 
                   setTagInput("");
@@ -350,12 +348,12 @@ export function AppSidebar({ initialNotes, initialGlobalTags, initialUser }: App
             <TagsInfo desc="Here you can add tags by seberating them with ','"></TagsInfo>
           </div>
 
-          {/* GLOBALTAGS */}
+          {/* USER-TAGS */}
           <div className="flex flex-wrap gap-1 mt-3">
-            {sortedGlobalTags ? sortedGlobalTags.map(tag => (
-              <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
-                handleRemoveGlobalTag={handleRemoveGlobalTag} 
-                handleEditGlobalTag={handleEditGlobalTag}
+            {sortedUserTags ? sortedUserTags.map(sortedUserTag => (
+              <SingleTag tag={sortedUserTag} Icon={X} key={sortedUserTag.name + " container"}
+                handleDeleteUserTag={handleDeleteUserTag} 
+                handleEditUserTag={handleEditUserTag}
                 handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
             )) : (
               <span>No Tags set yet, sadge...</span>

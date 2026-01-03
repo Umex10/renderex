@@ -1,41 +1,41 @@
 "use client"
 
 import { useDispatch } from "react-redux";
-import { addGlobalTag, editColor, GlobalTags, removeGlobalTag, setUserId, setWholeArray, Tag } from "../../redux/slices/tags/tagsSlice";
+import { addTag, editColor, UserTags, removeTag, setUserId, setWholeTags, Tag } from "../../redux/slices/tags/tagsSlice";
 import { AppDispatch } from "../../redux/store";
 import { useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import {  doc, onSnapshot } from "firebase/firestore";
-import { createGlobalTag, deleteGlobalTag, editGlobalTag } from "@/actions/tags";
+import { createUserTag, deleteUserTag, editUserTag } from "@/actions/tags";
 
-interface UseGlobalTagsArgs {
-  initialGlobalTags: GlobalTags,
-  setDeletedGlobalTag: (globalTag: Tag) => void;
+interface UseUserTagsArgs {
+  initialUserTags: UserTags,
+  setDeletedUserTag: (tag: Tag) => void;
 }
 
-export function useGlobalTags(data: UseGlobalTagsArgs) {
+export function useUserTags(data: UseUserTagsArgs) {
 
-  const {initialGlobalTags, setDeletedGlobalTag} = data;
+  const {initialUserTags, setDeletedUserTag} = data;
 
   const dispatch = useDispatch<AppDispatch>();
   const [user, loading] = useAuthState(auth);
-  // This will ensure, that we will not load the globalTags uneccessarily since 
+  // This will ensure, that we will not load the userTags uneccessarily since 
   // we are getting it from the server action already on mount
   const firstCall = useRef(true);
 
   useEffect(() => {
       // Fill the redux state on mount
-      dispatch(setWholeArray(initialGlobalTags.tags));
-      if (!initialGlobalTags.userId) return;
-      dispatch(setUserId(initialGlobalTags.userId));
+      dispatch(setWholeTags(initialUserTags.tags));
+      if (!initialUserTags.userId) return;
+      dispatch(setUserId(initialUserTags.userId));
   }, [])
 
   useEffect(() => {
 
     if (loading || !user) return;
 
-    const ref = doc(db, "globalTags", user.uid);
+    const ref = doc(db, "userTags", user.uid);
 
     // This will automatically fetch the latest data, so we always have the
     // correct values.
@@ -48,57 +48,56 @@ export function useGlobalTags(data: UseGlobalTagsArgs) {
       }
     
       if (!snap.exists()) {
-        dispatch(setWholeArray([]));
+        dispatch(setWholeTags([]));
         return;
       }
 
       const data = snap.data();
-      dispatch(setWholeArray(data?.tags ?? []))
+      dispatch(setWholeTags(data?.tags ?? []))
      
     },
       (err) => {
-        console.error("Firestore error occured while catching globalTags:", err);
+        console.error("An error occured while catching userTags:", err);
       })
 
       return () => unsubscribe();
   }, [user, loading])  
 
-  const handleNewGlobalTag = async (globalTag: Tag) => {
+  const handleCreateUserTag = async (tag: Tag) => {
 
     // The user receives immediate feedback
-    dispatch(addGlobalTag(globalTag));
+    dispatch(addTag(tag));
 
     try {
-      await createGlobalTag(globalTag);
+      await createUserTag(tag);
     } catch (err) {
       console.error(err);
     }
   }
 
-   const handleRemoveGlobalTag = async (globalTag: Tag) => {
+   const handleDeleteUserTag = async (tag: Tag) => {
 
     // The user receives immediate feedback
-    dispatch(removeGlobalTag(globalTag));
-
-    setDeletedGlobalTag(globalTag);
+    dispatch(removeTag(tag));
+    setDeletedUserTag(tag);
 
     try {
-      await deleteGlobalTag(globalTag);
+      await deleteUserTag(tag);
     } catch (err) {
       console.error(err);
     }
   }
 
-  const handleEditGlobalTag = async (tag: Tag, tagColor: string) => {
+  const handleEditUserTag = async (tag: Tag, tagColor: string) => {
 
     dispatch(editColor({ tagName: tag.name, newColor: tagColor }));
 
     try {
-      await editGlobalTag(tag, tagColor);
+      await editUserTag(tag, tagColor);
     } catch (err) {
       console.error(err);
     }
   }
 
-  return {handleNewGlobalTag, handleRemoveGlobalTag, handleEditGlobalTag}
+  return {handleCreateUserTag, handleDeleteUserTag, handleEditUserTag}
 }

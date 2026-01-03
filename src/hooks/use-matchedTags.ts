@@ -6,28 +6,28 @@ import { Tag } from "../../redux/slices/tags/tagsSlice";
 
 interface UseMatchedTagsArgs {
   notes: NotesArgs[],
-  globalTags: Tag[],
+  userTags: Tag[],
   handleEdit: (data: { title: string, content: string, tags: Tag[] }, noteId: string) => void,
   sortAfter: string,
   isDescending: boolean,
   selectedTags: Tag[],
-  deletedGlobalTag: Tag | null,
-  setDeletedGlobalTag: (globalTag: Tag | null) => void;
+  deletedUserTag: Tag | null,
+  setDeletedUserTag: (tag: Tag | null) => void;
 
 }
 
 export const useMatchedTags = (data: UseMatchedTagsArgs) => {
 
-  const { notes, globalTags, handleEdit, sortAfter,
-    isDescending, selectedTags, deletedGlobalTag, setDeletedGlobalTag } = data;
+  const { notes, userTags, handleEdit, sortAfter,
+    isDescending, selectedTags, deletedUserTag, setDeletedUserTag } = data;
 
-      // This will ensure, that a note doesn't contain tags, that are not in global tags.
+      // This will ensure, that a note doesn't contain tags, that are not in user tags.
     const matchedTagsNotes = useMemo(() => {
     return [...notes].map(note => {
-      const updatedTags = note.tags.filter(noteTag => {
-        if (!deletedGlobalTag) return true;
+      const updatedTags = note.tags.filter(tag => {
+        if (!deletedUserTag) return true;
 
-          return noteTag.name !== deletedGlobalTag.name;
+          return tag.name !== deletedUserTag.name;
       });
 
       return {
@@ -35,13 +35,13 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
         tags: updatedTags,
       };
     });
-  }, [notes, globalTags, deletedGlobalTag, setDeletedGlobalTag]);
+  }, [notes, userTags, deletedUserTag, setDeletedUserTag]);
 
   // If matchesTagNotes changed, call the server action to actually set the new tags object 
   // in firebase
   useEffect(() => {
 
-    if (!deletedGlobalTag) return;
+    if (!deletedUserTag) return;
 
     matchedTagsNotes.forEach((note, index) => {
 
@@ -52,29 +52,29 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
       }
 
       // set it to null, since we don't want any sideEffects with it
-      setDeletedGlobalTag(null);
+      setDeletedUserTag(null);
     });
-  }, [matchedTagsNotes, deletedGlobalTag]);
+  }, [matchedTagsNotes, deletedUserTag]);
 
   const refactoredNotes = useMemo(() => {
 
     // This will ensure, that each tag inside the note will have the same color as 
-    // the globalTag one
+    // the userTag one
     const matchedColorsNotes = [...notes].map(note => {
-      const updatedTags = note.tags.map(noteTag => {
-        const globalTag = globalTags.find(
-          globalTag => globalTag.name === noteTag.name
+      const updatedTags = note.tags.map(tag => {
+        const foundUserTag = userTags.find(
+          userTag => userTag.name === tag.name
         );
 
         // New Tag, ignore it
-        if (!globalTag) return noteTag;
+        if (!foundUserTag) return tag;
 
-        // Set the same color as in globalTag
-        if (globalTag.color === noteTag.color) return noteTag;
+        // Set the same color as in userTag
+        if (foundUserTag.color === tag.color) return tag;
 
         return {
-          ...noteTag,
-          color: globalTag.color,
+          ...tag,
+          color: foundUserTag.color,
         };
       });
 
@@ -99,18 +99,18 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
         }
       case "tags":
         return [...matchedColorsNotes].filter(note =>
-          note.tags.some(noteTag => selectedTags.some(selectedTag => selectedTag.name === noteTag.name))
+          note.tags.some(tag => selectedTags.some(selectedTag => selectedTag.name === tag.name))
         );
       default:
         return matchedColorsNotes;
     }
 
-  }, [notes, sortAfter, isDescending, selectedTags, globalTags])
+  }, [notes, sortAfter, isDescending, selectedTags, userTags])
 
-  const sortedGlobalTags = useMemo(() => {
-    return [...globalTags].sort((a, b) => a.name.localeCompare(b.name));
-  }, [globalTags])
+  const sortedUserTags = useMemo(() => {
+    return [...userTags].sort((a, b) => a.name.localeCompare(b.name));
+  }, [userTags])
 
 
-  return { refactoredNotes, sortedGlobalTags }
+  return { refactoredNotes, sortedUserTags }
 }

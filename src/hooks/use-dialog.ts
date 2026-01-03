@@ -11,7 +11,7 @@ import { NotesArgs } from "@/types/notesArgs";
 
 interface UseDialogTagsArgs {
   form: UseFormReturn<FormSchema>,
-  globalTags: Tag[],
+  userTags: Tag[],
   user: User | null | undefined,
   noteId: string | null | undefined,
   setNote: (noteData: NotesArgs) => void;
@@ -19,7 +19,7 @@ interface UseDialogTagsArgs {
 
 export const useDialog = (data: UseDialogTagsArgs) => {
 
-    const {form, globalTags, user, noteId, setNote} = data
+    const {form, userTags, user, noteId, setNote} = data
 
     useEffect(() => {
       if (!user || !data.noteId) return;
@@ -53,11 +53,11 @@ export const useDialog = (data: UseDialogTagsArgs) => {
    const activeTags = form.watch("tags");
 
    const suggestedTags = useMemo(() => {
-      // Will only show tags, that are not already inside globalTags
-      const newTags = globalTags.filter(tag => !activeTags.some(activeTag => activeTag.name === tag.name));
+      // Will only show tags, that are not already inside userTags
+      const newTags = userTags.filter(userTag => !activeTags.some(activeTag => activeTag.name === userTag.name));
   
       return newTags.sort((a, b) => a.name.localeCompare(b.name));
-    }, [globalTags, activeTags]);
+    }, [userTags, activeTags]);
 
    function removeTag(tagToRemove: Tag) {
       const tags = form.getValues("tags");
@@ -66,14 +66,14 @@ export const useDialog = (data: UseDialogTagsArgs) => {
       const newTags = tags.filter(tag => tag.name !== tagToRemove.name);
       form.setValue("tags", newTags);
   
-      if (globalTags.some(globalTag => globalTag.name === tagToRemove.name)) return;
+      if (userTags.some(userTag => userTag.name === tagToRemove.name)) return;
   
-      // suggest the global tag again
+      // suggest the user tag again
       suggestedTags.push(tagToRemove);
     }
   
-    // Ensures that the user can add/remove tags from the outside (global tags)
-    function addSuggestedGlobalTag(tagToAdd: Tag) {
+    // Ensures that the user can add/remove tags from the outside (user tags)
+    function addSuggestedUserTag(tagToAdd: Tag) {
       const tags = form.getValues("tags");
   
       // Rejects same tag name
@@ -81,9 +81,9 @@ export const useDialog = (data: UseDialogTagsArgs) => {
   
       form.setValue("tags", [...tags, tagToAdd]);
   
-      // remove the suggested global tag
-      suggestedTags.filter(tag => tag !== tagToAdd);
+      // remove the suggested user tag
+      suggestedTags.filter(suggestedTag => suggestedTag !== tagToAdd);
     }
 
-    return {suggestedTags, removeTag, addSuggestedGlobalTag}
+    return {suggestedTags, removeTag, addSuggestedUserTag}
 }

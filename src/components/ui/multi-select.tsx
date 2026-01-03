@@ -18,14 +18,14 @@ export function MultiSelect({ items, selected, onChange, placeholder = "Choose..
   const [isOpen, setIsOpen] = useState(false)
 
   const handleUnselect = (tag: Tag) => {
-    const newSelected = selected.filter((s) => s.name !== tag.name)
+    const newSelected = selected.filter((selectedTag) => selectedTag.name !== tag.name)
     onChange(newSelected)
   }
 
   const handleSelect = (tag: Tag) => {
     let newSelected: Tag[]
     if (selected.includes(tag)) {
-      newSelected = selected.filter((s) => s.name !== tag.name)
+      newSelected = selected.filter((selectedTag) => selectedTag.name !== tag.name)
     } else {
       newSelected = [...selected, tag]
     }
@@ -48,12 +48,12 @@ export function MultiSelect({ items, selected, onChange, placeholder = "Choose..
     ">
           {selected.length > 0 && (
             <div className="flex flex-wrap gap-2 p-3 border-b">
-              {selected.map((tag) => (
-                <Badge key={tag.name} variant="secondary" className="gap-1">
-                  {tag.name}
+              {selected.map((selectedTag) => (
+                <Badge key={selectedTag.name} variant="secondary" className="gap-1">
+                  {selectedTag.name}
                   <button
                     className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onClick={() => handleUnselect(tag)}
+                    onClick={() => handleUnselect(selectedTag)}
                     type="button"
                   >
                     <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />

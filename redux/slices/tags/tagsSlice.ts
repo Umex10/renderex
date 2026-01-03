@@ -5,15 +5,16 @@ export interface Tag {
   color: string
 }
 
-export interface GlobalTags {
+export interface UserTags {
   userId: string | null
   tags: Tag[],
 
 }
 
-const initialState: GlobalTags = {
-  tags: [],
-  userId: null
+const initialState: UserTags = {
+  userId: null,
+  tags: []
+
 }
 
 const tagsSlice = createSlice({
@@ -23,13 +24,13 @@ const tagsSlice = createSlice({
     setUserId: (state, action: PayloadAction<string>) => {
       state.userId = action.payload;
     },
-    setWholeArray: (state, action: PayloadAction<Tag[]>) => {
+    setWholeTags: (state, action: PayloadAction<Tag[]>) => {
       state.tags = [...action.payload];
     },
-    addGlobalTag: (state, action: PayloadAction<Tag>) => {
+    addTag: (state, action: PayloadAction<Tag>) => {
       state.tags.push(action.payload);
     },
-    removeGlobalTag: (state, action: PayloadAction<Tag>) => {
+    removeTag: (state, action: PayloadAction<Tag>) => {
       state.tags = state.tags.filter(tag => tag.name !== action.payload.name);
     },
     editColor: (state, action: PayloadAction<{ tagName: string, newColor: string }>) => {
@@ -40,5 +41,5 @@ const tagsSlice = createSlice({
   }
 }})
 
-export const { setWholeArray,setUserId, addGlobalTag, removeGlobalTag, editColor } = tagsSlice.actions;
+export const { setWholeTags,setUserId, addTag, removeTag, editColor } = tagsSlice.actions;
 export default tagsSlice.reducer;

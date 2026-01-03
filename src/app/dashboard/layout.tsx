@@ -8,8 +8,8 @@ import { getInitialNotes } from "../../actions/notes";
 import { NotesArgs } from "../../types/notesArgs";
 import { AuthSetter } from "@/components/AuthSetter";
 import SelectFormat from "@/components/SelectFormat";
-import { getInitialGlobalTags } from "@/actions/tags";
-import { GlobalTags } from "../../../redux/slices/tags/tagsSlice";
+import { getInitialUserTags } from "@/actions/tags";
+import { UserTags } from "../../../redux/slices/tags/tagsSlice";
 import { getInitialUser } from "@/actions/user";
 import { User } from "@/types/user";
 
@@ -31,22 +31,22 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const userId = cookieStore.get("userId")?.value;
 
   let initialNotes: NotesArgs[] = [];
-  let initialGlobalTags: GlobalTags = { tags: [], userId: userId ?? null };
+  let initialUserTags: UserTags = { tags: [], userId: userId ?? null };
   // Null needed because on fresh registration it may be that the cookie is not set
   let initialUser: User | null = null;
 
   if (userId) {
     // Load the notes global tags and the user when the server starts
     const notesResult = await getInitialNotes(userId);
-    const globalTagsResult = await getInitialGlobalTags(userId);
+    const userTagsResult = await getInitialUserTags();
     const userResult = await getInitialUser(userId);
 
     if (notesResult.success && notesResult.data) {
       initialNotes = notesResult.data;
     }
 
-    if (globalTagsResult && globalTagsResult.data) {
-      initialGlobalTags = globalTagsResult.data;
+    if (userTagsResult && userTagsResult.data) {
+      initialUserTags = userTagsResult.data;
     }
 
     if (userResult.success && userResult.data) {
@@ -60,7 +60,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <SidebarProvider>
 
           {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
-          <AppSidebar initialNotes={initialNotes} initialGlobalTags={initialGlobalTags}
+          <AppSidebar initialNotes={initialNotes} initialUserTags={initialUserTags}
           initialUser={initialUser} />
 
           {/* UNDERNEATH SIDEBAR (RIGHT SIDE) - Content of a note */}

@@ -10,13 +10,13 @@ import { Badge } from './ui/badge'
 interface TagArgs {
   tag: Tag,
   Icon: LucideIcon,
-  handleRemoveGlobalTag: (tag: Tag) => void,
-  handleEditGlobalTag: (tag: Tag, tagColor: string) => void,
+  handleDeleteUserTag: (tag: Tag) => void,
+  handleEditUserTag: (tag: Tag, tagColor: string) => void,
   handleEditedColorNotes: (tag: Tag, tagColor: string) => void,
   noColorChange?: boolean
 }
 
-const SingleTag = ({tag, Icon, handleRemoveGlobalTag, handleEditGlobalTag,
+const SingleTag = ({tag, Icon, handleDeleteUserTag, handleEditUserTag,
   handleEditedColorNotes, noColorChange = false}: TagArgs) => {
 
     const [tagColor, setTagColor] = useState<string>(tag.color);
@@ -29,7 +29,7 @@ const SingleTag = ({tag, Icon, handleRemoveGlobalTag, handleEditGlobalTag,
 
       const timeout = setTimeout(() => {
 
-        handleEditGlobalTag(tag, tagColor);
+        handleEditUserTag(tag, tagColor);
         handleEditedColorNotes(tag, tagColor);
 
       }, 500)
@@ -43,7 +43,7 @@ const SingleTag = ({tag, Icon, handleRemoveGlobalTag, handleEditGlobalTag,
                 <span className='text-sm'>{tag.name.charAt(0).toUpperCase() +
                   tag.name.slice(1,)}</span>
                 <Button className="w-4 h-4 p-2 rounded-full"
-                  onClick={() => handleRemoveGlobalTag(tag)}>
+                  onClick={() => handleDeleteUserTag(tag)}>
                   <Icon className='w-4 h-4'></Icon>
                 </Button>
 
