@@ -30,7 +30,10 @@ export async function getInitialNotes() {
 
     return { success: true, data: notes };
   } catch (error) {
-    return { success: false, error: "An error occurred while loading the notes: " + error };
+    return {
+      success: false,
+      error: "An error occurred while loading the notes. Reason: " + error,
+    };
   }
 }
 
@@ -58,7 +61,10 @@ export async function createNote(note: NotesArgs) {
     return {success: true, id: noteRef.id};
 
   } catch (err) {
-    return {success: false, error: "An error occurred while creating new Note: " + err};
+    return {
+      success: false,
+      error: "An error occurred while creating a note. Reason: " + err,
+    };
   }
 
 }
@@ -83,7 +89,7 @@ export async function editNote(noteId: string, note: Omit<NotesArgs, "id" | "use
     const snap = await noteRef.get();
 
     if (!snap.exists) {
-      throw new Error("Note not found");
+      throw new Error("Note not found.");
     }
 
     await noteRef.update(note);
@@ -92,7 +98,10 @@ export async function editNote(noteId: string, note: Omit<NotesArgs, "id" | "use
     return { success: true };
 
   } catch (err) {
-    return { success: false, error: "An error occurred while editing the note: " + err };
+    return {
+      success: false,
+      error: "An error occurred while updating the note. Reason: " + err,
+    };
   }
 }
 
@@ -115,7 +124,7 @@ export async function deleteNote(noteId: string) {
     const snap = await noteRef.get();
 
     if (!snap.exists) {
-      throw new Error("Note not found");
+      throw new Error("Note not found.");
     }
 
     await noteRef.delete();
@@ -124,7 +133,10 @@ export async function deleteNote(noteId: string) {
     return {success: true};
 
   } catch (err) {
-    return {success: false, error: "An error occurred while deleting the note: " + err}
+    return {
+      success: false,
+      error: "An error occurred while deleting the note. Reason: " + err,
+    }
   }
 
 }

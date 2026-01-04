@@ -47,7 +47,10 @@ export async function getInitialUserTags() {
     };
 
   } catch (err) {
-    return { success: false, error: "An error occurred while loading the userTags:" + err };
+    return {
+      success: false,
+      error: "An error occurred while loading the user tags. Reason: " + err,
+    };
   }
 }
 
@@ -84,7 +87,10 @@ export async function createUserTag(tag: Tag) {
     return { success: true };
 
   } catch (err) {
-    return { success: false, error: "An error occurred while creating new userTag:" + err };
+    return {
+      success: false,
+      error: "An error occurred while creating a user tag. Reason: " + err,
+    };
   }
 
 }
@@ -126,7 +132,10 @@ export async function deleteUserTag(tagToDelete: Tag) {
     return { success: true };
 
   } catch (err) {
-    return { success: false, error: "An error occurred while deleting a userTag:" + err };
+    return {
+      success: false,
+      error: "An error occurred while deleting a user tag. Reason: " + err,
+    };
   }
 }
 
@@ -173,7 +182,10 @@ export async function editUserTag(tagToEdit: Tag, tagColor: string) {
     return { success: true }
 
   } catch (err) {
-    return { success: false, error: "An error occurred while editing a userTag:" + err };
+    return {
+      success: false,
+      error: "An error occurred while updating a user tag. Reason: " + err,
+    };
   }
 
 }

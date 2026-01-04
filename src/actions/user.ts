@@ -19,7 +19,7 @@ export async function getInitialUser() {
 
     const snap = await userRef.get();
 
-    if (!snap.exists) throw new Error("There is no such user!");
+    if (!snap.exists) throw new Error("User not found.");
 
     const data = snap.data();
 
@@ -38,7 +38,10 @@ export async function getInitialUser() {
     }
 
   } catch (err) {
-    return { success: false, error: "Error while loading the user:" + err };
+    return {
+      success: false,
+      error: "An error occurred while loading the user. Reason: " + err,
+    };
   }
 }
 
@@ -59,7 +62,7 @@ export async function editUser(user: User) {
     const snap = await userRef.get();
 
     if (!snap.exists) {
-      throw new Error("There is no such user!");
+      throw new Error("User not found.");
     }
 
     const { uid, createdAt, role, ...neededUser } = user;
@@ -70,7 +73,10 @@ export async function editUser(user: User) {
     return { success: true }
 
   } catch (err) {
-    return { success: false, error: "Error while editing the user:" + err };
+    return {
+      success: false,
+      error: "An error occurred while updating the user. Reason: " + err,
+    };
   }
 }
 
@@ -96,7 +102,10 @@ export async function deleteUser(userId: string) {
     return { success: true }
 
   } catch (err) {
-    return { success: false, error: "Error while deleting the user:" + err };
+    return {
+      success: false,
+      error: "An error occurred while deleting the user. Reason: " + err,
+    };
   }
 }
 
