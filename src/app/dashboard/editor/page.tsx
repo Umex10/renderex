@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { main } from "@/actions/ai"; // Wir importieren dein offizielles Script
+import { aiDo } from "@/actions/ai"; // Wir importieren dein offizielles Script
 
 export default function Editor() {
   const [content, setContent] = useState("# Meine Notiz\nKI Test...");
@@ -10,7 +10,7 @@ export default function Editor() {
   const handleRunMain = async () => {
     setLoading(true);
     // Wir rufen dein offizielles main-Script auf
-    const result = await main(content);
+    const result = await aiDo(content);
     if (result) setContent(result);
     setLoading(false);
   };

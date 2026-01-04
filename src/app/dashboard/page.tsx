@@ -16,6 +16,9 @@ import { NotesArgs } from "../../types/notesArgs";
 import { useFormat } from '@/hooks/use-format';
 import LiveRenderer from '@/components/LiveRenderer';
 import EditorActions from '@/components/EditorActions';
+import { CONTENT_STATE } from '../../../constants/loadingStates/ContentState';
+import { AI_STATE } from '../../../constants/loadingStates/AiState';
+import { useAi } from '@/hooks/use-ai';
 
 /**
  * Protected dashboard page component.
@@ -35,19 +38,24 @@ const Dashboard = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
 
-  const { handleDownload } = useFormat();
-
   const [note, setNote] = useState<NotesArgs | null>(null);
-  const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
+  const [content, setContent] = useState<string>(note?.content || "");
+  // Ensures that content isn't rewritten uneccessarily onto firebase
+  const lastSavedContent = useRef(note?.content || "")
+  const firstLoad = useRef(true);
 
   const [saveState, setSaveState] = useState<
-    "idle" | "saving" | "saved" | "error"
-  >("idle");
+    typeof CONTENT_STATE[keyof typeof CONTENT_STATE]
+  >(CONTENT_STATE.IDLE);
 
-  const [content, setContent] = useState("");
+  const [aiState, setAiState] = useState<
+    typeof AI_STATE[keyof typeof AI_STATE]>(AI_STATE.IDLE);
 
-  // Ensures that content isn't rewritten uneccessarily onto firebase
-  const lastSavedContent = useRef(note?.content)
+  const { handleDownload } = useFormat();
+  const { handleSummarize, handleStructure } = useAi({ setAiState, setContent });
+
+
+  const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
   useEffect(() => {
 
@@ -91,10 +99,12 @@ const Dashboard = () => {
     // if the content is the same as before, than ignore
     if (content === lastSavedContent.current) return;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSaveState(last =>
-      last === "saving" ? last : "saving"
-    );
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
+
+     setTimeout(() => setSaveState("saving"), 0);
 
     // Ensures that after 5 seconds the current content is written onto firebase
     const handler = setTimeout(async () => {
@@ -138,13 +148,14 @@ const Dashboard = () => {
         <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
       </div>
 
-      {/* EDITOR | LIVE */}
+      {/* EDITOR | LIVE FOR 2XL AND ABOVE */}
       <div className='w-full hidden 2xl:grid grid-cols-2 gap-2'>
 
         {/* EDITOR */}
         <EditorActions content={content} setContent={setContent}
           saveState={saveState} handleDownload={handleDownload}
-          note={note}></EditorActions>
+          note={note} aiState={aiState} handleSummarize={handleSummarize}
+          handleStructure={handleStructure}></EditorActions>
 
         {/* LIVE */}
         <LiveRenderer content={content}></LiveRenderer>
@@ -157,7 +168,7 @@ const Dashboard = () => {
 
 
           <div className="w-full flex items-center gap-2 text-3xl">
-            <h2 className="w-full text-center md:text-left font-bold">{note.title.charAt(0).toUpperCase() + note.title.slice(1, )}</h2>
+            <h2 className="w-full text-center md:text-left font-bold">{note.title.charAt(0).toUpperCase() + note.title.slice(1,)}</h2>
           </div>
 
 
@@ -171,10 +182,11 @@ const Dashboard = () => {
         <div className="w-full mt-4">
           {/* EDITOR VIEW */}
           <TabsContent value="markdown" >
-            
+
             <EditorActions content={content} setContent={setContent}
               saveState={saveState} handleDownload={handleDownload}
-              note={note}></EditorActions>
+              note={note} aiState={aiState} handleSummarize={handleSummarize}
+              handleStructure={handleStructure}></EditorActions>
 
           </TabsContent>
           {/* LIVE VIEW */}
