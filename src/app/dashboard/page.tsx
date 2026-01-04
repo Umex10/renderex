@@ -46,7 +46,7 @@ const Dashboard = () => {
 
   const [content, setContent] = useState("");
 
-  // Ensures that content isn't rewritten uneccessarily on firebase
+  // Ensures that content isn't rewritten uneccessarily onto firebase
   const lastSavedContent = useRef(note?.content)
 
   useEffect(() => {
@@ -88,6 +88,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!note || !content) return;
 
+    // if the content is the same as before, than ignore
     if (content === lastSavedContent.current) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -126,7 +127,7 @@ const Dashboard = () => {
   }
 
   if (!note) {
-    return <h2>Create a note to be able to see the markdown text editor</h2>
+    return <h2>Create or click a note to see the markdown text editor</h2>
   }
 
   return (
@@ -156,7 +157,7 @@ const Dashboard = () => {
 
 
           <div className="w-full flex items-center gap-2 text-3xl">
-            <h2 className="w-full text-center md:text-left font-bold">{note.title}</h2>
+            <h2 className="w-full text-center md:text-left font-bold">{note.title.charAt(0).toUpperCase() + note.title.slice(1, )}</h2>
           </div>
 
 

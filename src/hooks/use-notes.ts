@@ -65,10 +65,6 @@ export function useNotes(initialNotes: NotesArgs[]) {
 
     e.stopPropagation();
 
-     if (!user) {
-      throw new Error("User was not defined while handling new Note inside Sidebar");
-    }
-
     // fallback array
     const oldNotes = [...notes];
 
@@ -99,12 +95,12 @@ export function useNotes(initialNotes: NotesArgs[]) {
    */
   const handleCreateNote = async (data: { title: string, tags: Tag[] }) => {
 
+    // set newNote with a fake id which we will change later
+    const customId = data.title + data.tags.toString();
+
     if (!user) {
       throw new Error("User was not defined while handling new Note inside Sidebar");
     }
-
-    // set newNote with a fake id which we will change later
-    const customId = data.title + data.tags.toString();
 
     const newNote = {
       id: customId,
@@ -156,10 +152,6 @@ export function useNotes(initialNotes: NotesArgs[]) {
   const handleEditNote = async (data: { title: string, content: string, tags: Tag[] },
     noteId: string
   ) => {
-
-     if (!user) {
-      throw new Error("User was not defined while handling new Note inside Sidebar");
-    }
 
     const newNote = {
       title: data.title,
