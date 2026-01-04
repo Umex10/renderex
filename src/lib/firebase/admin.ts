@@ -27,5 +27,11 @@ if (!admin.apps.length) {
  * Used for performing database operations on the server side with full admin privileges.
  */
 const db = admin.firestore();
+
+/**
+ * Firebase Auth instance (Admin SDK).
+ * Used for managing users and authentication on the server side with full admin privileges.
+ */
 const adminAuth = getAuth();
+
 export { db, adminAuth };

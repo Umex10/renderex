@@ -1,5 +1,10 @@
+"use client"
+
 import { Dispatch, RefObject, SetStateAction, useEffect } from "react";
 
+/**
+ * Arguments for the useResize hook.
+ */
 interface UseResizeArgs {
   // Ref that tells us if the user is currently dragging
   isDragging: RefObject<boolean>;
@@ -8,6 +13,14 @@ interface UseResizeArgs {
   setTopHeight: Dispatch<SetStateAction<number>>;
 }
 
+/**
+ * Custom hook to handle the resizing of the top section via drag and drop.
+ * 
+ * Listens for mouse movements when dragging is active and updates the height
+ * of the top section accordingly.
+ * 
+ * @param {UseResizeArgs} args - The arguments for the hook.
+ */
 export const useResize = ({ isDragging, setTopHeight }: UseResizeArgs) => {
 
   useEffect(() => {

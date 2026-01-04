@@ -1,10 +1,10 @@
 import { Tag } from "../../redux/slices/tags/tagsSlice";
 
 /**
- * Type definition for the data required to create a new note.
+ * Data required to create a new note.
  * @typedef {Object} NoteDataForNew
  * @property {string} title - The title of the new note.
- * @property {string[]} tags - The tags associated with the new note.
+ * @property {Tag[]} tags - The tags associated with the new note.
  */
 export type NoteDataForNew = {
   title: string;
@@ -12,11 +12,11 @@ export type NoteDataForNew = {
 };
 
 /**
- * Type definition for the data required to edit an existing note.
+ * Data required to edit an existing note.
  * @typedef {Object} NoteDataForEdit
  * @property {string} title - The updated title of the note.
  * @property {string} content - The updated content of the note.
- * @property {string[]} tags - The updated tags of the note.
+ * @property {Tag[]} tags - The updated tags of the note.
  */
 export type NoteDataForEdit = {
   title: string;
@@ -25,13 +25,16 @@ export type NoteDataForEdit = {
 };
 
 /**
- * Discriminated Union for DialogForm props.
- * Determines the mode (create or edit) and the corresponding action handler.
+ * Discriminated union for dialog form props.
+ * Determines the mode (create vs. edit) and the corresponding action handler.
  * 
  * @typedef {Object} DialogNoteArgs
- * @property {boolean} edit - Flag to indicate if the form is in edit mode.
- * @property {Function} onAction - Callback function to handle the form submission.
- * @property {string} [noteId] - The ID of the note to edit (required if edit is true).
+ * @property {boolean} edit - Whether the form is in edit mode.
+ * @property {Function} onAction - Callback invoked on submit.
+ * @property {string} [noteId] - The ID of the note to edit (required when `edit` is true).
+ * @property {(tag: Tag) => void} handleNewUserTag - Adds a new tag for the current user.
+ * @property {(tag: Tag, tagColor: string) => void} handleEditUserTag - Updates an existing user tag (including its color).
+ * @property {(tag: Tag, tagColor: string) => void} handleEditedColorNotes - Applies a tag color change to any notes that use the tag.
  */
 export type DialogNoteArgs =
   | {

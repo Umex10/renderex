@@ -1,5 +1,11 @@
 
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+
+/** Props for {@link MyPdf}. */
+export type MyPdfProps = {
+  title: string;
+  content: string;
+};
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 12, fontFamily: 'Helvetica' },
@@ -7,15 +13,22 @@ const styles = StyleSheet.create({
   paragraph: { marginBottom: 10, lineHeight: 1.5 },
 });
 
-export const MyPdf = ({ title, content }: { title: string; content: string }) => (
+/**
+ * Minimal PDF layout used for exporting notes/content.
+ *
+ * Notes:
+ * - Splits `content` on `\n` to create rough paragraphs.
+ * - Strips a small set of Markdown symbols (`#`, `*`, `` ` ``) for cleaner output.
+ */
+export const MyPdf = ({ title, content }: MyPdfProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View>
         <Text style={styles.title}>{title}</Text>
-        {/* Wir splitten den Text grob in Paragraphen */}
+        {/* Split content into rough paragraphs */}
         {content.split('\n').map((line, index) => (
           <Text key={index} style={styles.paragraph}>
-            {line.replace(/[#*`]/g, '')} {/* Einfaches Stripping von MD Symbolen */}
+            {line.replace(/[#*`]/g, '')} {/* Simple stripping of Markdown symbols */}
           </Text>
         ))}
       </View>

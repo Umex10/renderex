@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteU, editUser } from "@/actions/user";
+import { deleteUser, editUser } from "@/actions/user";
 import { db } from "@/lib/firebase/config";
 import { User } from "@/types/user";
 import { getAuth, EmailAuthProvider, reauthenticateWithCredential, 
@@ -8,6 +8,9 @@ import { getAuth, EmailAuthProvider, reauthenticateWithCredential,
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * Interface representing the form data for updating user information.
+ */
 interface FormData {
   username?: string,
   email?: string,
@@ -15,6 +18,20 @@ interface FormData {
   imageURL?: string
 }
 
+/**
+ * Custom hook to manage user state and operations.
+ * 
+ * This hook handles real-time updates from Firestore, optimistic UI updates,
+ * and interactions with Firebase Auth and server actions for user management.
+ * 
+ * @param {User} initialUser - The initial user data loaded from the server.
+ * @returns {Object} An object containing the user state and handler functions.
+ * @returns {User} returns.user - The current user state.
+ * @returns {React.MutableRefObject<User>} returns.userRef - A ref holding the latest confirmed user state (used for rollbacks).
+ * @returns {() => void} returns.removeImage - Function to remove the user's profile image locally.
+ * @returns {(data: FormData) => Promise<void>} returns.handleEditUser - Function to handle user profile updates, including sensitive data like password and email.
+ * @returns {() => Promise<boolean>} returns.handleDeleteUser - Function to delete the user account.
+ */
 export function useUser(initialUser: User) {
 
   // This will be our fallback, if something is going wrong with firebase
@@ -57,13 +74,16 @@ export function useUser(initialUser: User) {
       setUser(convertedUser as User);
 
     }, (err) => {
-      console.error("Firestore error occured while catching the user details:", err);
+      console.error("An error occurred while catching the user details:", err);
     })
 
     return () => unsubscribe();
   }, [])
 
 
+  /**
+   * Removes the user's profile image from the local state.
+   */
   const removeImage = () => {
     setUser(old => ({
       ...old,
@@ -71,7 +91,15 @@ export function useUser(initialUser: User) {
     }))
   }
 
-  const handleEdit = async (data: FormData) => {
+  /**
+   * Handles the update of user information.
+   * 
+   * Updates the local state optimistically, then attempts to update Firebase Auth
+   * (for password/email) and the database via server action. Rolls back on failure.
+   * 
+   * @param {FormData} data - The data to update.
+   */
+  const handleEditUser = async (data: FormData) => {
 
     // fallback array
     const oldUser = { ...userRef.current };
@@ -99,8 +127,12 @@ export function useUser(initialUser: User) {
           data.key || "" 
         );
 
+        // This checks if the user did log in recently, to ensure better
+        // security
         await reauthenticateWithCredential(currentUser, credential);
 
+        // This will actually send out an 2fa like email to the old email
+        // to verify the change
         await verifyBeforeUpdateEmail(currentUser, data.email);
        
       }
@@ -118,23 +150,32 @@ export function useUser(initialUser: User) {
         setUser(oldUser); // Rollback
       }
     } catch (err) {
-      console.error("An error occured while calling editUser server action:", err);
+      console.error("An error occurred while calling editUser server action:", err);
       setUser(oldUser);
     }
 
   }
 
-   const handleDelete = async () => {
+  /**
+   * Deletes the user account.
+   * 
+   * Optimistically clears the user state, then calls the server action to delete the user.
+   * Rolls back if the deletion fails.
+   * 
+   * @returns {Promise<boolean>} True if deletion was successful (or initiated), false otherwise.
+   */
+   const handleDeleteUser = async () => {
 
     const oldUser = { ...userRef.current };
 
+    // Just needed for immediate feedback
     setUser({uid: "", username: "", imageURL: "", email: "",
       role: "", createdAt: ""
     })
 
     try {
 
-      const result = await deleteU(oldUser.uid);
+      const result = await deleteUser(oldUser.uid);
 
       if (result.success) {
         
@@ -145,13 +186,13 @@ export function useUser(initialUser: User) {
       return true;
 
     }catch (err) {
-      console.error("An error occured while calling deleteUser server action:", err);
+      console.error("An error occurred while calling deleteUser server action:", err);
       setUser(oldUser);
       return false;
     }
 
    }
 
-  return { user, userRef, removeImage, handleEdit, handleDelete };
+  return { user, userRef, removeImage, handleEditUser, handleDeleteUser };
 
 }

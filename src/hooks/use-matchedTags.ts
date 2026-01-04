@@ -4,6 +4,9 @@ import { NotesArgs } from "@/types/notesArgs";
 import { useEffect, useMemo } from "react";
 import { Tag } from "../../redux/slices/tags/tagsSlice";
 
+/**
+ * Arguments for the useMatchedTags hook.
+ */
 interface UseMatchedTagsArgs {
   notes: NotesArgs[],
   userTags: Tag[],
@@ -16,6 +19,15 @@ interface UseMatchedTagsArgs {
 
 }
 
+/**
+ * Custom hook to filter, sort, and synchronize tags for notes.
+ * 
+ * Ensures notes only contain valid user tags, handles tag deletion synchronization,
+ * applies color matching from user tags to note tags, and sorts notes based on criteria.
+ * 
+ * @param {UseMatchedTagsArgs} data - The arguments for the hook.
+ * @returns {NotesArgs[]} The processed and sorted list of notes.
+ */
 export const useMatchedTags = (data: UseMatchedTagsArgs) => {
 
   const { notes, userTags, handleEdit, sortAfter,
@@ -35,7 +47,7 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
         tags: updatedTags,
       };
     });
-  }, [notes, userTags, deletedUserTag, setDeletedUserTag]);
+  }, [notes, deletedUserTag]);
 
   // If matchesTagNotes changed, call the server action to actually set the new tags object 
   // in firebase

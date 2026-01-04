@@ -1,3 +1,5 @@
+"use client"
+
 import { NotesArgs } from "../types/notesArgs";
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -11,16 +13,12 @@ import { Tag } from "../../redux/slices/tags/tagsSlice";
 
 /**
  * Custom hook to manage notes state and interactions.
+ * 
  * Handles real-time updates from Firestore and provides methods to create, edit, and delete notes.
  * Uses Server Actions for data mutations.
  * 
  * @param {NotesArgs[]} initialNotes - The initial list of notes to display before updates kick in.
  * @returns {Object} An object containing the notes list, loading state, and handler functions.
- * @property {NotesArgs[]} notes - The current list of notes.
- * @property {boolean} loading - The loading state of the user authentication.
- * @property {Function} handleNew - Function to handle the creation of a new note.
- * @property {Function} handleDelete - Function to handle the deletion of a note.
- * @property {Function} handleEdit - Function to handle the editing of a note.
  */
 export function useNotes(initialNotes: NotesArgs[]) {
 
@@ -48,7 +46,7 @@ export function useNotes(initialNotes: NotesArgs[]) {
       setNotes(notesData)
     },
       (error) => {
-        console.error("Firestore error while catching all notes: ", error);
+        console.error("An error occurred while catching all notes: ", error);
       })
 
     return () => unsubscribe()
@@ -80,7 +78,7 @@ export function useNotes(initialNotes: NotesArgs[]) {
       }
 
     } catch (err) {
-      console.error("An error occured while deleting the note: ", err);
+      console.error("An error occurred while deleting the note: ", err);
     }
   }
 

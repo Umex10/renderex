@@ -58,7 +58,7 @@ interface AccountProps {
 
 const Account = ({ initialUser }: AccountProps) => {
 
-  const { user, userRef, removeImage, handleEdit, handleDelete } = useUser(initialUser);
+  const { user, userRef, removeImage, handleEditUser, handleDeleteUser } = useUser(initialUser);
   const [imageView, setImageView] = useState<string | null>(user.imageURL || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -130,7 +130,7 @@ const Account = ({ initialUser }: AccountProps) => {
       }
 
       // Call handleEdit with filtered data
-      await handleEdit({
+      await handleEditUser({
         ...filteredData,
         imageURL: imageUrlToSave,
       });
@@ -165,7 +165,7 @@ const Account = ({ initialUser }: AccountProps) => {
   const onDelete = async () => {
 
     try {
-      const result = await handleDelete();
+      const result = await handleDeleteUser();
 
       if (result) {
         router.replace("/sign-in")

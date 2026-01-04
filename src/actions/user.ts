@@ -1,15 +1,21 @@
 "use server"
 
+import { requireUserId } from "@/lib/auth/requireUserId";
 import { db, adminAuth } from "@/lib/firebase/admin";
 import { User } from "@/types/user";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
-
-export async function getInitialUser(userId: string) {
+/**
+ * Fetches the initial user data from the server.
+ * 
+ * @returns {Promise<{success: boolean, data?: User, error?: string}>} The result of the operation.
+ */
+export async function getInitialUser() {
   try {
 
-    const userRef = db.collection("users").doc(userId);
+    const validUserId = await requireUserId();
+
+    const userRef = db.collection("users").doc(validUserId);
 
     const snap = await userRef.get();
 
@@ -37,19 +43,16 @@ export async function getInitialUser(userId: string) {
 }
 
 
+/**
+ * Updates the user's information in the database.
+ * 
+ * @param {User} user - The user object containing updated data.
+ * @returns {Promise<{success: boolean, error?: string}>} The result of the update operation.
+ */
 export async function editUser(user: User) {
   try {
 
-    const cookieStore = await cookies();
-    const useridCk = cookieStore.get("userId")?.value;
-
-    if (!useridCk) {
-      throw new Error("User is not authenticated!");
-    }
-
-    if (useridCk !== user.uid) {
-      throw new Error("The given user and the user from cookie are not the same!");
-    }
+    await requireUserId();
 
     const userRef = db.collection("users").doc(user.uid);
 
@@ -61,9 +64,9 @@ export async function editUser(user: User) {
 
     const { uid, createdAt, role, ...neededUser } = user;
 
-    await userRef.set(neededUser, { merge: true })
+    await userRef.update(neededUser)
 
-    revalidatePath("/");
+    revalidatePath("/dashboard/account");
     return { success: true }
 
   } catch (err) {
@@ -71,29 +74,25 @@ export async function editUser(user: User) {
   }
 }
 
-export async function deleteU(userId: string) {
+/**
+ * Deletes a user from both Authentication and Firestore.
+ * 
+ * @param {string} userId - The ID of the user to delete.
+ * @returns {Promise<{success: boolean, error?: string}>} The result of the deletion operation.
+ */
+export async function deleteUser(userId: string) {
   try {
 
-    const cookieStore = await cookies();
-    const useridCk = cookieStore.get("userId")?.value;
-
-    if (!useridCk) {
-      throw new Error("User is not authenticated!");
-    }
-
-    if (useridCk !== userId) {
-      throw new Error("The given user and the user from cookie are not the same!");
-    }
+    await requireUserId();
 
     await adminAuth.deleteUser(userId);
 
     const userRef = db.collection("users").doc(userId);
 
     await userRef.delete();
-
     cookieStore.delete("userId");
 
-    revalidatePath("/");
+    revalidatePath("/dashboard/account");
     return { success: true }
 
   } catch (err) {

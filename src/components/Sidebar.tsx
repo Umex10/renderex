@@ -68,24 +68,26 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
 
   const router = useRouter();
 
-  // It may be that the user uid is not set in the cookie, so we need to make 
-  // sure that the user still sees his credentials on fresh registration
+
   const auth = getAuth();
   const loadedUserRef = useRef<User | null>(null);
   const [loadedUser, setLoadedUser] = useState<User | null>(null);
 
   useEffect(() => {
+
+     // It may be that the user uid is not set in the cookie, so we need to make 
+  // sure that the user still sees his credentials on fresh registration
     async function notLoadedUser() {
       if (!initialUser && auth.currentUser) {
-        console.log(auth.currentUser);
-        const user = await getInitialUser(auth.currentUser?.uid);
+  
+        const user = await getInitialUser();
         if (!user.data) return;
+
         const data: User = user.data;
         if (data.uid !== loadedUserRef.current?.uid) {
           setLoadedUser(data);
           loadedUserRef.current = data;
         }
-        console.log(loadedUserRef.current)
       }
     }
     notLoadedUser();
@@ -134,15 +136,17 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
 
   const handleEditedColorNotes = (toEditTag: Tag, tagColor: string) => {
 
-    const editedNotes = notes.filter(note => note.tags.some(tag => {
-        return tag.name = toEditTag.name
-    }));
-
-    editedNotes.map(note => note.tags.map(tag => tag.color = tagColor))
+    const editedNotes = notes.filter(note =>
+      note.tags.some(tag => tag.name === toEditTag.name)
+    );
 
     editedNotes.forEach(note => {
-      const {title, content, tags} = note;  
-      handleEdit({title, content, tags}, note.id)
+      const updatedTags = note.tags.map(tag =>
+        tag.name === toEditTag.name
+          ? { ...tag, color: tagColor }
+          : tag
+      );
+      handleEdit({ title: note.title, content: note.content, tags: updatedTags }, note.id);
     });
   }
 
@@ -168,7 +172,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
             >
               {/* ADD + */}
               <DialogNote edit={false} onAction={handleNew} handleNewUserTag={handleCreateUserTag}
-              handleEditUserTag={handleEditUserTag} handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
+                handleEditUserTag={handleEditUserTag} handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
 
               {/* SORT */}
               <div className="flex flex-row items-center gap-1">
@@ -352,7 +356,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
           <div className="flex flex-wrap gap-1 mt-3">
             {sortedUserTags ? sortedUserTags.map(sortedUserTag => (
               <SingleTag tag={sortedUserTag} Icon={X} key={sortedUserTag.name + " container"}
-                handleDeleteUserTag={handleDeleteUserTag} 
+                handleDeleteUserTag={handleDeleteUserTag}
                 handleEditUserTag={handleEditUserTag}
                 handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
             )) : (

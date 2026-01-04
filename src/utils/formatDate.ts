@@ -1,11 +1,19 @@
+/**
+ * Formats an ISO date string as a human-readable relative time.
+ *
+ * Examples: "just now", "3 minutes ago", "about 2 days ago".
+ *
+ * @param isoString - An ISO-8601 date string.
+ * @returns A relative time string in English.
+ */
 export function formatDate(isoString: string): string {
   const date = new Date(isoString);
   const now = new Date();
 
-  // Zeitdifferenz in Millisekunden
+  // Time difference in milliseconds
   const diffMs = now.getTime() - date.getTime();
   
-  // Umrechnungen
+  // Conversions
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
   const diffHours = Math.floor(diffMinutes / 60);
@@ -14,7 +22,7 @@ export function formatDate(isoString: string): string {
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 
-  // Logik für die Rückgabe
+  // Output logic
   if (diffSeconds < 60) return "just now";
   if (diffMinutes < 60) return diffMinutes === 1 ? "1 minute ago" : `${diffMinutes} minutes ago`;
   if (diffHours < 24)   return diffHours === 1 ? "about 1 hour ago" : `about ${diffHours} hours ago`;

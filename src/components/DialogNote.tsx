@@ -76,7 +76,8 @@ const DialogNote = (data: DialogNoteArgs) => {
   })
 
   // Starts a subscribe listener and is handling the tags in a Dialog
-  const {suggestedTags, removeTag, addSuggestedUserTag} = useDialog({form, userTags, user,
+  const {suggestedTags, removeTag, addSuggestedUserTag
+    , removeSuggestedUserTag} = useDialog({form, userTags, user,
        noteId, setNote});
 
   // Load the data of the note while editing
@@ -94,6 +95,7 @@ const DialogNote = (data: DialogNoteArgs) => {
     const tags = form.getValues("tags");
 
     // Will add all new tags to user Tags, that he doesn't contain yet
+  
     const newTags = tags.filter(tag => !userTags.some(userTag => userTag.name === tag.name));
     newTags.forEach(tag => handleNewUserTag(tag));
 
@@ -168,16 +170,22 @@ const DialogNote = (data: DialogNoteArgs) => {
 
                       if (value.endsWith(",")) {
                         const tagName = value.slice(0, -1).trim().toLowerCase();
+                    
 
                         // Is there already a tag with the same name?
                         if (tagName && !field.value.some(tag => tag.name === tagName)) {
+                   
 
                         // If found, we must not create an extra tag with a new color
                         const found = userTags.find(userTag => userTag.name === tagName);
 
                         if (found) {
-                              suggestedTags.filter(suggestedTag => suggestedTag.name !== tagName);
+
+                              removeSuggestedUserTag(found);
+                              console.log("SuggestedTags after:", suggestedTags);
+                              console.log("Since it was found, it was removed from the suggestentions")
                               field.onChange([...field.value, found])
+                             
                         } else {
                             const newTag = {
                             name: tagName,
@@ -204,7 +212,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                     <div className="flex flex-wrap gap-1">
                       <span>Active: </span>
                       {field.value.map(tag => {
-                        if (!userTags.some(userTag => userTag.name === userTag.name)) {
+                        if (!userTags.some(userTag => userTag.name === tag.name)) {
                           return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
                             handleDeleteUserTag={removeTag}
                             handleEditUserTag={handleEditUserTag}

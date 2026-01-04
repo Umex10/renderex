@@ -9,6 +9,9 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { NotesArgs } from "@/types/notesArgs";
 
+/**
+ * Arguments for the useDialog hook.
+ */
 interface UseDialogTagsArgs {
   form: UseFormReturn<FormSchema>,
   userTags: Tag[],
@@ -17,6 +20,15 @@ interface UseDialogTagsArgs {
   setNote: (noteData: NotesArgs) => void;
 }
 
+/**
+ * Custom hook to manage the dialog state and logic for notes.
+ * 
+ * Handles fetching note data, managing active tags, and providing
+ * handlers for adding and removing tags within the dialog form.
+ * 
+ * @param {UseDialogTagsArgs} data - The arguments for the hook.
+ * @returns {Object} An object containing suggested tags and tag handlers.
+ */
 export const useDialog = (data: UseDialogTagsArgs) => {
 
     const {form, userTags, user, noteId, setNote} = data
@@ -41,7 +53,7 @@ export const useDialog = (data: UseDialogTagsArgs) => {
   
         setNote(noteData);
       }, (error) => {
-        console.error("Firestore error while getting the active note: ", error);
+        console.error("An error occurred while getting the active note: ", error);
       });
   
       return () => unsubscribe();
@@ -67,12 +79,13 @@ export const useDialog = (data: UseDialogTagsArgs) => {
       form.setValue("tags", newTags);
   
       if (userTags.some(userTag => userTag.name === tagToRemove.name)) return;
-  
-      // suggest the user tag again
-      suggestedTags.push(tagToRemove);
     }
   
-    // Ensures that the user can add/remove tags from the outside (user tags)
+    /**
+     * Adds a suggested user tag to the form.
+     * 
+     * @param {Tag} tagToAdd - The tag to add.
+     */
     function addSuggestedUserTag(tagToAdd: Tag) {
       const tags = form.getValues("tags");
   
@@ -80,10 +93,23 @@ export const useDialog = (data: UseDialogTagsArgs) => {
       if (tags.some(tag => tag.name === tagToAdd.name)) return;
   
       form.setValue("tags", [...tags, tagToAdd]);
-  
-      // remove the suggested user tag
-      suggestedTags.filter(suggestedTag => suggestedTag !== tagToAdd);
+
     }
 
-    return {suggestedTags, removeTag, addSuggestedUserTag}
+    /**
+     * Removes a suggested user tag from the form.
+     * 
+     * @param {Tag} tagToRemove - The tag to remove.
+     */
+    function removeSuggestedUserTag(tagToRemove: Tag) {
+      const tags = form.getValues("tags");
+  
+      // Rejects same tag name
+     const filteredTags = tags.filter(tag => tag.name !== tagToRemove.name);
+  
+      form.setValue("tags", filteredTags);
+
+    }
+
+    return {suggestedTags, removeTag, addSuggestedUserTag, removeSuggestedUserTag}
 }

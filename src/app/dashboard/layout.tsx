@@ -3,7 +3,6 @@
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/Sidebar"
 import StoreProvider from "../../../redux/StoreProvider";
-import { cookies } from "next/headers";
 import { getInitialNotes } from "../../actions/notes";
 import { NotesArgs } from "../../types/notesArgs";
 import { AuthSetter } from "@/components/AuthSetter";
@@ -26,20 +25,16 @@ import { User } from "@/types/user";
  */
 export default async function Layout({ children }: { children: React.ReactNode }) {
 
-  // This will tell us if the user is actually logged in
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
-
   let initialNotes: NotesArgs[] = [];
-  let initialUserTags: UserTags = { tags: [], userId: userId ?? null };
+  let initialUserTags: UserTags = { tags: [], userId: null };
   // Null needed because on fresh registration it may be that the cookie is not set
   let initialUser: User | null = null;
 
-  if (userId) {
+
     // Load the notes global tags and the user when the server starts
-    const notesResult = await getInitialNotes(userId);
+    const notesResult = await getInitialNotes();
     const userTagsResult = await getInitialUserTags();
-    const userResult = await getInitialUser(userId);
+    const userResult = await getInitialUser();
 
     if (notesResult.success && notesResult.data) {
       initialNotes = notesResult.data;
@@ -52,7 +47,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     if (userResult.success && userResult.data) {
       initialUser = userResult.data
     }
-  }
+  
 
   return (
     <StoreProvider>

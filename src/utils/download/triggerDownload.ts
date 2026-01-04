@@ -1,4 +1,16 @@
 
+/**
+ * Triggers a browser download for the provided data.
+ *
+ * Creates a `Blob` (if needed), generates an object URL, clicks a hidden anchor,
+ * and revokes the object URL shortly after.
+ *
+ * Note: This function must run in a browser environment.
+ *
+ * @param data - Data to download (raw data or an existing `Blob`).
+ * @param filename - The name for the downloaded file.
+ * @param mimeType - MIME type for the created `Blob` (ignored if `data` is already a `Blob`).
+ */
 export function triggerDownload(
   data: BlobPart, 
   filename: string,

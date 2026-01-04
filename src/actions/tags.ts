@@ -2,19 +2,16 @@
 
 import { db } from "@/lib/firebase/admin";
 import { Tag } from "../../redux/slices/tags/tagsSlice";
-import { cookies } from "next/headers";
+import { requireUserId } from "@/lib/auth/requireUserId";
 
-// This validates if the user is really logged in currently
-async function requireUserId() {
-  const cookieStore = await cookies();
-  const userIdCk = cookieStore.get("userId")?.value;
-
-  if (!userIdCk) {
-    throw new Error("User is not authenticated!");
-  }
-  return userIdCk;
-}
-
+/**
+ * Server Action to fetch the initial user tags.
+ * Retrieves the user's tags from the "userTags" collection in Firestore.
+ * If the user document does not exist, it creates a new one with an empty tags array.
+ * 
+ * @async
+ * @returns {Promise<{success: boolean, data?: {userId: string, tags: Tag[]}, error?: string}>} An object containing the success status and either the user tags data or an error message.
+ */
 export async function getInitialUserTags() {
 
   try {
@@ -50,10 +47,20 @@ export async function getInitialUserTags() {
     };
 
   } catch (err) {
-    return { success: false, error: "An error while loading the userTags:" + err };
+    return { success: false, error: "An error occurred while loading the userTags:" + err };
   }
 }
 
+/**
+ * Server Action to create a new user tag.
+ * Adds a new tag to the user's "userTags" document in Firestore.
+ * Uses `merge: true` to ensure that other fields in the document are not affected.
+ * If the document doesn't exist, it will be created.
+ * 
+ * @async
+ * @param {Tag} tag - The tag object to be added.
+ * @returns {Promise<{success: boolean, error?: string}>} An object indicating the success or failure of the operation.
+ */
 export async function createUserTag(tag: Tag) {
 
   try {
@@ -66,23 +73,31 @@ export async function createUserTag(tag: Tag) {
     const data = snap.data();
     const tags: Tag[] = data ? data.tags : [];  // emty array - fallback
 
-    // We won't change the userId, but add the tag to the array
     await userTagsRef.set(
       {
         userId: validUserId,
         tags: [...tags, tag]
       },
-      { merge: true } // This will ensure that not changed fields are not affected
+      { merge: true }
     )
 
     return { success: true };
 
   } catch (err) {
-    return { success: false, error: "An error occured while creating new userTag:" + err };
+    return { success: false, error: "An error occurred while creating new userTag:" + err };
   }
 
 }
 
+/**
+ * Server Action to delete a user tag.
+ * Removes a specific tag from the user's "userTags" document in Firestore.
+ * Uses `update` to ensure that the operation only proceeds if the document exists.
+ * 
+ * @async
+ * @param {Tag} tagToDelete - The tag object to be removed.
+ * @returns {Promise<{success: boolean, error?: string}>} An object indicating the success or failure of the operation.
+ */
 export async function deleteUserTag(tagToDelete: Tag) {
 
   try {
@@ -101,22 +116,30 @@ export async function deleteUserTag(tagToDelete: Tag) {
     let tags: Tag[] = data?.tags;
     tags = tags.filter(tag => tag.name !== tagToDelete.name);
 
-    // We won't change the userId, but add the tag to the array
-    await userTagsRef.set(
+    await userTagsRef.update(
       {
         userId: data?.userId,
         tags: [...tags]
       },
-      { merge: true } // This will ensure that not changed fields are not affected
     )
 
     return { success: true };
 
   } catch (err) {
-    return { success: false, error: "An error occured while deleting a userTag:" + err };
+    return { success: false, error: "An error occurred while deleting a userTag:" + err };
   }
 }
 
+/**
+ * Server Action to edit an existing user tag.
+ * Updates the color of a specific tag in the user's "userTags" document in Firestore.
+ * Uses `update` to ensure that the operation only proceeds if the document exists.
+ * 
+ * @async
+ * @param {Tag} tagToEdit - The tag object to be edited.
+ * @param {string} tagColor - The new color for the tag.
+ * @returns {Promise<{success: boolean, error?: string}>} An object indicating the success or failure of the operation.
+ */
 export async function editUserTag(tagToEdit: Tag, tagColor: string) {
 
   try {
@@ -139,19 +162,18 @@ export async function editUserTag(tagToEdit: Tag, tagColor: string) {
       return tag;
 
     })
-
-    await userTagsRef.set(
+    
+    await userTagsRef.update(
       {
         userId: data?.userId,
         tags: [...editedTags]
       },
-      { merge: true } // This will ensure that not changed fields are not affected
     )
 
     return { success: true }
 
   } catch (err) {
-    return { success: false, error: "An error occured while editing a userTag:" + err };
+    return { success: false, error: "An error occurred while editing a userTag:" + err };
   }
 
 }
