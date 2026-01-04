@@ -103,7 +103,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
   useResize({ isDragging, setTopHeight });
 
   // NOTES HOOK
-  const { notes, loading, handleNew, handleDelete, handleEdit } = useNotes(initialNotes);
+  const { notes, loading, handleCreateNote, handleDeleteNote, handleEditNote } = useNotes(initialNotes);
 
   // SORT STATES
   const [sortAfter, setSortAfter] = useState("date");
@@ -124,7 +124,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
 
   // Ensures that these objects are sorted, and matched with other states, to ensure the same data
   const { refactoredNotes, sortedUserTags } = useMatchedTags({
-    notes, userTags, handleEdit,
+    notes, userTags, handleEdit: handleEditNote,
     sortAfter, isDescending, selectedTags, deletedUserTag, setDeletedUserTag
   }
   );
@@ -146,7 +146,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
           ? { ...tag, color: tagColor }
           : tag
       );
-      handleEdit({ title: note.title, content: note.content, tags: updatedTags }, note.id);
+      handleEditNote({ title: note.title, content: note.content, tags: updatedTags }, note.id);
     });
   }
 
@@ -171,7 +171,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
             items-center md:gap-6"
             >
               {/* ADD + */}
-              <DialogNote edit={false} onAction={handleNew} handleNewUserTag={handleCreateUserTag}
+              <DialogNote edit={false} onAction={handleCreateNote} handleNewUserTag={handleCreateUserTag}
                 handleEditUserTag={handleEditUserTag} handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
 
               {/* SORT */}
@@ -266,14 +266,14 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
                         onClick={(e) => e.stopPropagation()}>
                         {/* EDIT NOTE DIALOG BUTTON */}
                         <DialogNote edit={true} noteId={note.id}
-                          onAction={handleEdit} handleNewUserTag={handleCreateUserTag}
+                          onAction={handleEditNote} handleNewUserTag={handleCreateUserTag}
                           handleEditUserTag={handleEditUserTag}
                           handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
                         {/* DELETE NOTE */}
                         <Button variant="secondary" className="w-8 h-8 p-0
                         hover:scale-105"
                           onClick={(e) => {
-                            handleDelete(e, note.id);
+                            handleDeleteNote(e, note.id);
                           }}>
                           <Trash2 className="w-4 h-4" />
                         </Button>

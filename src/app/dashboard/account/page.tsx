@@ -4,7 +4,6 @@ import { getInitialUser } from '@/actions/user';
 import Account from '@/components/Account';
 import { User } from '@/types/user';
 import { cookies } from 'next/headers';
-import React from 'react'
 
 const page = async () => {
 
@@ -23,7 +22,7 @@ const page = async () => {
 
       if (userId) {
           // Load the user when the server starts
-          const userResult = await getInitialUser(userId);
+          const userResult = await getInitialUser();
       
           if (userResult.success && userResult.data) {
             initialUser = userResult.data
