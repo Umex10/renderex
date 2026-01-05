@@ -1,31 +1,33 @@
 "use client"
 
-import React from 'react'
-
 import Editor from '@/components/Editor';
 import { Button } from './ui/button';
-import { CheckCircle, Download, FileText, ListTree } from 'lucide-react';
-import { NotesArgs } from '@/types/notesArgs';
+import { CheckCircle, Loader2, RotateCcw } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
-
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 
 interface EditorActionsArgs {
   content: string,
   setContent: (content: string) => void,
   saveState: string,
-  handleDownload: (note: NotesArgs) => void,
-  note: NotesArgs,
   aiState: string,
-  handleSummarize: (content: string) => void;
-  handleStructure: (content: string) => void;
+  summaryActive: boolean,
+  structureActive: boolean,
+  handleSummarizeSelection: (value: string) => void;
+  handleStructureSelection: (value: string) => void;
+  handleResetSelection: () => void,
+  handleGenerate: () => void;
 }
 
 const EditorActions = (data: EditorActionsArgs) => {
 
-  const { content, setContent, saveState, handleDownload, note,
-    aiState, handleSummarize, handleStructure
+  const { content, setContent, saveState,
+    aiState, summaryActive, structureActive,
+    handleSummarizeSelection, handleStructureSelection,
+    handleResetSelection, handleGenerate
   } = data;
+
 
   return (
     <div className='min-w-0'>
@@ -34,33 +36,86 @@ const EditorActions = (data: EditorActionsArgs) => {
         onChange={(val) => setContent(val)}
       />
 
-      <div className='flex justify-between items-center'>
-        <div className='flex flex-row gap-3'>
-          <Button className='mt-2' onClick={() => handleDownload(note)}>
-            <span>Download</span>
-            <Download></Download>
-          </Button>
-          <Button className='mt-2' onClick={() => handleSummarize(content)}>
-            <span>Summarize</span>
-            <FileText></FileText>
-          </Button>
-          <Button className='mt-2' onClick={() => handleStructure(content)}>
-            <span>Structure</span>
-            <ListTree></ListTree>
+      {/* SELECT + BUTTONS | SAVE/GENERATE STATE */}
+      <div className='flex justify-center md:justify-between items-start mt-2'>
+
+         {/* SELECTIONS + RESET SELECTION | GENERATE CONTAINER */}
+        <div className='flex flex-col items-center
+        md:items-start gap-2'>
+
+          {/* SELECTIONS + RESET SELECTION */}
+          <div className='flex flex-row gap-3'>
+
+  
+              {/* Summarize */}
+              <Select
+                defaultValue="summarize-replace"
+                onValueChange={(value) => handleSummarizeSelection(value)}
+              >
+                <SelectTrigger
+                  className={`px-1 border-2 ${summaryActive
+                    ? "border-violet-500 bg-violet-50"
+                    : "border-gray-400 bg-white opacity-50"
+                    }`}
+                >
+                  <span className='px-2'>AI Summary</span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="summarize-replace" className="md:text-lg">
+                    Change entire note
+                  </SelectItem>
+                  <SelectItem value="summarize-insert-start" className="md:text-lg">
+                    Insert summary at start
+                  </SelectItem>
+                  <SelectItem value="summarize-insert-bottom" className="md:text-lg">
+                    Insert summary at bottom
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Structure */}
+              <Select
+                onValueChange={(value) => handleStructureSelection(value)}
+              >
+                <SelectTrigger
+                  className={`px-1 border-2 ${structureActive
+                    ? "border-violet-500 bg-violet-50"
+                    : "border-gray-400 bg-white opacity-50"
+                    }`}
+                >
+                  <span className='px-2'>AI Structure</span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="structure-replace" className="md:text-lg">
+                    Change entire note
+                  </SelectItem>
+                  <SelectItem value="structure-enhance" className="md:text-lg">
+                    Enhance structure
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+          </div>
+          <Button onClick={() => handleGenerate()}>
+            {`Generate ${summaryActive ? "Summary" : "Structure"}`}
           </Button>
         </div>
 
-        <div className='flex flex-row gap-1'>
+        {/* SAVING | GENERATING STATES */}
+        <div className='flex flex-row gap-4 mt-2'>
+          {/* SAVING STATES */}
           <div className={`${saveState === CONTENT_STATE.IDLE ? "hidden" : ""}`}>
             {saveState === CONTENT_STATE.SAVING && (
-              <span className="text-muted-foreground">Saving Content…</span>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving Content</span>
+              </div>
             )}
 
             {saveState === CONTENT_STATE.SAVED && (
-              <span className="flex items-center gap-1 text-green-600">
+              <div className="w-full flex items-center gap-1 text-green-600">
                 <CheckCircle className="h-4 w-4" />
-                Saved Content
-              </span>
+                <span>Saved content</span>
+              </div>
             )}
 
             {saveState === CONTENT_STATE.ERROR && (
@@ -68,16 +123,21 @@ const EditorActions = (data: EditorActionsArgs) => {
             )}
           </div>
 
-          <div className={`${aiState === AI_STATE.IDLE ? "hidden" : ""} flex-nowrap`}>
+          {/* GENERATE STATES */}
+          <div className={`${aiState === AI_STATE.IDLE ? "hidden" : ""}`}>
             {aiState === AI_STATE.GENERATING && (
-              <span className="text-muted-foreground">AI is generating...</span>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>AI is generating</span>
+              </div>
+
             )}
 
             {aiState === AI_STATE.FINISHED && (
-              <span className="flex items-center gap-1 text-green-600">
+              <div className="w-full flex items-center gap-1 text-green-600 flex-nowrap">
                 <CheckCircle className="h-4 w-4" />
-                AI Finished Generating...
-              </span>
+                <span>AI Finished Generating</span>
+              </div>
             )}
 
             {aiState === AI_STATE.ERROR && (

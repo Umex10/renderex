@@ -6,6 +6,7 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { useTheme } from 'next-themes';
 import { EditorView } from "@codemirror/view";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface EditorProps {
   value: string;
@@ -15,10 +16,12 @@ interface EditorProps {
 const Editor = ({ value, onChange }: EditorProps) => {
 
   const { resolvedTheme } = useTheme();
+
+  const isMobile = useIsMobile();
   return (
     <CodeMirror
       value={value}
-      height="650px"
+      height={isMobile ? "500px" : "650px"}
       extensions={[
         markdown({ base: markdownLanguage, codeLanguages: languages }),
         EditorView.lineWrapping

@@ -51,9 +51,42 @@ const Dashboard = () => {
   const [aiState, setAiState] = useState<
     typeof AI_STATE[keyof typeof AI_STATE]>(AI_STATE.IDLE);
 
-  const { handleDownload } = useFormat();
   const { handleSummarize, handleStructure } = useAi({ setAiState, setContent });
 
+  const [summaryActive, setSummaryActive] = useState(true);
+  const [structureActive, setStructureAtive] = useState(false);
+
+  const startMode = "summarize-replace"
+
+  const [activeMode, setActiveMode] = useState(startMode);
+
+  function handleSummarizeSelection(value: string) {
+    setSummaryActive(true);
+    setStructureAtive(false);
+
+    setActiveMode(value);
+  }
+
+  function handleStructureSelection(value: string) {
+    setStructureAtive(true);
+    setSummaryActive(false);
+
+    setActiveMode(value);
+  }
+
+  function handleResetSelection() {
+    setActiveMode(startMode);
+    setSummaryActive(true);
+    setStructureAtive(false);
+  }
+
+  function handleGenerate() {
+    if (summaryActive) {
+      handleSummarize(content, activeMode);
+    } else {
+      handleStructure(content, activeMode)
+    }
+  }
 
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
@@ -94,7 +127,7 @@ const Dashboard = () => {
   }, [user, activeNote])
 
   useEffect(() => {
-    if (!note || !content) return;
+    if (!note || !content || aiState !== "idle") return;
 
     // if the content is the same as before, than ignore
     if (content === lastSavedContent.current) return;
@@ -104,7 +137,7 @@ const Dashboard = () => {
       return;
     }
 
-     setTimeout(() => setSaveState("saving"), 0);
+    setTimeout(() => setSaveState("saving"), 0);
 
     // Ensures that after 5 seconds the current content is written onto firebase
     const handler = setTimeout(async () => {
@@ -126,7 +159,7 @@ const Dashboard = () => {
     }, 5000)
 
     return () => clearTimeout(handler);
-  }, [content, note])
+  }, [content, note, aiState])
 
   if (loading) {
     return <div>Loading information...</div>;
@@ -153,9 +186,13 @@ const Dashboard = () => {
 
         {/* EDITOR */}
         <EditorActions content={content} setContent={setContent}
-          saveState={saveState} handleDownload={handleDownload}
-          note={note} aiState={aiState} handleSummarize={handleSummarize}
-          handleStructure={handleStructure}></EditorActions>
+          saveState={saveState}
+           aiState={aiState} summaryActive={summaryActive}
+          structureActive={structureActive}
+          handleSummarizeSelection={handleSummarizeSelection}
+          handleStructureSelection={handleStructureSelection}
+          handleResetSelection={handleResetSelection}
+          handleGenerate={handleGenerate}></EditorActions>
 
         {/* LIVE */}
         <LiveRenderer content={content}></LiveRenderer>
@@ -183,10 +220,16 @@ const Dashboard = () => {
           {/* EDITOR VIEW */}
           <TabsContent value="markdown" >
 
+
+            {/* EDITOR */}
             <EditorActions content={content} setContent={setContent}
-              saveState={saveState} handleDownload={handleDownload}
-              note={note} aiState={aiState} handleSummarize={handleSummarize}
-              handleStructure={handleStructure}></EditorActions>
+              saveState={saveState}
+              aiState={aiState} summaryActive={summaryActive}
+              structureActive={structureActive}
+              handleSummarizeSelection={handleSummarizeSelection}
+              handleStructureSelection={handleStructureSelection}
+              handleResetSelection={handleResetSelection}
+              handleGenerate={handleGenerate}></EditorActions>
 
           </TabsContent>
           {/* LIVE VIEW */}
