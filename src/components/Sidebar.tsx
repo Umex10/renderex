@@ -255,6 +255,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                   transform-all ease-out duration-300 cursor-pointer"
                   onClick={() => {
                     dispatch(setActiveNote(note.id));
+                    router.push(`/dashboard/note/${note.id}`)
                   }}>
                   <CardHeader className="px-4 py-0">
                     <div className="flex items-center justify-between">
@@ -375,7 +376,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
 
 
           <CardHeader className="p-0">
-            {initialUser ? (
+            {initialUser?.imageURL ? (
               <Image
                 src={initialUser.imageURL}
                 alt='Image of the user'

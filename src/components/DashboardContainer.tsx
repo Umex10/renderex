@@ -3,8 +3,8 @@
 import React from 'react'
 
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { UserTagsLoader } from './UserTagsLoader'
-import { ClientNotesLoader } from './ClientNotesLoader'
+import { UserTagsSubscriber } from './UserTagsSubscriber'
+import { NotesSubscriber } from './NotesSubscriber'
 import { AppSidebar } from './Sidebar'
 import SelectFormat from './SelectFormat'
 import { User } from '@/types/user'
@@ -22,8 +22,8 @@ const DashboardContainer = ({ initialNotes, initialUserTags, initialUser, childr
   return (
     <SidebarProvider>
 
-          <UserTagsLoader initialUserTags={initialUserTags}></UserTagsLoader>
-          <ClientNotesLoader initialNotes={initialNotes}></ClientNotesLoader>
+          <UserTagsSubscriber initialUserTags={initialUserTags}></UserTagsSubscriber>
+          <NotesSubscriber initialNotes={initialNotes}></NotesSubscriber>
 
           {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
           <AppSidebar

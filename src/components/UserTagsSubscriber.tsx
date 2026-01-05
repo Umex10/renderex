@@ -8,11 +8,11 @@ import { useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase/config";
 import { doc, onSnapshot } from "firebase/firestore";
  
- interface UserTagsLoader {
+ interface UserTagsSubscriberArgs {
    initialUserTags: UserTags
  }
 
- export function UserTagsLoader({initialUserTags}: UserTagsLoader) {
+ export function UserTagsSubscriber({initialUserTags}: UserTagsSubscriberArgs) {
   const dispatch = useDispatch<AppDispatch>();
   const [user, loading] = useAuthState(auth);
   // This will ensure, that we will not load the userTags uneccessarily since 

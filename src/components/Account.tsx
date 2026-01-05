@@ -194,7 +194,7 @@ const Account = ({ initialUser }: AccountProps) => {
               onClick={() => fileInputRef.current?.click()}
             >
               {imageView ? (
-                <Image src={imageView} alt="Profile"
+                <Image src={imageView} alt="Account"
                   className="w-full h-full object-cover"
                   width={100} height={100} />
               ) : (

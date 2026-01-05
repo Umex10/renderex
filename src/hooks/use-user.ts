@@ -34,7 +34,7 @@ interface FormData {
  */
 export function useUser(initialUser: User) {
 
-  // This will be our fallback, if something is going wrong with firebase
+  // This will be our fallbck, if something is going wrong with firebase
   const userRef = useRef<User>(initialUser);
 
   // This is our UI immediate feedback!
@@ -42,7 +42,7 @@ export function useUser(initialUser: User) {
 
   // This will ensure, that we will not load the globalTags uneccessarily since 
   // we are getting it from the server action already on mount
-  const firstCall = useRef(true);
+  const firstLoad = useRef(true);
 
   // Needed because the key credentials are handeld differently than other fields
   const auth = getAuth();
@@ -54,8 +54,8 @@ export function useUser(initialUser: User) {
 
     const unsubscribe = onSnapshot(ref, (snap) => {
 
-      if (firstCall.current) {
-        firstCall.current = false;
+      if (firstLoad.current) {
+        firstLoad.current = false;
         return;
       }
 
@@ -82,7 +82,7 @@ export function useUser(initialUser: User) {
 
 
   /**
-   * Removes the user's profile image from the local state.
+   * Removes the user's account image from the local state.
    */
   const removeImage = () => {
     setUser(old => ({

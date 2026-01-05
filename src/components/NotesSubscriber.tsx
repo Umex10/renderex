@@ -9,11 +9,11 @@ import { AppDispatch } from "../../redux/store";
 import { setNotes } from "../../redux/slices/notesSlice";
 import { NotesArgs } from "@/types/notesArgs";
 
-interface ClientNotesLoaderArgs {
+interface NotesSubscriberArgs {
   initialNotes: NotesArgs[]
 }
 
-export function ClientNotesLoader({initialNotes}: ClientNotesLoaderArgs) {
+export function NotesSubscriber({initialNotes}: NotesSubscriberArgs) {
  
   const [user, loading] = useAuthState(auth);
   const firstLoad = useRef(true);
