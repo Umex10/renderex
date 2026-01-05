@@ -62,6 +62,9 @@ const EditorActions = (data: EditorActionsArgs) => {
                   <SelectItem value="summarize-replace" className="md:text-lg">
                     Change entire note
                   </SelectItem>
+                   <SelectItem value="summarize-sandbox" className="md:text-lg">
+                    Sandbox Mode
+                  </SelectItem>
                   <SelectItem value="summarize-insert-start" className="md:text-lg">
                     Insert summary at start
                   </SelectItem>
@@ -87,8 +90,8 @@ const EditorActions = (data: EditorActionsArgs) => {
                   <SelectItem value="structure-replace" className="md:text-lg">
                     Change entire note
                   </SelectItem>
-                  <SelectItem value="structure-enhance" className="md:text-lg">
-                    Enhance structure
+                  <SelectItem value="structure-sandbox" className="md:text-lg">
+                    Sandbox Mode
                   </SelectItem>
                 </SelectContent>
               </Select>
