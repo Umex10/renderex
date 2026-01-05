@@ -265,7 +265,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                       <div className="flex justify-center items-center gap-1"
                         onClick={(e) => e.stopPropagation()}>
                         {/* EDIT NOTE DIALOG BUTTON */}
-                        <DialogNote edit={true} noteId={note.id}
+                        <DialogNote note={note} edit={true} 
                           handleCreateNote={handleCreateNote}
                           handleEditNote={handleEditNote} handleNewUserTag={handleCreateUserTag}
                           handleEditUserTag={handleEditUserTag}

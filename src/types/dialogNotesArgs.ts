@@ -1,4 +1,5 @@
 import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { NotesArgs } from "./notesArgs";
 
 /**
  * Data required to create a new note.
@@ -38,10 +39,10 @@ export type NoteDataForEdit = {
  */
 export type DialogNoteArgs =
   {
+    note?: NotesArgs,
     edit: boolean;
     handleCreateNote: (data: NoteDataForNew) => void,
     handleEditNote: (data: NoteDataForEdit, id: string) => void,
-    noteId?: string,
     handleNewUserTag: (tag: Tag) => void;
     handleEditUserTag: (tag: Tag, tagColor: string) => void,
     handleEditedColorNotes: (tag: Tag, tagColor: string) => void,

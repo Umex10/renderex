@@ -2,12 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
-import { NotesArgs } from "../types/notesArgs";
 import { Button } from './ui/button'
 import { Plus, PlusCircle, Syringe, X } from 'lucide-react'
 import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
-import { auth } from "@/lib/firebase/config"
 
 import {
   Dialog,
@@ -18,7 +16,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
-import { useAuthState } from 'react-firebase-hooks/auth'
+
 import { DialogNoteArgs } from '@/types/dialogNotesArgs';
 import { useSelector } from 'react-redux';
 import {  RootState } from '../../redux/store';
@@ -56,13 +54,11 @@ export type FormSchema = z.infer<typeof formSchema>;
  */
 const DialogNote = (data: DialogNoteArgs) => {
 
-  const { edit, noteId, handleCreateNote, handleEditNote, handleNewUserTag,
+  const {note, edit, handleCreateNote, handleEditNote, handleNewUserTag,
     handleEditUserTag, handleEditedColorNotes
    } = data;
 
   const [tagInput, setTagInput] = useState("");
-  const [user] = useAuthState(auth);
-  const [note, setNote] = useState<NotesArgs | null>(null);
 
   const userTags = useSelector((state: RootState) => state.tagsState.tags);
 
@@ -77,8 +73,7 @@ const DialogNote = (data: DialogNoteArgs) => {
 
   // Starts a subscribe listener and is handling the tags in a Dialog
   const {suggestedTags, removeTag, addSuggestedUserTag
-    , removeSuggestedUserTag} = useDialog({form, userTags, user,
-       noteId, setNote});
+    , removeSuggestedUserTag} = useDialog({form, userTags});
 
   // Load the data of the note while editing
   useEffect(() => {
@@ -88,7 +83,7 @@ const DialogNote = (data: DialogNoteArgs) => {
         tags: note.tags
       });
     }
-  }, [note]);
+  }, [note, form]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
 
@@ -101,13 +96,12 @@ const DialogNote = (data: DialogNoteArgs) => {
 
     if (edit) {
 
-      if (!note || !noteId) return;
+      if (!note || !note.id) return;
 
-      // EDIT the note in firebase
-      handleEditNote({ ...data, content: note.content }, noteId);
+      handleEditNote({ ...data, content: note.content }, note.id);
 
     } else {
-      // CREATE the note in firebase
+     
       handleCreateNote(data);
     }
 
@@ -182,8 +176,6 @@ const DialogNote = (data: DialogNoteArgs) => {
                         if (found) {
 
                               removeSuggestedUserTag(found);
-                              console.log("SuggestedTags after:", suggestedTags);
-                              console.log("Since it was found, it was removed from the suggestentions")
                               field.onChange([...field.value, found])
                              
                         } else {

@@ -1,13 +1,9 @@
 "use client"
 
-import { useEffect, useMemo } from "react";
+import {useMemo } from "react";
 import { Tag } from "../../redux/slices/tags/tagsSlice";
 import { UseFormReturn } from "react-hook-form";
 import { FormSchema } from "@/components/DialogNote";
-import { User } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
-import { NotesArgs } from "@/types/notesArgs";
 
 /**
  * Arguments for the useDialog hook.
@@ -15,9 +11,6 @@ import { NotesArgs } from "@/types/notesArgs";
 interface UseDialogTagsArgs {
   form: UseFormReturn<FormSchema>,
   userTags: Tag[],
-  user: User | null | undefined,
-  noteId: string | null | undefined,
-  setNote: (noteData: NotesArgs) => void;
 }
 
 /**
@@ -31,34 +24,7 @@ interface UseDialogTagsArgs {
  */
 export const useDialog = (data: UseDialogTagsArgs) => {
 
-    const {form, userTags, user, noteId, setNote} = data
-
-    useEffect(() => {
-      if (!user || !data.noteId) return;
-  
-      // Get the reference of the note
-      const noteRef = doc(db, "notes", data.noteId);
-  
-      // This will ensure that always the current data will be fetched from firebase
-      const unsubscribe = onSnapshot(noteRef, (snap) => {
-        if (!snap.exists()) {
-          return;
-        }
-  
-        const noteData = {
-          id: snap.id, // id given by firebase
-          ...(snap.data() as Omit<NotesArgs, "id">)
-        };
-  
-        setNote(noteData);
-      }, (error) => {
-        console.error("An error occurred while getting the active note: ", error);
-      });
-  
-      return () => unsubscribe();
-    }, [user, noteId]);
-
-
+  const {form, userTags} = data
 
    // Watch will trigger the useMemo when the value has changed
    const activeTags = form.watch("tags");
