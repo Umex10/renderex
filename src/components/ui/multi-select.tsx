@@ -52,7 +52,7 @@ export function MultiSelect({ items, selected, onChange, placeholder = "Choose..
                 <Badge key={selectedTag.name} variant="secondary" className="gap-1">
                   {selectedTag.name}
                   <button
-                    className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
                     onClick={() => handleUnselect(selectedTag)}
                     type="button"
                   >

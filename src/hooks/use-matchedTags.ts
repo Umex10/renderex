@@ -1,7 +1,7 @@
 "use client"
 
 import { NotesArgs } from "@/types/notesArgs";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Tag } from "../../redux/slices/tags/tagsSlice";
 
 /**
@@ -122,7 +122,6 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
   const sortedUserTags = useMemo(() => {
     return [...userTags].sort((a, b) => a.name.localeCompare(b.name));
   }, [userTags])
-
 
   return { refactoredNotes, sortedUserTags }
 }

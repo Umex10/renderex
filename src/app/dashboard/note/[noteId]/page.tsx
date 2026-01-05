@@ -1,20 +1,15 @@
 "use client"
 
-import React, { use, useEffect, useRef, useState } from 'react'
-import { db } from "@/lib/firebase/config"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { NotesArgs } from "../../../../types/notesArgs";
 import LiveRenderer from '@/components/LiveRenderer';
 import EditorActions from '@/components/EditorActions';
-import { CONTENT_STATE } from '../../../../../constants/loadingStates/ContentState';
-import { AI_STATE } from '../../../../../constants/loadingStates/AiState';
-import { useAi } from '@/hooks/use-ai';
+import { useNote } from '@/hooks/use-note';
+import { use } from "react";
 
 const Note = ({
   params
@@ -25,112 +20,13 @@ const Note = ({
   const unwrappedParams = use(params);
   const noteId = unwrappedParams.noteId;
 
-  const [note, setNote] = useState<NotesArgs | null>(null);
-  const [content, setContent] = useState<string>(note?.content || "");
-  // Ensures that content isn't rewritten uneccessarily onto firebase
-  const lastSavedContent = useRef(note?.content || "")
-  const firstLoad = useRef(true);
-
-  const [saveState, setSaveState] = useState<
-    typeof CONTENT_STATE[keyof typeof CONTENT_STATE]
-  >(CONTENT_STATE.IDLE);
-
-  const [aiState, setAiState] = useState<
-    typeof AI_STATE[keyof typeof AI_STATE]>(AI_STATE.IDLE);
-
-  const { handleSummarize, handleStructure } = useAi({ setAiState, setContent });
-
-  const [summaryActive, setSummaryActive] = useState(true);
-  const [structureActive, setStructureAtive] = useState(false);
-
-  const startMode = "summarize-replace"
-
-  const [activeMode, setActiveMode] = useState(startMode);
-
-  function handleSummarizeSelection(value: string) {
-    setSummaryActive(true);
-    setStructureAtive(false);
-
-    setActiveMode(value);
-  }
-
-  function handleStructureSelection(value: string) {
-    setStructureAtive(true);
-    setSummaryActive(false);
-
-    setActiveMode(value);
-  }
-
-  function handleGenerate() {
-    if (summaryActive) {
-      handleSummarize(content, activeMode);
-    } else {
-      handleStructure(content, activeMode)
-    }
-  }
-
-  useEffect(() => {
-
-    const noteRef = doc(db, "notes", noteId);
-
-    const unsubscribe = onSnapshot(noteRef, snap => {
-      if (!snap.exists) {
-        return;
-      }
-
-      const noteData = {
-        id: snap.id,
-        ...(snap.data() as Omit<NotesArgs, "id">)
-      };
-
-      // initialize state
-      setNote(noteData);
-
-      // Enables the markdown editor with the content
-      setContent(noteData.content);
-
-    })
-    return () => unsubscribe();
-  }, [noteId])
-
-  useEffect(() => {
-    if (!note || !content || aiState !== "idle") return;
-
-    // if the content is the same as before, than ignore
-    if (content === lastSavedContent.current) return;
-
-    // This will ensure we don't fetch the notes unnecessarily on the first load
-    if (firstLoad.current) {
-      firstLoad.current = false;
-      return;
-    }
-
-    setTimeout(() => setSaveState("saving"), 0);
-
-    // Ensures that after 5 seconds the current content is written onto firebase
-    const handler = setTimeout(async () => {
-      try {
-        const noteRef = doc(db, "notes", note.id);
-
-        await updateDoc(noteRef, {
-          content: content,
-          date: new Date().toISOString()
-        });
-        lastSavedContent.current = content;
-
-        setSaveState("saved");
-
-        setTimeout(() => setSaveState("idle"), 1500);
-      } catch (err) {
-        console.error("An error occured while editing the content field in firebase: ", err);
-      }
-    }, 5000)
-
-    return () => clearTimeout(handler);
-  }, [content, note, aiState])
+  const {note, content, setContent, saveState, aiState,
+    summaryActive, structureActive, handleSummarizeSelection, 
+    handleStructureSelection, handleGenerate, 
+  } = useNote(noteId);
 
   if (!note) {
-    return <h2>The note does not exist</h2>
+    return <h2>Loading note</h2>
   }
 
   return (

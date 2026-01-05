@@ -34,7 +34,7 @@ interface FormData {
  */
 export function useUser(initialUser: User) {
 
-  // This will be our fallbck, if something is going wrong with firebase
+  // This will be our rollback, if something is going wrong with firebase
   const userRef = useRef<User>(initialUser);
 
   // This is our UI immediate feedback!

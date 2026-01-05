@@ -7,8 +7,7 @@ export interface Tag {
 
 export interface UserTags {
   userId: string | null
-  tags: Tag[],
-
+  tags: Tag[]
 }
 
 const initialState: UserTags = {

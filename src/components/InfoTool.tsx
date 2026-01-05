@@ -7,11 +7,11 @@ import {
 
 import { BadgeInfo } from 'lucide-react';
 
-interface TagsInfoArgs {
+interface InfoToolArgs {
   desc: string
 }
 
-const TagsInfo = ({desc}: TagsInfoArgs) => {
+const InfoTool = ({desc}: InfoToolArgs) => {
   return (
     <Tooltip>
       <TooltipTrigger className='mt-2'>
@@ -26,4 +26,4 @@ const TagsInfo = ({desc}: TagsInfoArgs) => {
   )
 }
 
-export default TagsInfo
+export default InfoTool

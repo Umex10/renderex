@@ -33,7 +33,7 @@ import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
 import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
 import { Tag } from "../../redux/slices/tags/tagsSlice";
-import TagsInfo from "./TagsInfo";
+import InfoTool from "./InfoTool";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { getRandomHexColor } from "@/utils/getRandomHexColor";
@@ -162,7 +162,8 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
         {/* ADD + | SORT SECTION - dynamic height */}
         <div style={{ height: topHeight, minHeight: '190px' }} className="flex flex-col">
           <SidebarGroup className="overflow-y-auto flex-1">
-            <SidebarGroupLabel className="border-b border-black rounded-none px-0">
+            <SidebarGroupLabel className="border-b border-black rounded-none px-0 cursor-pointer"
+            onClick={() => router.push("/dashboard")}>
               <span className="text-xl font-bold">Notes</span>
             </SidebarGroupLabel>
             <div
@@ -210,7 +211,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                   </SelectContent>
                 </Select>
                 <ArrowDown
-                  className={`w-8 h-8
+                  className={`w-8 h-8 cursor-pointer
                 ${isDescending ? "text-violet-400" : ""} `}
                   onClick={() => {
                     setIsDescending(!isDescending);
@@ -219,7 +220,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                   data-testid="desc"
                 ></ArrowDown>
                 <ArrowUp
-                  className={`w-8 h-8
+                  className={`w-8 h-8 cursor-pointer
                 ${isAscending ? "text-violet-400" : ""} `}
                   onClick={() => {
                     setIsAscending(!isAscending);
@@ -247,7 +248,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
             <div className="flex flex-col gap-4 mt-2">
 
               {loading || notes.length === 0 && (
-                <h2>It{"'"}s not very noisy here...</h2>
+                <span className="text-center">It{"'"}s not very noisy here...</span>
               )}
 
               {refactoredNotes && refactoredNotes.map(note => (
@@ -313,7 +314,8 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
 
         {/* USER-TAGS SECTION */}
         <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden">
-          <SidebarGroupLabel className="border-b border-black rounded-none px-0">
+          <SidebarGroupLabel className="border-b border-black rounded-none px-0 cursor-pointer"
+          onClick={() => router.push("/dashboard")}>
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>
           {/* INPUT */}
@@ -351,18 +353,24 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                         border-muted-foreground/30"
             ></Input>
 
-            <TagsInfo desc="Here you can add tags by seberating them with ','"></TagsInfo>
+            <InfoTool desc="Here you can add tags by seberating them with ','"></InfoTool>
           </div>
 
           {/* USER-TAGS */}
           <div className="flex flex-wrap gap-1 mt-3">
-            {sortedUserTags ? sortedUserTags.map(sortedUserTag => (
+            {notes && sortedUserTags.length !== 0 && sortedUserTags.map(sortedUserTag => (
               <SingleTag tag={sortedUserTag} Icon={X} key={sortedUserTag.name + " container"}
                 handleDeleteUserTag={handleDeleteUserTag}
                 handleEditUserTag={handleEditUserTag}
                 handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
-            )) : (
-              <span>No Tags set yet, sadge...</span>
+            ))}
+
+            {userTags &&  (
+              <span className="w-full text-center">Loading tags...</span>
+            )}
+            
+            {!userTags && sortedUserTags.length === 0 &&  (
+              <span className="w-full text-center">No tags set yet, waiting...</span>
             )}
           </div>
         </SidebarGroup>
@@ -370,8 +378,8 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
       {/* ACCOUNT | LOG OUT SECTION*/}
       <SidebarFooter className="flex flex-col gap-4 items-center">
         {/* ACCOUNT */}
-        <Card className="w-full flex flex-row items-center justify-start
-           gap-2 px-4 py-4"
+          <Card className="w-full flex flex-row items-center justify-start
+            gap-2 px-4 py-4 cursor-pointer"
           onClick={() => router.push("/dashboard/account")}>
 
 

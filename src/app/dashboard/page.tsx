@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   useEffect(() => {
 
-    // Return the user to sign in if not logged in
+    // Return the user to "sign in" if not logged in
     if (!loading && !user) {
       router.push('/sign-in');
     }

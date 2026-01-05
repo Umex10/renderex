@@ -111,7 +111,7 @@ const DialogNote = (data: DialogNoteArgs) => {
   return (
     <Dialog>
       <DialogTrigger asChild onClick={() => form.reset()}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer">
           <span className="text-lg">{edit ? "" : "Add"}</span>
           <Button variant="default" className={`w-6 h-7`}>
             {edit ? (
