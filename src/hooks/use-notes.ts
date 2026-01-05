@@ -1,20 +1,19 @@
 import { NotesArgs } from "../types/notesArgs";
-import { useState, useEffect, useRef } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "@/lib/firebase/config";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+
 import { createNote, deleteNote, editNote } from "@/actions/notes";
 import { useDispatch } from "react-redux";
-import { setActiveNote } from "../../redux/slices/notesSlice";
+import { addNote, removeNote, setActiveNote, setNotes, changeNote } from "../../redux/slices/notesSlice";
 import { AppDispatch } from "../../redux/store";
 import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { auth } from "@/lib/firebase/config";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 /**
  * Custom hook to manage notes state and interactions.
  * Handles real-time updates from Firestore and provides methods to create, edit, and delete notes.
  * Uses Server Actions for data mutations.
  * 
- * @param {NotesArgs[]} initialNotes - The initial list of notes to display before updates kick in.
+ * @param {NotesArgs[]} notes - The initial list of notes to display before updates kick in.
  * @returns {Object} An object containing the notes list, loading state, and handler functions.
  * @property {NotesArgs[]} notes - The current list of notes.
  * @property {boolean} loading - The loading state of the user authentication.
@@ -22,44 +21,18 @@ import { Tag } from "../../redux/slices/tags/tagsSlice";
  * @property {Function} handleDelete - Function to handle the deletion of a note.
  * @property {Function} handleEdit - Function to handle the editing of a note.
  */
-export function useNotes(initialNotes: NotesArgs[]) {
+export function useNotes(notes: NotesArgs[]) {
 
   const dispatch = useDispatch<AppDispatch>();
-
-  const [notes, setNotes] = useState<NotesArgs[]>(initialNotes)
   const [user, loading] = useAuthState(auth);
-  const firstLoad = useRef(true);
 
-  useEffect(() => {
 
-    if (loading || !user) return;
-
-    // This will ensure we don't fetch the notes unnecessarily on the first load
-    if (firstLoad.current) {
-      firstLoad.current = false;
-      return;
-    }
-
-    // Gets all notes related to the user
-    const q = query(
-      collection(db, "notes"),
-      where("userId", "==", user.uid)
-    );
-
-    // Triggers fetching the current data, if something changes on firebase
-    const unsubscribe = onSnapshot(q, (snap) => {
-      const notesData = snap.docs.map(doc => ({
-        id: doc.id, //Given by firebase
-        ...(doc.data() as Omit<NotesArgs, "id">)
-      }));
-      setNotes(notesData)
-    },
-      (error) => {
-        console.error("Firestore error while catching all notes: ", error);
-      })
-
-    return () => unsubscribe()
-  }, [user, loading])
+  // This is needed, to find the exact note we need. We can't write this function within the slice,
+  // because the return statement is not suitable
+  const findNote = (noteId: string) => {
+    const found = notes.find(note => note.id === noteId);
+    return found;
+  }
 
   /**
    * Handles the deletion of a note.
@@ -76,14 +49,14 @@ export function useNotes(initialNotes: NotesArgs[]) {
     const oldNotes = [...notes];
 
     // This will give the user immediate feedback!
-    setNotes(old => old.filter(note => note.id !== noteId));
+    dispatch(removeNote(noteId));
 
     try {
       // Calling firebase
       const result = await deleteNote(noteId);
 
       if (!result.success) {
-        setNotes(oldNotes);
+        dispatch(setNotes(oldNotes));
       }
 
     } catch (err) {
@@ -118,11 +91,11 @@ export function useNotes(initialNotes: NotesArgs[]) {
       userId: user.uid
     }
 
-     // fallback array
+    // fallback array
     const oldNotes = [...notes];
 
-     // This will give the user immediate feedback!
-    setNotes(old => [...old, newNote]);
+    // This will give the user immediate feedback!
+    dispatch(addNote(newNote));
 
     try {
       // Calling firebase
@@ -134,10 +107,14 @@ export function useNotes(initialNotes: NotesArgs[]) {
 
       if (result && result.id) {
 
+        const neededNote = findNote(result.id)
+
+        if (!neededNote) return;
+
         // Change id to the id which was given by firebase 
-        setNotes(old => old.map(note => 
-          note.id === result.id ? {...note, id: result.id} : note
-        ))
+        const editedNote = { ...neededNote, id: result.id }
+
+        dispatch(changeNote(editedNote));
         dispatch(setActiveNote(result.id))
       }
 
@@ -167,15 +144,16 @@ export function useNotes(initialNotes: NotesArgs[]) {
       tags: data.tags,
     }
 
-     // fallback array
+    // fallback array
     const oldNotes = [...notes];
 
-     // This will give the user immediate feedback!
-    setNotes(old =>
-      old.map(note =>
-        note.id === noteId ? { ...note, ...newNote } : note
-      )
-    );
+    const neededNote = findNote(noteId)
+
+    if (!neededNote) return;
+
+    // This will give the user immediate feedback!
+    const editedNote = { ...neededNote, ...newNote };
+    dispatch(changeNote(editedNote));
 
     try {
       // Calling firebase
@@ -190,6 +168,6 @@ export function useNotes(initialNotes: NotesArgs[]) {
     }
   }
 
-  return { notes, loading, handleCreateNote, handleDeleteNote, handleEditNote };
+  return { loading, handleCreateNote, handleDeleteNote, handleEditNote };
 
 }

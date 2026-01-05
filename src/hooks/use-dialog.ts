@@ -42,7 +42,6 @@ export const useDialog = (data: UseDialogTagsArgs) => {
       // This will ensure that always the current data will be fetched from firebase
       const unsubscribe = onSnapshot(noteRef, (snap) => {
         if (!snap.exists()) {
-          console.log("Note doesn't exist");
           return;
         }
   

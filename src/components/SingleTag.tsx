@@ -28,7 +28,8 @@ const SingleTag = ({tag, Icon, handleDeleteUserTag, handleEditUserTag,
     useEffect(() => {
 
       const timeout = setTimeout(() => {
-
+        
+        if (tag.color === tagColor) return;
         handleEditUserTag(tag, tagColor);
         handleEditedColorNotes(tag, tagColor);
 

@@ -1,16 +1,13 @@
 "use server"
-
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/Sidebar"
 import StoreProvider from "../../../redux/StoreProvider";
 import { getInitialNotes } from "../../actions/notes";
 import { NotesArgs } from "../../types/notesArgs";
 import { AuthSetter } from "@/components/AuthSetter";
-import SelectFormat from "@/components/SelectFormat";
 import { getInitialUserTags } from "@/actions/tags";
 import { UserTags } from "../../../redux/slices/tags/tagsSlice";
 import { getInitialUser } from "@/actions/user";
 import { User } from "@/types/user";
+import DashboardContainer from "@/components/DashboardContainer";
 
 /**
  * The main layout for the dashboard section.
@@ -29,7 +26,6 @@ export default async function Layout({ children }: { children: React.ReactNode }
   let initialUserTags: UserTags = { tags: [], userId: null };
   // Null needed because on fresh registration it may be that the cookie is not set
   let initialUser: User | null = null;
-
 
     // Load the notes global tags and the user when the server starts
     const notesResult = await getInitialNotes();
@@ -52,30 +48,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
   return (
     <StoreProvider>
       <AuthSetter>
-        <SidebarProvider>
-
-          {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
-          <AppSidebar  initialNotes={initialNotes} initialUserTags={initialUserTags}
-          initialUser={initialUser} />
-
-          {/* UNDERNEATH SIDEBAR (RIGHT SIDE) - Content of a note */}
-          <SidebarInset>
-            <header
-              className="flex justify-between md:justify-left h-16 shrink-0 items-center gap-2 border-b px-4"
-            >
-              <SidebarTrigger className="lg:hidden" />
-
-              {/* DOWNLOAD FORMAT */}
-              <SelectFormat></SelectFormat>
-
-            </header>
-
-            <main className="flex flex-1 flex-col gap-4 p-4">
-              {children}
-            </main>
-          </SidebarInset>
-
-        </SidebarProvider>
+        <DashboardContainer initialNotes={initialNotes} initialUserTags={initialUserTags}
+        initialUser={initialUser}>{children}</DashboardContainer>
       </AuthSetter>
     </StoreProvider>
   );

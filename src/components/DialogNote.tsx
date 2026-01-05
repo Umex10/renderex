@@ -56,7 +56,7 @@ export type FormSchema = z.infer<typeof formSchema>;
  */
 const DialogNote = (data: DialogNoteArgs) => {
 
-  const { edit, noteId, onAction, handleNewUserTag,
+  const { edit, noteId, handleCreateNote, handleEditNote, handleNewUserTag,
     handleEditUserTag, handleEditedColorNotes
    } = data;
 
@@ -101,14 +101,14 @@ const DialogNote = (data: DialogNoteArgs) => {
 
     if (edit) {
 
-      if (!note) return;
+      if (!note || !noteId) return;
 
       // EDIT the note in firebase
-      onAction({ ...data, content: note.content }, noteId);
+      handleEditNote({ ...data, content: note.content }, noteId);
 
     } else {
       // CREATE the note in firebase
-      onAction(data);
+      handleCreateNote(data);
     }
 
     form.reset()

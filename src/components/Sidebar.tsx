@@ -24,7 +24,6 @@ import { Button } from "./ui/button";
 import { getAuth, signOut } from "firebase/auth"
 import { useRouter } from "next/navigation";
 import { AppDispatch, RootState } from "../../redux/store"
-import { NotesArgs } from "../types/notesArgs";
 import { useDispatch, useSelector } from "react-redux"
 import { Badge } from "./ui/badge"
 import DialogNote from "./DialogNote"
@@ -33,7 +32,7 @@ import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
 import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
-import { Tag, UserTags } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../../redux/slices/tags/tagsSlice";
 import TagsInfo from "./TagsInfo";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
@@ -51,8 +50,6 @@ import { getInitialUser } from "@/actions/user";
  * @property {NotesArgs[]} initialNotes - The initial list of notes to be displayed in the sidebar.
  */
 interface AppSidebarArgs {
-  initialNotes: NotesArgs[],
-  initialUserTags: UserTags,
   initialUser: User | null
 }
 
@@ -64,7 +61,7 @@ interface AppSidebarArgs {
  * @param {AppSidebarArgs} args - The component arguments.
  * @returns {JSX.Element} The AppSidebar component.
  */
-export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSidebarArgs) {
+export function AppSidebar({ initialUser }: AppSidebarArgs) {
 
   const router = useRouter();
 
@@ -102,7 +99,8 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
   useResize({ isDragging, setTopHeight });
 
   // NOTES HOOK
-  const { notes, loading, handleCreateNote, handleDeleteNote, handleEditNote } = useNotes(initialNotes);
+  const notes = useSelector((state: RootState) => state.notesState.notes);
+  const { loading, handleCreateNote, handleDeleteNote, handleEditNote } = useNotes(notes);
 
   // SORT STATES
   const [sortAfter, setSortAfter] = useState("date");
@@ -119,11 +117,11 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
   // This will hold the last deleted User tag, to ensure notes have also deleted that tag
   const [deletedUserTag, setDeletedUserTag] = useState<Tag | null>(null);
 
-  const { handleCreateUserTag, handleDeleteUserTag, handleEditUserTag } = useUserTags({ initialUserTags, setDeletedUserTag });
+  const { handleCreateUserTag, handleDeleteUserTag, handleEditUserTag } = useUserTags({ setDeletedUserTag });
 
   // Ensures that these objects are sorted, and matched with other states, to ensure the same data
   const { refactoredNotes, sortedUserTags } = useMatchedTags({
-    notes, userTags, handleEdit: handleEditNote,
+    notes, userTags, handleEditNote,
     sortAfter, isDescending, selectedTags, deletedUserTag, setDeletedUserTag
   }
   );
@@ -161,7 +159,7 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
       </SidebarHeader>
       <SidebarContent className="flex flex-col h-full overflow-hidden">
 
-        {/* ADD + | SORT SECTION - Jetzt mit dynamischer Höhe */}
+        {/* ADD + | SORT SECTION - dynamic height */}
         <div style={{ height: topHeight, minHeight: '190px' }} className="flex flex-col">
           <SidebarGroup className="overflow-y-auto flex-1">
             <SidebarGroupLabel className="border-b border-black rounded-none px-0">
@@ -172,7 +170,8 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
             items-center md:gap-6"
             >
               {/* ADD + */}
-              <DialogNote edit={false} onAction={handleCreateNote} handleNewUserTag={handleCreateUserTag}
+              <DialogNote edit={false} handleCreateNote={handleCreateNote}
+                handleEditNote={handleEditNote} handleNewUserTag={handleCreateUserTag}
                 handleEditUserTag={handleEditUserTag} handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
 
               {/* SORT */}
@@ -267,7 +266,8 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
                         onClick={(e) => e.stopPropagation()}>
                         {/* EDIT NOTE DIALOG BUTTON */}
                         <DialogNote edit={true} noteId={note.id}
-                          onAction={handleEditNote} handleNewUserTag={handleCreateUserTag}
+                          handleCreateNote={handleCreateNote}
+                          handleEditNote={handleEditNote} handleNewUserTag={handleCreateUserTag}
                           handleEditUserTag={handleEditUserTag}
                           handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
                         {/* DELETE NOTE */}

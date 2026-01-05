@@ -37,19 +37,12 @@ export type NoteDataForEdit = {
  * @property {(tag: Tag, tagColor: string) => void} handleEditedColorNotes - Applies a tag color change to any notes that use the tag.
  */
 export type DialogNoteArgs =
-  | {
-    edit: false;
-    onAction: (data: NoteDataForNew) => void;
-    noteId?: never;
+  {
+    edit: boolean;
+    handleCreateNote: (data: NoteDataForNew) => void,
+    handleEditNote: (data: NoteDataForEdit, id: string) => void,
+    noteId?: string,
     handleNewUserTag: (tag: Tag) => void;
     handleEditUserTag: (tag: Tag, tagColor: string) => void,
     handleEditedColorNotes: (tag: Tag, tagColor: string) => void,
   }
-  | {
-    edit: true;
-    noteId: string;
-    onAction: (data: NoteDataForEdit, id: string) => void;
-    handleNewUserTag: (tag: Tag) => void;
-    handleEditUserTag: (tag: Tag, tagColor: string) => void,
-    handleEditedColorNotes: (tag: Tag, tagColor: string) => void,
-  };

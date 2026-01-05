@@ -10,7 +10,7 @@ import { Tag } from "../../redux/slices/tags/tagsSlice";
 interface UseMatchedTagsArgs {
   notes: NotesArgs[],
   userTags: Tag[],
-  handleEdit: (data: { title: string, content: string, tags: Tag[] }, noteId: string) => void,
+  handleEditNote: (data: { title: string, content: string, tags: Tag[] }, noteId: string) => void,
   sortAfter: string,
   isDescending: boolean,
   selectedTags: Tag[],
@@ -30,7 +30,7 @@ interface UseMatchedTagsArgs {
  */
 export const useMatchedTags = (data: UseMatchedTagsArgs) => {
 
-  const { notes, userTags, handleEdit, sortAfter,
+  const { notes, userTags, handleEditNote, sortAfter,
     isDescending, selectedTags, deletedUserTag, setDeletedUserTag } = data;
 
       // This will ensure, that a note doesn't contain tags, that are not in user tags.
@@ -60,7 +60,7 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
       if (notes[index].tags.length !== note.tags.length) {
 
         // This means something has changed, we need to tell firebase
-        handleEdit(note, note.id);
+        handleEditNote(note, note.id);
       }
 
       // set it to null, since we don't want any sideEffects with it
