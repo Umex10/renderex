@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import notesSlice from "./slices/notesSlice";
 import formatSlice from "./slices/formatSlice";
 import tagsSlice from "./slices/tags/tagsSlice";
+import userSlice from "./slices/userSlice";
 
 /**
  * The Redux store configuration.
@@ -12,7 +13,8 @@ export const store = configureStore({
   reducer: {
     notesState: notesSlice,
     formState: formatSlice,
-    tagsState: tagsSlice
+    tagsState: tagsSlice,
+    userState: userSlice
   }
 })
 

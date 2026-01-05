@@ -1,5 +1,5 @@
 import { NotesArgs } from "../types/notesArgs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -28,10 +28,17 @@ export function useNotes(initialNotes: NotesArgs[]) {
 
   const [notes, setNotes] = useState<NotesArgs[]>(initialNotes)
   const [user, loading] = useAuthState(auth);
+  const firstLoad = useRef(true);
 
   useEffect(() => {
 
     if (loading || !user) return;
+
+    // This will ensure we don't fetch the notes unnecessarily on the first load
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
 
     // Gets all notes related to the user
     const q = query(

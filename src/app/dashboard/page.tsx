@@ -13,7 +13,6 @@ import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { NotesArgs } from "../../types/notesArgs";
-import { useFormat } from '@/hooks/use-format';
 import LiveRenderer from '@/components/LiveRenderer';
 import EditorActions from '@/components/EditorActions';
 import { CONTENT_STATE } from '../../../constants/loadingStates/ContentState';
@@ -74,12 +73,6 @@ const Dashboard = () => {
     setActiveMode(value);
   }
 
-  function handleResetSelection() {
-    setActiveMode(startMode);
-    setSummaryActive(true);
-    setStructureAtive(false);
-  }
-
   function handleGenerate() {
     if (summaryActive) {
       handleSummarize(content, activeMode);
@@ -132,6 +125,7 @@ const Dashboard = () => {
     // if the content is the same as before, than ignore
     if (content === lastSavedContent.current) return;
 
+    // This will ensure we don't fetch the notes unnecessarily on the first load
     if (firstLoad.current) {
       firstLoad.current = false;
       return;
@@ -191,7 +185,6 @@ const Dashboard = () => {
           structureActive={structureActive}
           handleSummarizeSelection={handleSummarizeSelection}
           handleStructureSelection={handleStructureSelection}
-          handleResetSelection={handleResetSelection}
           handleGenerate={handleGenerate}></EditorActions>
 
         {/* LIVE */}
@@ -228,7 +221,6 @@ const Dashboard = () => {
               structureActive={structureActive}
               handleSummarizeSelection={handleSummarizeSelection}
               handleStructureSelection={handleStructureSelection}
-              handleResetSelection={handleResetSelection}
               handleGenerate={handleGenerate}></EditorActions>
 
           </TabsContent>

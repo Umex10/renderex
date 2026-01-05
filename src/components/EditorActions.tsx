@@ -2,7 +2,7 @@
 
 import Editor from '@/components/Editor';
 import { Button } from './ui/button';
-import { CheckCircle, Loader2, RotateCcw } from 'lucide-react';
+import { CheckCircle, Loader2 } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
@@ -16,7 +16,6 @@ interface EditorActionsArgs {
   structureActive: boolean,
   handleSummarizeSelection: (value: string) => void;
   handleStructureSelection: (value: string) => void;
-  handleResetSelection: () => void,
   handleGenerate: () => void;
 }
 
@@ -24,8 +23,7 @@ const EditorActions = (data: EditorActionsArgs) => {
 
   const { content, setContent, saveState,
     aiState, summaryActive, structureActive,
-    handleSummarizeSelection, handleStructureSelection,
-    handleResetSelection, handleGenerate
+    handleSummarizeSelection, handleStructureSelection,handleGenerate
   } = data;
 
 

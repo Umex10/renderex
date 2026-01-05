@@ -34,7 +34,7 @@ export function useUserTags(data: UseUserTagsArgs) {
   const [user, loading] = useAuthState(auth);
   // This will ensure, that we will not load the userTags uneccessarily since 
   // we are getting it from the server action already on mount
-  const firstCall = useRef(true);
+  const firstLoad = useRef(true);
 
   useEffect(() => {
       // Fill the redux state on mount
@@ -53,9 +53,9 @@ export function useUserTags(data: UseUserTagsArgs) {
     // correct values.
     const unsubscribe = onSnapshot(ref, (snap) => {
 
-      // Ignore first iteration to not load data unnecessarily
-      if (firstCall.current) {
-        firstCall.current = false;
+      // This will ensure we don't fetch the notes unnecessarily on the first load
+      if (firstLoad.current) {
+        firstLoad.current = false;
         return;
       }
     

@@ -68,18 +68,17 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
 
   const router = useRouter();
 
-
   const auth = getAuth();
   const loadedUserRef = useRef<User | null>(null);
   const [loadedUser, setLoadedUser] = useState<User | null>(null);
 
   useEffect(() => {
 
-     // It may be that the user uid is not set in the cookie, so we need to make 
-  // sure that the user still sees his credentials on fresh registration
+    // It may be that the user uid is not set in the cookie, so we need to make 
+    // sure that the user still sees his credentials on fresh registration
     async function notLoadedUser() {
       if (!initialUser && auth.currentUser) {
-  
+
         const user = await getInitialUser();
         if (!user.data) return;
 
@@ -134,6 +133,8 @@ export function AppSidebar({ initialNotes, initialUserTags, initialUser }: AppSi
     setSelectedTags(selected)
   }
 
+  // This will ubdate the color of the tags inside the notes, if the tag color was changed
+  // in the Sidebar "Tags" section. So it will match.
   const handleEditedColorNotes = (toEditTag: Tag, tagColor: string) => {
 
     const editedNotes = notes.filter(note =>

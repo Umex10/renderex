@@ -56,7 +56,7 @@ const SelectFormat = () => {
   }, [activeNote])
 
   if (!note) {
-    return <p>Select a note, so the download Select element is visible</p>
+    return <p className='hidden md:block'>Select a note, so the download Select element is visible</p>
   }
 
   return (

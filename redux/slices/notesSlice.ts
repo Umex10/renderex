@@ -1,11 +1,14 @@
+import { NotesArgs } from "@/types/notesArgs";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface NotesState {
-  activeNote: string
+  activeNote: string,
+  notes: NotesArgs[]
 }
 
 const initialState: NotesState = {
-  activeNote: ""
+  activeNote: "",
+  notes: []
 }
 
 /**
@@ -20,6 +23,18 @@ const notesSlice = createSlice({
     //The dispatched action containing the note ID as payload.
     setActiveNote: (state, action: PayloadAction<string>) => {
       state.activeNote = action.payload;
+    },
+
+    setNotes: (state, action: PayloadAction<NotesArgs[]>) => {
+      state.notes = action.payload
+    },
+
+    addNote: (state, action: PayloadAction<NotesArgs>) => {
+      state.notes.push(action.payload);
+    },
+
+    removeNote: (state, action: PayloadAction<string>) => {
+      state.notes.filter(note => note.id !== action.payload)
     },
   }
 })

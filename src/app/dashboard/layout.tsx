@@ -55,7 +55,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <SidebarProvider>
 
           {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
-          <AppSidebar initialNotes={initialNotes} initialUserTags={initialUserTags}
+          <AppSidebar  initialNotes={initialNotes} initialUserTags={initialUserTags}
           initialUser={initialUser} />
 
           {/* UNDERNEATH SIDEBAR (RIGHT SIDE) - Content of a note */}
