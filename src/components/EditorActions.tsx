@@ -6,6 +6,7 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import ChatWidget from './ChatWidget';
 
 interface EditorActionsArgs {
   content: string,
@@ -95,6 +96,7 @@ const EditorActions = (data: EditorActionsArgs) => {
                   </SelectItem>
                 </SelectContent>
               </Select>
+              <ChatWidget></ChatWidget>
           </div>
           <Button onClick={() => handleGenerate()}>
             {`Generate ${summaryActive ? "Summary" : "Structure"}`}
