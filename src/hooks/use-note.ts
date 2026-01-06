@@ -9,10 +9,13 @@ import { useAi } from "./use-ai";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { NotesArgs } from "@/types/notesArgs";
+import { setShowSandbox, setSandboxContent, setIsSandboxActive, setIsTryAgainActive }
+  from "../../redux/slices/sandboxSlice";
 
 export const useNote = (noteId: string) => {
 
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
+
   const dispatch = useDispatch<AppDispatch>();
 
   if (activeNote !== noteId) {
@@ -24,7 +27,7 @@ export const useNote = (noteId: string) => {
 
   // Ensures that content isn't rewritten uneccessarily onto firebase
   const lastSavedContent = useRef(note?.content || "")
-  
+
   // This will ensure, that we will not load the globalTags uneccessarily since 
   // we are getting it from the server 
   const firstLoad = useRef(true);
@@ -47,15 +50,21 @@ export const useNote = (noteId: string) => {
 
   const [activeMode, setActiveMode] = useState(startMode);
 
-  const [isSandboxActive, setIsSandboxActive] = useState(false);
-
-  const [sandboxContent, setSandboxContent] = useState("");
+  const { isTryAgainActive, sandboxContent } = useSelector((state: RootState) => state.sandboxState);
 
   function handleSummarizeSelection(value: string) {
     setSummaryActive(true);
     setStructureAtive(false);
 
     setActiveMode(value);
+
+    if (value !== "summarize-sandbox") {
+      dispatch(setIsSandboxActive(false));
+    }
+
+    if (value === "summarize-sandbox") {
+      dispatch(setIsSandboxActive(true));
+    }
   }
 
   function handleStructureSelection(value: string) {
@@ -63,25 +72,46 @@ export const useNote = (noteId: string) => {
     setSummaryActive(false);
 
     setActiveMode(value);
+
+    if (value !== "structure-sandbox") {
+      dispatch(setIsSandboxActive(false));
+    }
+
+    if (value === "structure-sandbox") {
+      dispatch(setIsSandboxActive(true));
+    }
   }
 
   async function handleGenerate() {
     let res;
     if (summaryActive) {
-      res = await handleSummarize(content, activeMode);
+      res = await handleSummarize(content, activeMode, isTryAgainActive, sandboxContent);
     } else {
-      res = await handleStructure(content, activeMode)
+      res = await handleStructure(content, activeMode, isTryAgainActive, sandboxContent)
     }
+
+    // to ensure that this is not always active
+    dispatch(setIsTryAgainActive(false));
 
     if (!res) return;
 
     if (activeMode === "summarize-sandbox" || activeMode === "structure-sandbox") {
-      setIsSandboxActive(true);
-      setSandboxContent(res);
+      dispatch(setShowSandbox(true));
+      dispatch(setSandboxContent(res));
     } else {
       setContent(res);
     }
   }
+
+  useEffect(() => {
+    async function generateAgain() {
+      if (isTryAgainActive) {
+        await handleGenerate();
+      }
+    }
+
+    generateAgain();
+  }, [isTryAgainActive])
 
   useEffect(() => {
 
@@ -147,7 +177,6 @@ export const useNote = (noteId: string) => {
   return {
     note, content, setContent, saveState, aiState,
     summaryActive, structureActive, handleSummarizeSelection,
-    handleStructureSelection, handleGenerate, isSandboxActive,
-    setIsSandboxActive, sandboxContent, setSandboxContent
+    handleStructureSelection, handleGenerate
   }
 }

@@ -20,19 +20,13 @@ interface EditorActionsArgs {
   handleSummarizeSelection: (value: string) => void;
   handleStructureSelection: (value: string) => void;
   handleGenerate: () => void;
-  isSandboxActive: boolean,
-  setIsSandboxActive: Dispatch<SetStateAction<boolean>>,
-  sandboxContent: string,
-  setSandboxContent: Dispatch<SetStateAction<string>>,
-  
 }
 
 const EditorActions = (data: EditorActionsArgs) => {
 
   const { content, setContent, saveState,
     aiState, summaryActive, structureActive,
-    handleSummarizeSelection, handleStructureSelection,handleGenerate,
-    isSandboxActive, setIsSandboxActive, sandboxContent, setSandboxContent
+    handleSummarizeSelection, handleStructureSelection,handleGenerate
   } = data;
 
 
@@ -110,10 +104,7 @@ const EditorActions = (data: EditorActionsArgs) => {
               </InfoTool>
 
               {/* Sandbox */}
-              <Sandbox content={content} setContent={setContent}
-              isSandboxActive={isSandboxActive} setIsSandboxActive={setIsSandboxActive}
-              sandboxContent={sandboxContent} setSandboxContent={setSandboxContent}
-              ></Sandbox>
+              <Sandbox></Sandbox>
           </div>
           <Button onClick={() => handleGenerate()}>
             {`Generate ${summaryActive ? "Summary" : "Structure"}`}

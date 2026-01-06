@@ -22,8 +22,7 @@ const Note = ({
 
   const {note, content, setContent, saveState, aiState,
     summaryActive, structureActive, handleSummarizeSelection, 
-    handleStructureSelection, handleGenerate, isSandboxActive,
-    setIsSandboxActive, sandboxContent, setSandboxContent
+    handleStructureSelection, handleGenerate
   } = useNote(noteId);
 
   if (!note) {
@@ -43,14 +42,11 @@ const Note = ({
 
         {/* EDITOR */}
         <EditorActions content={content} setContent={setContent}
-          saveState={saveState}
-          aiState={aiState} summaryActive={summaryActive}
-          structureActive={structureActive}
+          saveState={saveState} aiState={aiState} 
+          summaryActive={summaryActive} structureActive={structureActive}
           handleSummarizeSelection={handleSummarizeSelection}
           handleStructureSelection={handleStructureSelection}
-          handleGenerate={handleGenerate} isSandboxActive={isSandboxActive}
-          setIsSandboxActive={setIsSandboxActive} sandboxContent={sandboxContent}
-          setSandboxContent={setSandboxContent}
+          handleGenerate={handleGenerate}
           ></EditorActions>
 
         {/* LIVE */}
@@ -87,11 +83,7 @@ const Note = ({
               structureActive={structureActive}
               handleSummarizeSelection={handleSummarizeSelection}
               handleStructureSelection={handleStructureSelection}
-              handleGenerate={handleGenerate}
-              isSandboxActive={isSandboxActive}
-              setIsSandboxActive={setIsSandboxActive}
-              sandboxContent={sandboxContent}
-          setSandboxContent={setSandboxContent}></EditorActions>
+              handleGenerate={handleGenerate}></EditorActions>
 
           </TabsContent>
           {/* LIVE VIEW */}

@@ -9,7 +9,9 @@ interface UseAiArgs {
 
 export const useAi = ({ setAiState }: UseAiArgs) => {
 
-  const handleSummarize = async (content: string, activeMode: string) => {
+  const handleSummarize = async (content: string, activeMode: string, isTryAgainActive: boolean,
+    sandboxContent: string
+  ) => {
 
     setAiState("generating");
 
@@ -32,8 +34,19 @@ export const useAi = ({ setAiState }: UseAiArgs) => {
     - summary-insert-bottom: Generate a summary and insert it at the end of the note. Do not remove the original content.
 
     Mode: ${activeMode}
+
     Markdown content:
     ${content}
+
+    Additional Mode: 
+    - try again: if this is active, then you should get the content as well as the last answer from you,
+    so you can "make it better" if the user didn't like the answer before.
+
+    Is try again active?: ${isTryAgainActive}
+
+    If so, the last answer was: 
+    Markdown content:
+    ${sandboxContent}
 `);
 
     if (!res) {
@@ -50,7 +63,8 @@ export const useAi = ({ setAiState }: UseAiArgs) => {
     return res;
   }
 
-  const handleStructure = async (content: string, activeMode: string) => {
+  const handleStructure = async (content: string, activeMode: string, isTryAgainActive: boolean,
+    sandboxContent: string) => {
     setAiState("generating");
 
     const res = await aiDo(`
@@ -74,6 +88,16 @@ export const useAi = ({ setAiState }: UseAiArgs) => {
     Mode: ${activeMode}
     Markdown content:
     ${content}
+
+    Additional Mode: 
+    - try again: if this is active, then you should get the content as well as the last answer from you,
+    so you can "make it better" if the user didn't like the answer before.
+
+    Is try again active?: ${isTryAgainActive}
+
+    If so, the last answer was: 
+    Markdown content:
+    ${sandboxContent}
 `);
 
     if (!res) {

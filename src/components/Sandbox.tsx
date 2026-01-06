@@ -1,25 +1,24 @@
 "use client"
 
-import React, { useRef, Dispatch, SetStateAction } from 'react';
+import React, { useRef } from 'react';
 import { Sparkles, X, GripHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
 import LiveRenderer from './LiveRenderer';
 import InfoTool from './InfoTool';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
+import { setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
+import { Undo2 } from 'lucide-react';
 
-interface SandboxArgs {
-  content: string,
-  setContent: Dispatch<SetStateAction<string>>,
-  sandboxContent: string,
-  setSandboxContent: Dispatch<SetStateAction<string>>,
-  isSandboxActive: boolean,
-  setIsSandboxActive: Dispatch<SetStateAction<boolean>>
-}
 
-const Sandbox = ({content, setContent, sandboxContent, setSandboxContent,
-   isSandboxActive, setIsSandboxActive}: SandboxArgs) => {
+const Sandbox = () => {
   // Reference for the boundary (the whole screen)
   const constraintsRef = useRef(null);
+
+  const {sandboxContent, showSandbox, isSandboxActive} =
+   useSelector((state: RootState) => state.sandboxState);
+  const dispatch = useDispatch<AppDispatch>();
 
   return (
     <>
@@ -30,8 +29,10 @@ const Sandbox = ({content, setContent, sandboxContent, setSandboxContent,
         <InfoTool desc="If sandbox mode is selected in either 'Summary' or 'Structure',
         you will see here the live view">
            <Button
-          onClick={() => setIsSandboxActive(!isSandboxActive)}
-          className="flex items-center gap-2 bg-violet-500 hover:bg-violet-600 text-white p-3 rounded-full shadow-lg transition-all active:scale-95"
+          onClick={() => dispatch(setShowSandbox(!showSandbox))}
+          className="flex items-center gap-2 bg-violet-500 hover:bg-violet-600
+          p-3 rounded-full shadow-lg transition-all active:scale-95"
+          disabled={!isSandboxActive}
         >
           <Sparkles size={24} />
           <span className="font-bold">Sandbox</span>
@@ -49,7 +50,7 @@ const Sandbox = ({content, setContent, sandboxContent, setSandboxContent,
         className="fixed inset-0 pointer-events-none z-50"
       >
         <AnimatePresence>
-          {isSandboxActive && (
+          {showSandbox && (
             <motion.div
               drag
               dragConstraints={constraintsRef}
@@ -68,30 +69,29 @@ const Sandbox = ({content, setContent, sandboxContent, setSandboxContent,
                   <span className="font-semibold">Sandbox</span>
                 </div>
                 <Button variant={"secondary"} 
-                 onClick={() => setIsSandboxActive(false)} className="hover:bg-orange-600 rounded">
+                 onClick={() => dispatch(setShowSandbox(false))} className="hover:bg-orange-600 rounded">
                   <X size={20} />
                 </Button>
               </div>
 
               {/* Body */}
-              <div className="flex-1 p-4 bg-gray-50 flex items-center justify-center
-              overflow-y-scroll">
+              <div className="flex-1 p-4 bg-gray-50 flex items-start gap-2 
+              justify-center overflow-y-scroll">
                 {/* LIVE */}
                 <LiveRenderer classes='w-full h-full' content={sandboxContent}></LiveRenderer>
+                 <Button className='bg-violet-500 px-2 py-1 w-10 h-10'>
+                  <Undo2 className='w-auto h-auto'></Undo2>
+                </Button>
               </div>
 
               {/* Footer */}
               <div className='px-4 flex flex-row gap-1'> 
                 <Button>
-                  Redo
+                     Transfer into Note
                 </Button>
 
-                 <Button className='bg-violet-500'>
+                 <Button className='bg-violet-500' onClick={() => dispatch(setIsTryAgainActive(true))}>
                   Try again
-                </Button>
-
-                <Button className='bg-violet-500'>
-                  Use
                 </Button>
               </div>
             </motion.div>
