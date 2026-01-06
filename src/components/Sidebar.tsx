@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar"
 import Logo from "./Logo"
 import Link from "next/link";
-import { ArrowDown, ArrowUp, Camera, LogOut, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, BadgeInfo, Camera, LogOut, Trash2, X } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -163,7 +163,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
         <div style={{ height: topHeight, minHeight: '190px' }} className="flex flex-col">
           <SidebarGroup className="overflow-y-auto flex-1">
             <SidebarGroupLabel className="border-b border-black rounded-none px-0 cursor-pointer"
-            onClick={() => router.push("/dashboard")}>
+              onClick={() => router.push("/dashboard")}>
               <span className="text-xl font-bold">Notes</span>
             </SidebarGroupLabel>
             <div
@@ -267,7 +267,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                       <div className="flex justify-center items-center gap-1"
                         onClick={(e) => e.stopPropagation()}>
                         {/* EDIT NOTE DIALOG BUTTON */}
-                        <DialogNote note={note} edit={true} 
+                        <DialogNote note={note} edit={true}
                           handleCreateNote={handleCreateNote}
                           handleEditNote={handleEditNote} handleNewUserTag={handleCreateUserTag}
                           handleEditUserTag={handleEditUserTag}
@@ -315,7 +315,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
         {/* USER-TAGS SECTION */}
         <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden">
           <SidebarGroupLabel className="border-b border-black rounded-none px-0 cursor-pointer"
-          onClick={() => router.push("/dashboard")}>
+            onClick={() => router.push("/dashboard")}>
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>
           {/* INPUT */}
@@ -353,7 +353,12 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                         border-muted-foreground/30"
             ></Input>
 
-            <InfoTool desc="Here you can add tags by seberating them with ','"></InfoTool>
+            <InfoTool desc="Here you can add tags by seberating them with ','"
+            triggerClasses="mt-2">
+              <BadgeInfo>
+
+              </BadgeInfo>
+            </InfoTool>
           </div>
 
           {/* USER-TAGS */}
@@ -365,11 +370,11 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                 handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
             ))}
 
-            {userTags &&  (
+            {userTags && (
               <span className="w-full text-center">Loading tags...</span>
             )}
-            
-            {!userTags && sortedUserTags.length === 0 &&  (
+
+            {!userTags && sortedUserTags.length === 0 && (
               <span className="w-full text-center">No tags set yet, waiting...</span>
             )}
           </div>
@@ -378,7 +383,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
       {/* ACCOUNT | LOG OUT SECTION*/}
       <SidebarFooter className="flex flex-col gap-4 items-center">
         {/* ACCOUNT */}
-          <Card className="w-full flex flex-row items-center justify-start
+        <Card className="w-full flex flex-row items-center justify-start
             gap-2 px-4 py-4 cursor-pointer"
           onClick={() => router.push("/dashboard/account")}>
 

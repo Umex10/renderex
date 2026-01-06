@@ -4,11 +4,10 @@ import { aiDo } from "@/actions/ai";
 import { AI_STATE } from "../../constants/loadingStates/AiState";
 
 interface UseAiArgs {
-  setAiState: React.Dispatch<React.SetStateAction<typeof AI_STATE[keyof typeof AI_STATE]>>,
-  setContent: React.Dispatch<React.SetStateAction<string>>
+  setAiState: React.Dispatch<React.SetStateAction<typeof AI_STATE[keyof typeof AI_STATE]>>
 }
 
-export const useAi = ({ setAiState, setContent }: UseAiArgs) => {
+export const useAi = ({ setAiState }: UseAiArgs) => {
 
   const handleSummarize = async (content: string, activeMode: string) => {
 
@@ -42,11 +41,13 @@ export const useAi = ({ setAiState, setContent }: UseAiArgs) => {
       setAiState("error");
       return;
     };
-    setContent(res);
+
 
     setAiState("finished");
 
     setTimeout(() => setAiState("idle"), 1500);
+
+    return res;
   }
 
   const handleStructure = async (content: string, activeMode: string) => {
@@ -80,11 +81,11 @@ export const useAi = ({ setAiState, setContent }: UseAiArgs) => {
       setAiState("error");
       return;
     };
-    setContent(res);
 
     setAiState("finished");
 
     setTimeout(() => setAiState("idle"), 1500);
+    return res;
   }
 
   return { handleSummarize, handleStructure };

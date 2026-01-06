@@ -5,19 +5,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { BadgeInfo } from 'lucide-react';
-
 interface InfoToolArgs {
-  desc: string
+  desc: string,
+  children: React.ReactNode,
+  triggerClasses?: string
 }
 
-const InfoTool = ({desc}: InfoToolArgs) => {
+const InfoTool = ({desc, children, triggerClasses}: InfoToolArgs) => {
   return (
     <Tooltip>
-      <TooltipTrigger className='mt-2'>
-        <BadgeInfo>
-    
-        </BadgeInfo>
+      <TooltipTrigger className={`${triggerClasses}`}>
+          {children}
       </TooltipTrigger>
       <TooltipContent>
         <p>{desc}</p>

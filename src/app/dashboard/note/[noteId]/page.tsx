@@ -22,7 +22,8 @@ const Note = ({
 
   const {note, content, setContent, saveState, aiState,
     summaryActive, structureActive, handleSummarizeSelection, 
-    handleStructureSelection, handleGenerate, 
+    handleStructureSelection, handleGenerate, isSandboxActive,
+    setIsSandboxActive, sandboxContent, setSandboxContent
   } = useNote(noteId);
 
   if (!note) {
@@ -47,10 +48,13 @@ const Note = ({
           structureActive={structureActive}
           handleSummarizeSelection={handleSummarizeSelection}
           handleStructureSelection={handleStructureSelection}
-          handleGenerate={handleGenerate}></EditorActions>
+          handleGenerate={handleGenerate} isSandboxActive={isSandboxActive}
+          setIsSandboxActive={setIsSandboxActive} sandboxContent={sandboxContent}
+          setSandboxContent={setSandboxContent}
+          ></EditorActions>
 
         {/* LIVE */}
-        <LiveRenderer content={content}></LiveRenderer>
+        <LiveRenderer classes="max-w-none h-[650px]" content={content}></LiveRenderer>
       </div>
 
       {/* TABS - MOBILE ONLY */}
@@ -83,12 +87,16 @@ const Note = ({
               structureActive={structureActive}
               handleSummarizeSelection={handleSummarizeSelection}
               handleStructureSelection={handleStructureSelection}
-              handleGenerate={handleGenerate}></EditorActions>
+              handleGenerate={handleGenerate}
+              isSandboxActive={isSandboxActive}
+              setIsSandboxActive={setIsSandboxActive}
+              sandboxContent={sandboxContent}
+          setSandboxContent={setSandboxContent}></EditorActions>
 
           </TabsContent>
           {/* LIVE VIEW */}
           <TabsContent value="live">
-            <LiveRenderer content={content}></LiveRenderer>
+            <LiveRenderer classes="max-w-none h-[650px]" content={content}></LiveRenderer>
           </TabsContent>
 
         </div>

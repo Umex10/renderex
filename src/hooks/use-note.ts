@@ -21,6 +21,7 @@ export const useNote = (noteId: string) => {
 
   const [note, setNote] = useState<NotesArgs | null>(null);
   const [content, setContent] = useState<string>(note?.content || "");
+
   // Ensures that content isn't rewritten uneccessarily onto firebase
   const lastSavedContent = useRef(note?.content || "")
   
@@ -37,7 +38,7 @@ export const useNote = (noteId: string) => {
   const [aiState, setAiState] = useState<
     typeof AI_STATE[keyof typeof AI_STATE]>(AI_STATE.IDLE);
 
-  const { handleSummarize, handleStructure } = useAi({ setAiState, setContent });
+  const { handleSummarize, handleStructure } = useAi({ setAiState });
 
   const [summaryActive, setSummaryActive] = useState(true);
   const [structureActive, setStructureAtive] = useState(false);
@@ -45,6 +46,10 @@ export const useNote = (noteId: string) => {
   const startMode = "summarize-replace"
 
   const [activeMode, setActiveMode] = useState(startMode);
+
+  const [isSandboxActive, setIsSandboxActive] = useState(false);
+
+  const [sandboxContent, setSandboxContent] = useState("");
 
   function handleSummarizeSelection(value: string) {
     setSummaryActive(true);
@@ -60,11 +65,21 @@ export const useNote = (noteId: string) => {
     setActiveMode(value);
   }
 
-  function handleGenerate() {
+  async function handleGenerate() {
+    let res;
     if (summaryActive) {
-      handleSummarize(content, activeMode);
+      res = await handleSummarize(content, activeMode);
     } else {
-      handleStructure(content, activeMode)
+      res = await handleStructure(content, activeMode)
+    }
+
+    if (!res) return;
+
+    if (activeMode === "summarize-sandbox" || activeMode === "structure-sandbox") {
+      setIsSandboxActive(true);
+      setSandboxContent(res);
+    } else {
+      setContent(res);
     }
   }
 
@@ -132,6 +147,7 @@ export const useNote = (noteId: string) => {
   return {
     note, content, setContent, saveState, aiState,
     summaryActive, structureActive, handleSummarizeSelection,
-    handleStructureSelection, handleGenerate,
+    handleStructureSelection, handleGenerate, isSandboxActive,
+    setIsSandboxActive, sandboxContent, setSandboxContent
   }
 }

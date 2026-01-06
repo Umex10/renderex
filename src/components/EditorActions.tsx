@@ -6,11 +6,13 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
-import ChatWidget from './ChatWidget';
+import Sandbox from './Sandbox';
+import { Dispatch, SetStateAction } from 'react';
+import InfoTool from './InfoTool';
 
 interface EditorActionsArgs {
   content: string,
-  setContent: (content: string) => void,
+  setContent: Dispatch<SetStateAction<string>>,
   saveState: string,
   aiState: string,
   summaryActive: boolean,
@@ -18,13 +20,19 @@ interface EditorActionsArgs {
   handleSummarizeSelection: (value: string) => void;
   handleStructureSelection: (value: string) => void;
   handleGenerate: () => void;
+  isSandboxActive: boolean,
+  setIsSandboxActive: Dispatch<SetStateAction<boolean>>,
+  sandboxContent: string,
+  setSandboxContent: Dispatch<SetStateAction<string>>,
+  
 }
 
 const EditorActions = (data: EditorActionsArgs) => {
 
   const { content, setContent, saveState,
     aiState, summaryActive, structureActive,
-    handleSummarizeSelection, handleStructureSelection,handleGenerate
+    handleSummarizeSelection, handleStructureSelection,handleGenerate,
+    isSandboxActive, setIsSandboxActive, sandboxContent, setSandboxContent
   } = data;
 
 
@@ -47,7 +55,8 @@ const EditorActions = (data: EditorActionsArgs) => {
 
   
               {/* Summarize */}
-              <Select
+              <InfoTool desc="Here you can generate a summary with different modes">
+                   <Select
                 defaultValue="summarize-replace"
                 onValueChange={(value) => handleSummarizeSelection(value)}
               >
@@ -74,9 +83,11 @@ const EditorActions = (data: EditorActionsArgs) => {
                   </SelectItem>
                 </SelectContent>
               </Select>
-
-              {/* Structure */}
-              <Select
+              </InfoTool>
+              
+                {/* Structure */}
+              <InfoTool desc="Here you can generate a better structure with different modes">
+                  <Select
                 onValueChange={(value) => handleStructureSelection(value)}
               >
                 <SelectTrigger
@@ -96,7 +107,13 @@ const EditorActions = (data: EditorActionsArgs) => {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <ChatWidget></ChatWidget>
+              </InfoTool>
+
+              {/* Sandbox */}
+              <Sandbox content={content} setContent={setContent}
+              isSandboxActive={isSandboxActive} setIsSandboxActive={setIsSandboxActive}
+              sandboxContent={sandboxContent} setSandboxContent={setSandboxContent}
+              ></Sandbox>
           </div>
           <Button onClick={() => handleGenerate()}>
             {`Generate ${summaryActive ? "Summary" : "Structure"}`}
