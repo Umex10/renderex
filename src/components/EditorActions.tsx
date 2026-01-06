@@ -2,7 +2,7 @@
 
 import Editor from '@/components/Editor';
 import { Button } from './ui/button';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
@@ -138,7 +138,7 @@ const EditorActions = (data: EditorActionsArgs) => {
           <div className={`${aiState === AI_STATE.IDLE ? "hidden" : ""}`}>
             {aiState === AI_STATE.GENERATING && (
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Sparkles className="h-4 w-4 animate-spin" />
                 <span>AI is generating</span>
               </div>
 

@@ -9,7 +9,7 @@ import { useAi } from "./use-ai";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { NotesArgs } from "@/types/notesArgs";
-import { setShowSandbox, setSandboxContent, setIsSandboxActive, setIsTryAgainActive }
+import { setShowSandbox, setSandboxContent, setIsSandboxActive, setIsTryAgainActive, setIsTransferActive }
   from "../../redux/slices/sandboxSlice";
 
 export const useNote = (noteId: string) => {
@@ -50,7 +50,9 @@ export const useNote = (noteId: string) => {
 
   const [activeMode, setActiveMode] = useState(startMode);
 
-  const { isTryAgainActive, sandboxContent } = useSelector((state: RootState) => state.sandboxState);
+  const { isTryAgainActive, sandboxContent,
+    isTransferActive
+  } = useSelector((state: RootState) => state.sandboxState);
 
   function handleSummarizeSelection(value: string) {
     setSummaryActive(true);
@@ -84,6 +86,10 @@ export const useNote = (noteId: string) => {
 
   async function handleGenerate() {
     let res;
+    const isAiActive = activeMode === "summarize-sandbox" || activeMode === "structure-sandbox"
+
+    if (isAiActive)  dispatch(setShowSandbox(true));
+
     if (summaryActive) {
       res = await handleSummarize(content, activeMode, isTryAgainActive, sandboxContent);
     } else {
@@ -95,8 +101,7 @@ export const useNote = (noteId: string) => {
 
     if (!res) return;
 
-    if (activeMode === "summarize-sandbox" || activeMode === "structure-sandbox") {
-      dispatch(setShowSandbox(true));
+    if (isAiActive) {
       dispatch(setSandboxContent(res));
     } else {
       setContent(res);
@@ -112,6 +117,17 @@ export const useNote = (noteId: string) => {
 
     generateAgain();
   }, [isTryAgainActive])
+
+  useEffect(() => {
+    function transfer() {
+      if (isTransferActive) {
+        setContent(sandboxContent);
+        dispatch(setIsTransferActive(false));
+      }
+    }
+
+    transfer();
+  }, [isTransferActive])
 
   useEffect(() => {
 
