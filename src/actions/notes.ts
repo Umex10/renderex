@@ -53,7 +53,7 @@ export async function createNote(note: NotesArgs) {
     await requireUserId();
 
     // id is not needed, firebase is handling that
-    const {id: _, ...newNote } = note;
+    const {id: _, loadingNote: __, ...newNote } = note;
 
     const noteRef = await db.collection("notes").add(newNote);
 

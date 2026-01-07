@@ -1,3 +1,5 @@
+"use client"
+
 import { NotesArgs } from "../types/notesArgs";
 
 import { createNote, deleteNote, editNote } from "@/actions/notes";
@@ -7,7 +9,6 @@ import { AppDispatch } from "../../redux/store";
 import { Tag } from "../../redux/slices/tags/tagsSlice";
 import { auth } from "@/lib/firebase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
-
 /**
  * Custom hook to manage notes state and interactions.
  * Handles real-time updates from Firestore and provides methods to create, edit, and delete notes.
@@ -24,7 +25,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 export function useNotes(notes: NotesArgs[]) {
 
   const dispatch = useDispatch<AppDispatch>();
-  const [user, loading] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
 
   // This is needed, to find the exact note we need. We can't write this function within the slice,
@@ -75,7 +76,8 @@ export function useNotes(notes: NotesArgs[]) {
    */
   const handleCreateNote = async (data: { title: string, tags: Tag[] }) => {
 
-    // set newNote with a fake id which we will change later
+
+    // set newNote with a fake id which we will change afterwards
     const customId = data.title + data.tags.toString();
 
     if (!user) {
@@ -88,7 +90,8 @@ export function useNotes(notes: NotesArgs[]) {
       content: "",
       date: new Date().toISOString(),
       tags: data.tags,
-      userId: user.uid
+      userId: user.uid,
+      loadingNote: true
     }
 
     // fallback array
@@ -107,15 +110,11 @@ export function useNotes(notes: NotesArgs[]) {
 
       if (result && result.id) {
 
-        const neededNote = findNote(result.id)
-
-        if (!neededNote) return;
-
         // Change id to the id which was given by firebase 
-        const editedNote = { ...neededNote, id: result.id }
+        const editedNote = { ...newNote, id: result.id, loadingNote: false };
 
-        dispatch(changeNote(editedNote));
-        dispatch(setActiveNote(result.id))
+        dispatch(changeNote({editedNote, customId}));
+        dispatch(setActiveNote(result.id));
       }
 
     } catch (err) {
@@ -153,7 +152,7 @@ export function useNotes(notes: NotesArgs[]) {
 
     // This will give the user immediate feedback!
     const editedNote = { ...neededNote, ...newNote };
-    dispatch(changeNote(editedNote));
+    dispatch(changeNote({editedNote}));
 
     try {
       // Calling firebase
@@ -168,6 +167,6 @@ export function useNotes(notes: NotesArgs[]) {
     }
   }
 
-  return { loading, handleCreateNote, handleDeleteNote, handleEditNote };
+  return {handleCreateNote, handleDeleteNote, handleEditNote };
 
 }

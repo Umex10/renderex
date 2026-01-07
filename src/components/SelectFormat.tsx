@@ -65,7 +65,7 @@ const SelectFormat = () => {
         <span>Download</span>
         <Download></Download>
       </Button>
-      <Select defaultValue={FORMAT.MD} value={format ?? undefined} onValueChange={setFormat}>
+      <Select defaultValue={FORMAT.MD} value={format} onValueChange={setFormat}>
         <SelectTrigger className="w-[100px]">
           <SelectValue placeholder="Select a format" />
         </SelectTrigger>

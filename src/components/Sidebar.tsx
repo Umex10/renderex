@@ -100,7 +100,8 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
 
   // NOTES HOOK
   const notes = useSelector((state: RootState) => state.notesState.notes);
-  const { loading, handleCreateNote, handleDeleteNote, handleEditNote } = useNotes(notes);
+  const {handleCreateNote, handleDeleteNote, handleEditNote } = useNotes(notes);
+  const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
   // SORT STATES
   const [sortAfter, setSortAfter] = useState("date");
@@ -247,7 +248,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
             {/* NOTES SECTION */}
             <div className="flex flex-col gap-4 mt-2">
 
-              {loading || notes.length === 0 && (
+              {notes.length === 0 && (
                 <span className="text-center">It{"'"}s not very noisy here...</span>
               )}
 
@@ -255,47 +256,59 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                   transform-all ease-out duration-300 cursor-pointer"
                   onClick={() => {
-                    dispatch(setActiveNote(note.id));
-                    router.push(`/dashboard/note/${note.id}`)
+                    if (!note.loadingNote || activeNote !== note.id) {
+                      dispatch(setActiveNote(note.id));
+                      router.push(`/dashboard/note/${note.id}`)
+                    }
                   }}>
-                  <CardHeader className="px-4 py-0">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="leading-tight">
-                        {note.title.charAt(0).toUpperCase() +
-                          note.title.slice(1,)}
-                      </CardTitle>
-                      <div className="flex justify-center items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}>
-                        {/* EDIT NOTE DIALOG BUTTON */}
-                        <DialogNote note={note} edit={true}
-                          handleCreateNote={handleCreateNote}
-                          handleEditNote={handleEditNote} handleNewUserTag={handleCreateUserTag}
-                          handleEditUserTag={handleEditUserTag}
-                          handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
-                        {/* DELETE NOTE */}
-                        <Button variant="secondary" className="w-8 h-8 p-0
-                        hover:scale-105"
-                          onClick={(e) => {
-                            handleDeleteNote(e, note.id);
-                          }}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                  {note.loadingNote ? (
+                    <CardHeader className="px-4 py-0">
+                      <h2>Initializing note...</h2>
+                    </CardHeader>
 
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-4 py-0 flex gap-1 flex-wrap">
-                    {/* ALL ACTIVE TAGS OF A NOTE */}
-                    {note.tags.map(tag => (
-                      <Badge key={tag.name} variant="outline"
-                        style={{ backgroundColor: tag.color }}>
-                        {tag.name.charAt(0).toUpperCase() + tag.name.slice(1,)}</Badge>
-                    ))}
-                  </CardContent>
-                  <CardFooter className="px-4 py-0">
-                    <span className="text-xs text-gray-400">Edited: <span>
-                      {formatDate(note.date)}</span></span>
-                  </CardFooter>
+                  ) : (
+                    <>
+                      <CardHeader className="px-4 py-0">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="leading-tight">
+                            {note.title.charAt(0).toUpperCase() +
+                              note.title.slice(1,)}
+                          </CardTitle>
+                          <div className="flex justify-center items-center gap-1"
+                            onClick={(e) => e.stopPropagation()}>
+                            {/* EDIT NOTE DIALOG BUTTON */}
+                            <DialogNote note={note} edit={true}
+                              handleCreateNote={handleCreateNote}
+                              handleEditNote={handleEditNote} handleNewUserTag={handleCreateUserTag}
+                              handleEditUserTag={handleEditUserTag}
+                              handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
+                            {/* DELETE NOTE */}
+                            <Button variant="secondary" className="w-8 h-8 p-0
+                        hover:scale-105"
+                              onClick={(e) => {
+                                handleDeleteNote(e, note.id);
+                              }}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+
+                        </div>
+                      </CardHeader>
+                      <CardContent className="px-4 py-0 flex gap-1 flex-wrap">
+                        {/* ALL ACTIVE TAGS OF A NOTE */}
+                        {note.tags.map(tag => (
+                          <Badge key={tag.name} variant="outline"
+                            style={{ backgroundColor: tag.color }}>
+                            {tag.name.charAt(0).toUpperCase() + tag.name.slice(1,)}</Badge>
+                        ))}
+                      </CardContent>
+                      <CardFooter className="px-4 py-0">
+                        <span className="text-xs text-gray-400">Edited: <span>
+                          {formatDate(note.date)}</span></span>
+                      </CardFooter>
+                    </>
+                  )}
+
                 </Card>
               ))}
             </div>
@@ -354,7 +367,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
             ></Input>
 
             <InfoTool desc="Here you can add tags by seberating them with ','"
-            triggerClasses="mt-2">
+              triggerClasses="mt-2">
               <BadgeInfo>
 
               </BadgeInfo>

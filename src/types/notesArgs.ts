@@ -16,5 +16,6 @@ export interface NotesArgs {
   content: string,
   date: string,
   tags: Tag[],
-  userId: string
+  userId: string,
+  loadingNote?: boolean
 }

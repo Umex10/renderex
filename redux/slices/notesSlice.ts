@@ -23,7 +23,7 @@ const notesSlice = createSlice({
     //The dispatched action containing the note ID as payload.
     setActiveNote: (state, action: PayloadAction<string>) => {
       state.activeNote = action.payload;
-    },
+    }, 
 
     setNotes: (state, action: PayloadAction<NotesArgs[]>) => {
       state.notes = action.payload
@@ -36,15 +36,28 @@ const notesSlice = createSlice({
     removeNote: (state, action: PayloadAction<string>) => {
       state.notes.filter(note => note.id !== action.payload)
     },
-    changeNote: (state, action: PayloadAction<NotesArgs>) => {
-      const index = state.notes.findIndex(note => note.id === action.payload.id);
+    changeNote: (state, action: PayloadAction<{
+    editedNote: NotesArgs
+    customId?: string
+  }>) => {
+    const {editedNote, customId} = action.payload;
+    let index;
+    // if the customId is defined, then it will be the id of the new created note. 
+    // so we need to relace it with the id coming from firebase.
 
+    // if undefined, then we will just edit the existing note 
+    if (customId) {
+         index = state.notes.findIndex(note => note.id === customId);
+    } else {
+        index = state.notes.findIndex(note => note.id === editedNote.id);
+    }
       if (index !== -1) {
-        state.notes[index] = action.payload;
+        state.notes[index] = action.payload.editedNote;
       }
     }
   }
 })
 
-export const { setActiveNote, setNotes, addNote, removeNote, changeNote } = notesSlice.actions;
+export const { setActiveNote, setNotes, addNote, removeNote, changeNote
+ } = notesSlice.actions;
 export default notesSlice.reducer;
