@@ -91,7 +91,7 @@ export function useNotes(notes: NotesArgs[]) {
       date: new Date().toISOString(),
       tags: data.tags,
       userId: user.uid,
-      loadingNote: true
+      creatingNote: true
     }
 
     // fallback array
@@ -111,7 +111,7 @@ export function useNotes(notes: NotesArgs[]) {
       if (result && result.id) {
 
         // Change id to the id which was given by firebase 
-        const editedNote = { ...newNote, id: result.id, loadingNote: false };
+        const editedNote = { ...newNote, id: result.id, creatingNote: false };
 
         dispatch(changeNote({editedNote, customId}));
         dispatch(setActiveNote(result.id));

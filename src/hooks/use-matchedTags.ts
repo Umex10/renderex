@@ -33,13 +33,26 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
   const { notes, userTags, handleEditNote, sortAfter,
     isDescending, selectedTags, deletedUserTag, setDeletedUserTag } = data;
 
-      // This will ensure, that a note doesn't contain tags, that are not in user tags.
-    const matchedTagsNotes = useMemo(() => {
+  const [loadingTags, setLoadingTags] = useState(true);
+
+  const sortedUserTags = useMemo(() => {
+    return [...userTags].sort((a, b) => a.name.localeCompare(b.name));
+  }, [userTags]);
+
+  useEffect(() => {
+    function handleLoadingTags() {
+      setLoadingTags(false);
+    }
+    handleLoadingTags();
+  }, [sortedUserTags.length])
+
+  // This will ensure, that a note doesn't contain tags, that are not in user tags.
+  const matchedTagsNotes = useMemo(() => {
     return [...notes].map(note => {
       const updatedTags = note.tags.filter(tag => {
         if (!deletedUserTag) return true;
 
-          return tag.name !== deletedUserTag.name;
+        return tag.name !== deletedUserTag.name;
       });
 
       return {
@@ -62,10 +75,9 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
         // This means something has changed, we need to tell firebase
         handleEditNote(note, note.id);
       }
-
-      // set it to null, since we don't want any sideEffects with it
-      setDeletedUserTag(null);
     });
+    // set it to null, since we don't want any sideEffects with it
+    setDeletedUserTag(null);
   }, [matchedTagsNotes, deletedUserTag]);
 
   const refactoredNotes = useMemo(() => {
@@ -119,9 +131,5 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
 
   }, [notes, sortAfter, isDescending, selectedTags, userTags])
 
-  const sortedUserTags = useMemo(() => {
-    return [...userTags].sort((a, b) => a.name.localeCompare(b.name));
-  }, [userTags])
-
-  return { refactoredNotes, sortedUserTags }
+  return { loadingTags, refactoredNotes, sortedUserTags }
 }

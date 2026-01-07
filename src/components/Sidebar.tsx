@@ -120,8 +120,9 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
 
   const { handleCreateUserTag, handleDeleteUserTag, handleEditUserTag } = useUserTags({ setDeletedUserTag });
 
+  
   // Ensures that these objects are sorted, and matched with other states, to ensure the same data
-  const { refactoredNotes, sortedUserTags } = useMatchedTags({
+  const { loadingTags, refactoredNotes, sortedUserTags } = useMatchedTags({
     notes, userTags, handleEditNote,
     sortAfter, isDescending, selectedTags, deletedUserTag, setDeletedUserTag
   }
@@ -256,14 +257,14 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                   transform-all ease-out duration-300 cursor-pointer"
                   onClick={() => {
-                    if (!note.loadingNote || activeNote !== note.id) {
+                    if (!note.creatingNote || activeNote !== note.id) {
                       dispatch(setActiveNote(note.id));
                       router.push(`/dashboard/note/${note.id}`)
                     }
                   }}>
-                  {note.loadingNote ? (
+                  {note.creatingNote ? (
                     <CardHeader className="px-4 py-0">
-                      <h2>Initializing note...</h2>
+                      <h2>Creating note...</h2>
                     </CardHeader>
 
                   ) : (
@@ -376,18 +377,18 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
 
           {/* USER-TAGS */}
           <div className="flex flex-wrap gap-1 mt-3">
-            {notes && sortedUserTags.length !== 0 && sortedUserTags.map(sortedUserTag => (
+            {sortedUserTags.length !== 0 && sortedUserTags.map(sortedUserTag => (
               <SingleTag tag={sortedUserTag} Icon={X} key={sortedUserTag.name + " container"}
                 handleDeleteUserTag={handleDeleteUserTag}
                 handleEditUserTag={handleEditUserTag}
                 handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
             ))}
 
-            {userTags && (
+            {loadingTags && sortedUserTags.length === 0 && (
               <span className="w-full text-center">Loading tags...</span>
             )}
 
-            {!userTags && sortedUserTags.length === 0 && (
+            {!loadingTags && sortedUserTags.length === 0 && (
               <span className="w-full text-center">No tags set yet, waiting...</span>
             )}
           </div>
@@ -399,7 +400,6 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
         <Card className="w-full flex flex-row items-center justify-start
             gap-2 px-4 py-4 cursor-pointer"
           onClick={() => router.push("/dashboard/account")}>
-
 
           <CardHeader className="p-0">
             {initialUser?.imageURL ? (
