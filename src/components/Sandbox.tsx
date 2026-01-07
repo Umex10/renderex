@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useRef } from 'react';
-import { Sparkles, X, GripVertical } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Sparkles, X, GripVertical, Redo2 } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { Button } from './ui/button';
 import LiveRenderer from './LiveRenderer';
@@ -15,11 +15,27 @@ import { Undo2 } from 'lucide-react';
 const Sandbox = () => {
   // Reference for the boundary (the whole screen)
   const constraintsRef = useRef(null);
+
+  // We will decide when dragging is allowed
   const dragControls = useDragControls();
 
-  const { sandboxContent, showSandbox, isSandboxActive } =
+  const { sandboxContent, showSandbox, isSandboxActive,
+    sandboxHistory
+   } =
     useSelector((state: RootState) => state.sandboxState);
   const dispatch = useDispatch<AppDispatch>();
+
+  const length = useRef(sandboxHistory.length > 0 ? sandboxHistory.length - 1 : 0);
+  const [index, setIndex] = useState(sandboxHistory.length > 0 ? sandboxHistory.length - 1 : 0)
+
+  useEffect(() => {
+    function setter() {
+      if (length.current === sandboxHistory.length) return;
+      length.current = sandboxHistory.length - 1;
+      setIndex(length.current);
+    }
+    setter();
+  }, [sandboxHistory.length])
 
   return (
     <>
@@ -55,7 +71,7 @@ const Sandbox = () => {
           {showSandbox && (
             <motion.div
               drag
-              dragConstraints={constraintsRef} // cage
+              dragConstraints={constraintsRef} // "cage", that the div is not allowed to leave
               dragMomentum={false} // animation related
               dragListener={false} // Will ignore default event
               dragControls={dragControls} // We will decide when dragging is allowed
@@ -86,9 +102,20 @@ const Sandbox = () => {
               <div className="flex-1 p-4 bg-gray-50 flex items-start gap-2 
               justify-center overflow-hidden">
                 {/* LIVE */}
-                <LiveRenderer classes='w-full h-full' content={sandboxContent}></LiveRenderer>
-                <Button className='bg-violet-500 px-2 py-1 w-10 h-10'>
+                <LiveRenderer classes='w-full h-full' content={sandboxHistory[index]}></LiveRenderer>
+                <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
+                disabled = {index === 0}
+                onClick={() => {
+                  setIndex(index - 1);
+                  }}>
                   <Undo2 className='w-auto h-auto'></Undo2>
+                </Button>
+                <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
+                disabled = {index === sandboxHistory.length - 1}
+                onClick={() => {
+                  setIndex(index + 1);
+                  }}>
+                  <Redo2 className='w-auto h-auto'></Redo2>
                 </Button>
               </div>
 

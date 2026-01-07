@@ -6,7 +6,8 @@ interface SandboxState {
   showSandbox: boolean,
   isSandboxActive: boolean,
   isTryAgainActive: boolean,
-  isTransferActive: boolean
+  isTransferActive: boolean,
+  sandboxHistory: string[]
 }
 
 const initialState: SandboxState = {
@@ -14,7 +15,8 @@ const initialState: SandboxState = {
   showSandbox: false,
   isSandboxActive: false,
   isTryAgainActive: false,
-  isTransferActive: false
+  isTransferActive: false,
+  sandboxHistory: [],
 }
 
 const sandboxSlice = createSlice({
@@ -35,11 +37,14 @@ const sandboxSlice = createSlice({
     },
     setIsTransferActive: (state, action: PayloadAction<boolean>) => {
       state.isTransferActive = action.payload
-    }
+    },
+    addToSandboxHistory: (state, action: PayloadAction<string>) => {
+      state.sandboxHistory.push(action.payload)
+    },
   }
 })
 
 export const { setSandboxContent, setShowSandbox, setIsSandboxActive,
-  setIsTryAgainActive, setIsTransferActive
+  setIsTryAgainActive, setIsTransferActive, addToSandboxHistory
 } = sandboxSlice.actions;
 export default sandboxSlice.reducer;

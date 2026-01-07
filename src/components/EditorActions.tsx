@@ -7,7 +7,7 @@ import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import Sandbox from './Sandbox';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import InfoTool from './InfoTool';
 
 interface EditorActionsArgs {
@@ -26,9 +26,8 @@ const EditorActions = (data: EditorActionsArgs) => {
 
   const { content, setContent, saveState,
     aiState, summaryActive, structureActive,
-    handleSummarizeSelection, handleStructureSelection,handleGenerate
+    handleSummarizeSelection, handleStructureSelection, handleGenerate
   } = data;
-
 
   return (
     <div className='min-w-0'>
@@ -40,20 +39,21 @@ const EditorActions = (data: EditorActionsArgs) => {
       {/* SELECT + BUTTONS | SAVE/GENERATE STATE */}
       <div className='flex justify-center md:justify-between items-start mt-2'>
 
-         {/* SELECTIONS + RESET SELECTION | GENERATE CONTAINER */}
+        {/* SELECTIONS + RESET SELECTION | GENERATE CONTAINER */}
         <div className='flex flex-col items-center
         md:items-start gap-2'>
 
           {/* SELECTIONS + RESET SELECTION */}
           <div className='flex flex-row gap-3'>
 
-  
-              {/* Summarize */}
+
+            {/* Summarize */}
+
+            <Select
+              defaultValue="summarize-replace"
+              onValueChange={(value) => handleSummarizeSelection(value)}
+            >
               <InfoTool desc="Here you can generate a summary with different modes">
-                   <Select
-                defaultValue="summarize-replace"
-                onValueChange={(value) => handleSummarizeSelection(value)}
-              >
                 <SelectTrigger
                   className={`px-1 border-2 ${summaryActive
                     ? "border-violet-500 bg-violet-50"
@@ -62,28 +62,30 @@ const EditorActions = (data: EditorActionsArgs) => {
                 >
                   <span className='px-2'>AI Summary</span>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="summarize-replace" className="md:text-lg">
-                    Change entire note
-                  </SelectItem>
-                   <SelectItem value="summarize-sandbox" className="md:text-lg">
-                    Sandbox Mode
-                  </SelectItem>
-                  <SelectItem value="summarize-insert-start" className="md:text-lg">
-                    Insert summary at start
-                  </SelectItem>
-                  <SelectItem value="summarize-insert-bottom" className="md:text-lg">
-                    Insert summary at bottom
-                  </SelectItem>
-                </SelectContent>
-              </Select>
               </InfoTool>
-              
-                {/* Structure */}
+              <SelectContent>
+                <SelectItem value="summarize-replace" className="md:text-lg">
+                  Change entire note
+                </SelectItem>
+                <SelectItem value="summarize-sandbox" className="md:text-lg">
+                  Sandbox Mode
+                </SelectItem>
+                <SelectItem value="summarize-insert-start" className="md:text-lg">
+                  Insert summary at start
+                </SelectItem>
+                <SelectItem value="summarize-insert-bottom" className="md:text-lg">
+                  Insert summary at bottom
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+
+            {/* Structure */}
+
+            <Select
+              onValueChange={(value) => handleStructureSelection(value)}
+            >
               <InfoTool desc="Here you can generate a better structure with different modes">
-                  <Select
-                onValueChange={(value) => handleStructureSelection(value)}
-              >
                 <SelectTrigger
                   className={`px-1 border-2 ${structureActive
                     ? "border-violet-500 bg-violet-50"
@@ -92,19 +94,20 @@ const EditorActions = (data: EditorActionsArgs) => {
                 >
                   <span className='px-2'>AI Structure</span>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="structure-replace" className="md:text-lg">
-                    Change entire note
-                  </SelectItem>
-                  <SelectItem value="structure-sandbox" className="md:text-lg">
-                    Sandbox Mode
-                  </SelectItem>
-                </SelectContent>
-              </Select>
               </InfoTool>
+              <SelectContent>
+                <SelectItem value="structure-replace" className="md:text-lg">
+                  Change entire note
+                </SelectItem>
+                <SelectItem value="structure-sandbox" className="md:text-lg">
+                  Sandbox Mode
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-              {/* Sandbox */}
-              <Sandbox></Sandbox>
+
+            {/* Sandbox */}
+            <Sandbox></Sandbox>
           </div>
           <Button onClick={() => handleGenerate()}>
             {`Generate ${summaryActive ? "Summary" : "Structure"}`}

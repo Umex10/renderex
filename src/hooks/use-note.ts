@@ -9,7 +9,7 @@ import { useAi } from "./use-ai";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { NotesArgs } from "@/types/notesArgs";
-import { setShowSandbox, setSandboxContent, setIsSandboxActive, setIsTryAgainActive, setIsTransferActive }
+import { setShowSandbox, setSandboxContent, setIsSandboxActive, setIsTryAgainActive, setIsTransferActive, addToSandboxHistory }
   from "../../redux/slices/sandboxSlice";
 
 export const useNote = (noteId: string) => {
@@ -86,9 +86,9 @@ export const useNote = (noteId: string) => {
 
   async function handleGenerate() {
     let res;
-    const isAiActive = activeMode === "summarize-sandbox" || activeMode === "structure-sandbox"
+    const isSandboxActive = activeMode === "summarize-sandbox" || activeMode === "structure-sandbox"
 
-    if (isAiActive)  dispatch(setShowSandbox(true));
+    if (isSandboxActive) dispatch(setShowSandbox(true));
 
     if (summaryActive) {
       res = await handleSummarize(content, activeMode, isTryAgainActive, sandboxContent);
@@ -96,13 +96,11 @@ export const useNote = (noteId: string) => {
       res = await handleStructure(content, activeMode, isTryAgainActive, sandboxContent)
     }
 
-    // to ensure that this is not always active
-    dispatch(setIsTryAgainActive(false));
-
     if (!res) return;
 
-    if (isAiActive) {
+    if (isSandboxActive) {
       dispatch(setSandboxContent(res));
+      dispatch(addToSandboxHistory(res));
     } else {
       setContent(res);
     }
@@ -112,6 +110,9 @@ export const useNote = (noteId: string) => {
     async function generateAgain() {
       if (isTryAgainActive) {
         await handleGenerate();
+
+        // to ensure that this is not always active
+        dispatch(setIsTryAgainActive(false));
       }
     }
 

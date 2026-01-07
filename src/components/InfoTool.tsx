@@ -14,7 +14,7 @@ interface InfoToolArgs {
 const InfoTool = ({desc, children, triggerClasses}: InfoToolArgs) => {
   return (
     <Tooltip>
-      <TooltipTrigger className={`${triggerClasses}`}>
+      <TooltipTrigger asChild className={`${triggerClasses}`}>
           {children}
       </TooltipTrigger>
       <TooltipContent>
