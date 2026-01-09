@@ -7,14 +7,12 @@ import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import Sandbox from './Sandbox';
-import { Dispatch, SetStateAction } from 'react';
 import InfoTool from './InfoTool';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
+import { setContent } from '../../redux/slices/sandboxSlice';
 
 interface EditorActionsArgs {
-  content: string,
-  setContent: Dispatch<SetStateAction<string>>,
   saveState: string,
   summaryActive: boolean,
   structureActive: boolean,
@@ -25,18 +23,22 @@ interface EditorActionsArgs {
 
 const EditorActions = (data: EditorActionsArgs) => {
 
-  const { content, setContent, saveState,
+  const { saveState,
     summaryActive, structureActive,
     handleSummarizeSelection, handleStructureSelection, handleGenerate
   } = data;
 
+  const content = useSelector((state: RootState) => state.sandboxState.content);
+
   const aiState = useSelector((state: RootState) => state.aiState.status);
+
+  const dispatch = useDispatch<AppDispatch>();
 
   return (
     <div className='min-w-0'>
       <Editor
         value={content}
-        onChange={(val) => setContent(val)}
+        onChange={(val) =>  dispatch(setContent(val))}
       />
 
       {/* SELECT + BUTTONS | SAVE/GENERATE STATE */}

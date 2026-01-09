@@ -2,20 +2,20 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 
 interface SandboxState {
+  content: string,
   sandboxContent: string,
   showSandbox: boolean,
   isSandboxActive: boolean,
   isTryAgainActive: boolean,
-  isTransferActive: boolean,
   sandboxHistory: string[]
 }
 
 const initialState: SandboxState = {
+  content: "",
   sandboxContent: "",
   showSandbox: false,
   isSandboxActive: false,
   isTryAgainActive: false,
-  isTransferActive: false,
   sandboxHistory: [],
 }
 
@@ -23,8 +23,8 @@ const sandboxSlice = createSlice({
   name: "sandbox",
   initialState,
   reducers: {
-    setSandboxContent: (state, action: PayloadAction<string>) => {
-      state.sandboxContent = action.payload;
+     setContent: (state, action: PayloadAction<string>) => {
+      state.content = action.payload
     },
     setShowSandbox: (state, action: PayloadAction<boolean>) => {
       state.showSandbox = action.payload
@@ -35,16 +35,21 @@ const sandboxSlice = createSlice({
     setIsTryAgainActive: (state, action: PayloadAction<boolean>) => {
       state.isTryAgainActive = action.payload
     },
-    setIsTransferActive: (state, action: PayloadAction<boolean>) => {
-      state.isTransferActive = action.payload
-    },
     addToSandboxHistory: (state, action: PayloadAction<string>) => {
       state.sandboxHistory.push(action.payload)
+    },
+    setContentOfSandbox: (state, action: PayloadAction<{
+      index: number,
+      content: string
+    }>) => {
+      const {index, content} = action.payload;
+      state.sandboxHistory[index] = content;
     },
   }
 })
 
-export const { setSandboxContent, setShowSandbox, setIsSandboxActive,
-  setIsTryAgainActive, setIsTransferActive, addToSandboxHistory
+export const {setContent, setShowSandbox, setIsSandboxActive,
+  setIsTryAgainActive, addToSandboxHistory,
+  setContentOfSandbox
 } = sandboxSlice.actions;
 export default sandboxSlice.reducer;

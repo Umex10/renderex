@@ -1,16 +1,18 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Sparkles, X, GripVertical, Redo2, CheckCircle,Box } from 'lucide-react';
+import { Sparkles, X, GripVertical, Redo2, CheckCircle, Box } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { Button } from './ui/button';
 import LiveRenderer from './LiveRenderer';
 import InfoTool from './InfoTool';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { setIsTransferActive, setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
+import { setContent, setContentOfSandbox, setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
 import { Undo2 } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import Editor from './Editor';
 
 
 const Sandbox = () => {
@@ -109,7 +111,44 @@ const Sandbox = () => {
               md:flex-row items-center justify-start md:items-start gap-2
                md:justify-between overflow-hidden">
                 {/* LIVE */}
-                <LiveRenderer classes='flex-1 w-full max-w-none order-2 md:order-1' content={sandboxHistory[index]}></LiveRenderer>
+
+                {/* TABS - MOBILE ONLY */}
+                <Tabs defaultValue="markdown" className="flex-1 w-full ">
+
+                  <div className="w-full flex flex-col gap-4 md:flex-row justify-between items-center md:items-end">
+
+                    <div className="w-full flex items-center gap-2 text-3xl">
+                      <h2 className="w-full text-center md:text-left font-bold"></h2>
+                    </div>
+
+                    <TabsList className="grid grid-cols-2 w-full md:w-auto max-w-[250px]">
+                      <TabsTrigger value="markdown">Markdown</TabsTrigger>
+                      <TabsTrigger value="live">Live</TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  <div className="w-full mt-4">
+                    {/* EDITOR VIEW */}
+                    <TabsContent value="markdown" >
+
+                      <Editor
+                        value={sandboxHistory[index]}
+                        onChange={(val) => {dispatch(setContentOfSandbox({
+                          index: index,
+                          content: val
+                        }))}}
+                      />
+
+                    </TabsContent>
+                    {/* LIVE VIEW */}
+                    <TabsContent value="live">
+                      <LiveRenderer classes='max-w-none order-2 md:order-1 h-[500px] md:h-[650px]'
+                        content={sandboxHistory[index]}></LiveRenderer>
+                    </TabsContent>
+
+                  </div>
+                </Tabs>
+
                 <div className='flex flex-row gap-1 order-1 md:order-2 justify-end'>
                   <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
                     disabled={index === 0}
@@ -134,7 +173,7 @@ const Sandbox = () => {
                 {/* GENERATE STATES */}
                 <div className='order-1 md:order-2'>
                   {aiState === AI_STATE.IDLE && (
-                     <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <Box className="h-4 w-4" />
                       <span>Start generating!</span>
                     </div>
@@ -161,7 +200,7 @@ const Sandbox = () => {
 
                 <div className='order-2 md:order-1 flex flex-row gap-1 justify-center
                  md:justify-start'>
-                  <Button onClick={() => dispatch(setIsTransferActive(true))}>
+                  <Button onClick={() => dispatch(setContent(sandboxHistory[index]))}>
                     Transfer into Note
                   </Button>
 
