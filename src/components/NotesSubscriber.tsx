@@ -4,20 +4,18 @@ import { useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../redux/store";
 import { setNotes } from "../../redux/slices/notesSlice";
 import { NotesArgs } from "@/types/notesArgs";
 
-interface NotesSubscriberArgs {
-  initialNotes: NotesArgs[]
-}
 
-export function NotesSubscriber({initialNotes}: NotesSubscriberArgs) {
+export function NotesSubscriber() {
  
   const [user, loading] = useAuthState(auth);
   const firstLoad = useRef(true);
   const dispatch = useDispatch<AppDispatch>();
+  const initialNotes = useSelector((state: RootState) => state.notesState.notes);
   
     useEffect(() => {
   

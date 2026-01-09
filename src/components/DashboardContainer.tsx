@@ -7,27 +7,16 @@ import { UserTagsSubscriber } from './UserTagsSubscriber'
 import { NotesSubscriber } from './NotesSubscriber'
 import { AppSidebar } from './Sidebar'
 import SelectFormat from './SelectFormat'
-import { User } from '@/types/user'
-import { UserTags } from '../../redux/slices/tags/tagsSlice'
-import { NotesArgs } from '@/types/notesArgs'
 
-interface DashboardContainerArgs {
-  initialNotes: NotesArgs[],
-  initialUserTags: UserTags,
-  initialUser: User | null,
-  children: React.ReactNode
-}
-
-const DashboardContainer = ({ initialNotes, initialUserTags, initialUser, children }: DashboardContainerArgs) => {
+const DashboardContainer = ({ children }: {children: React.ReactNode}) => {
   return (
     <SidebarProvider>
 
-          <UserTagsSubscriber initialUserTags={initialUserTags}></UserTagsSubscriber>
-          <NotesSubscriber initialNotes={initialNotes}></NotesSubscriber>
+          <UserTagsSubscriber></UserTagsSubscriber>
+          <NotesSubscriber></NotesSubscriber>
 
           {/* SLIDER (LEFT SIDE) - Content in Sidebar */}
-          <AppSidebar
-          initialUser={initialUser} />
+          <AppSidebar/>
 
           {/* UNDERNEATH SIDEBAR (RIGHT SIDE) - Content of a note */}
           <SidebarInset>

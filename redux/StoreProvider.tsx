@@ -2,7 +2,9 @@
 
 import React from "react";
 import { Provider } from "react-redux";
-import { store } from "./store";
+import { configureStore } from "@reduxjs/toolkit";
+import { rootReducer, RootState } from "./store";
+
 
 /**
  * Props for the StoreProvider component.
@@ -10,8 +12,10 @@ import { store } from "./store";
  * @property {React.ReactNode} children - The child components that will have access to the Redux store.
  */
 interface StoreProviderProps {
-  children: React.ReactNode;
+  children: React.ReactNode,
+  preloadedState?: Partial<RootState>; 
 }
+
 
 /**
  * A wrapper component that provides the Redux store to the application.
@@ -22,6 +26,12 @@ interface StoreProviderProps {
  * @param {React.ReactNode} args.children - The child components to render within the provider.
  * @returns {JSX.Element} The Provider component wrapping the children.
  */
-export default function StoreProvider({ children }: StoreProviderProps) {
+export default function StoreProvider({ children, preloadedState }: StoreProviderProps) {
+
+  const store = configureStore({
+    reducer: rootReducer,
+    preloadedState,
+  })
+
   return <Provider store={store}>{children}</Provider>;
 }

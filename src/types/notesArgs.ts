@@ -1,4 +1,4 @@
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 
 /**
  * Represents the structure of a note object.

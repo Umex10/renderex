@@ -1,7 +1,8 @@
 "use client"
 
 import { useDispatch } from "react-redux";
-import { addTag, editColor, removeTag, Tag } from "../../redux/slices/tags/tagsSlice";
+import { addTag, editColor, removeTag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 import { AppDispatch } from "../../redux/store";
 import { createUserTag, deleteUserTag, editUserTag } from "@/actions/tags";
 

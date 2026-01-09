@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/firebase/admin";
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 import { requireUserId } from "@/lib/auth/requireUserId";
 
 /**

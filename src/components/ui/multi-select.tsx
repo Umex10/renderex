@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-import { Tag } from "../../../redux/slices/tags/tagsSlice"
+import { Tag } from "../../types/tag";
 
 interface MultiSelectProps {
   items: Tag[]

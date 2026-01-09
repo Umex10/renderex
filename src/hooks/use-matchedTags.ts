@@ -2,7 +2,7 @@
 
 import { NotesArgs } from "@/types/notesArgs";
 import { useEffect, useMemo, useState } from "react";
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 
 /**
  * Arguments for the useMatchedTags hook.
@@ -16,7 +16,6 @@ interface UseMatchedTagsArgs {
   selectedTags: Tag[],
   deletedUserTag: Tag | null,
   setDeletedUserTag: (tag: Tag | null) => void;
-
 }
 
 /**

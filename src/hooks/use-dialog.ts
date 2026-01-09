@@ -1,7 +1,7 @@
 "use client"
 
 import {useMemo } from "react";
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 import { UseFormReturn } from "react-hook-form";
 import { FormSchema } from "@/components/DialogNote";
 

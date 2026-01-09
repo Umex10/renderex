@@ -1,29 +1,25 @@
 "use client"
 
-import { useDispatch } from "react-redux";
-import { setUserId, setWholeTags, UserTags } from "../../redux/slices/tags/tagsSlice";
-import { AppDispatch } from "../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { setWholeTags } from "../../redux/slices/tags/tagsSlice";
+import { AppDispatch, RootState } from "../../redux/store";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase/config";
 import { doc, onSnapshot } from "firebase/firestore";
  
- interface UserTagsSubscriberArgs {
-   initialUserTags: UserTags
- }
 
- export function UserTagsSubscriber({initialUserTags}: UserTagsSubscriberArgs) {
+ export function UserTagsSubscriber() {
   const dispatch = useDispatch<AppDispatch>();
   const [user, loading] = useAuthState(auth);
   // This will ensure, that we will not load the userTags uneccessarily since 
   // we are getting it from the server action already on mount
   const firstLoad = useRef(true);
+  const initialUserTags = useSelector((state: RootState) => state.tagsState.tags);
 
   useEffect(() => {
       // Fill the redux state on mount
-      dispatch(setWholeTags(initialUserTags.tags));
-      if (!initialUserTags.userId) return;
-      dispatch(setUserId(initialUserTags.userId));
+      dispatch(setWholeTags(initialUserTags));
   }, [])
 
   useEffect(() => {

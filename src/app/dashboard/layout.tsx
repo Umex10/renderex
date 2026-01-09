@@ -8,6 +8,7 @@ import { UserTags } from "../../../redux/slices/tags/tagsSlice";
 import { getInitialUser } from "@/actions/user";
 import { User } from "@/types/user";
 import DashboardContainer from "@/components/DashboardContainer";
+import { RootState } from "../../../redux/store";
 
 /**
  * The main layout for the dashboard section.
@@ -23,7 +24,7 @@ import DashboardContainer from "@/components/DashboardContainer";
 export default async function Layout({ children }: { children: React.ReactNode }) {
 
   let initialNotes: NotesArgs[] = [];
-  let initialUserTags: UserTags = { tags: [], userId: null };
+  let initialUserTags: UserTags = { tags: []};
   // Null needed because on fresh registration it may be that the cookie is not set
   let initialUser: User | null = null;
 
@@ -43,13 +44,23 @@ export default async function Layout({ children }: { children: React.ReactNode }
     if (userResult.success && userResult.data) {
       initialUser = userResult.data
     }
+
+    const preloadedState: Partial<RootState> = {
+      notesState: {
+        activeNote: "",
+        notes: initialNotes
+      },
+      tagsState: {
+        tags: initialUserTags.tags
+      },
+      userState: initialUser ?? undefined
+    }
   
 
   return (
-    <StoreProvider>
+    <StoreProvider preloadedState={preloadedState}>
       <AuthSetter>
-        <DashboardContainer initialNotes={initialNotes} initialUserTags={initialUserTags}
-        initialUser={initialUser}>{children}</DashboardContainer>
+        <DashboardContainer>{children}</DashboardContainer>
       </AuthSetter>
     </StoreProvider>
   );

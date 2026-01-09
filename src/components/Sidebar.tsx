@@ -32,7 +32,7 @@ import { setActiveNote } from "../../redux/slices/notesSlice";
 import { formatDate } from "@/utils/formatDate";
 import { Input } from "./ui/input";
 import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 import InfoTool from "./InfoTool";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
@@ -44,14 +44,6 @@ import { User } from "@/types/user";
 import { useResize } from "@/hooks/use-resize";
 import { getInitialUser } from "@/actions/user";
 
-/**
- * Args for the AppSidebar component.
- * @interface AppSidebarArgs
- * @property {NotesArgs[]} initialNotes - The initial list of notes to be displayed in the sidebar.
- */
-interface AppSidebarArgs {
-  initialUser: User | null
-}
 
 /**
  * The main sidebar component for the application.
@@ -61,20 +53,21 @@ interface AppSidebarArgs {
  * @param {AppSidebarArgs} args - The component arguments.
  * @returns {JSX.Element} The AppSidebar component.
  */
-export function AppSidebar({ initialUser }: AppSidebarArgs) {
+export function AppSidebar() {
 
   const router = useRouter();
 
   const auth = getAuth();
   const loadedUserRef = useRef<User | null>(null);
   const [loadedUser, setLoadedUser] = useState<User | null>(null);
+  const user = useSelector((state: RootState) => state.userState);
 
   useEffect(() => {
 
     // It may be that the user uid is not set in the cookie, so we need to make 
     // sure that the user still sees his credentials on fresh registration
     async function notLoadedUser() {
-      if (!initialUser && auth.currentUser) {
+      if (!user && auth.currentUser) {
 
         const user = await getInitialUser();
         if (!user.data) return;
@@ -87,7 +80,7 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
       }
     }
     notLoadedUser();
-  }, [initialUser, auth])
+  }, [user, auth])
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -402,9 +395,9 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
           onClick={() => router.push("/dashboard/account")}>
 
           <CardHeader className="p-0">
-            {initialUser?.imageURL ? (
+            {user?.imageURL ? (
               <Image
-                src={initialUser.imageURL}
+                src={user.imageURL}
                 alt='Image of the user'
                 width={48}
                 height={48}
@@ -417,10 +410,10 @@ export function AppSidebar({ initialUser }: AppSidebarArgs) {
             )}
           </CardHeader>
 
-          {initialUser ? (
+          {user ? (
             <CardContent className="w-full flex flex-col items-start p-0">
-              <span className="text-sm font-bold">{initialUser.username}</span>
-              <span className="text-xs">{initialUser.email}</span>
+              <span className="text-sm font-bold">{user.username}</span>
+              <span className="text-xs">{user.email}</span>
             </CardContent>
           ) : (
             <CardContent className="w-full flex flex-col items-start p-0">

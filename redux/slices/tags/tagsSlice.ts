@@ -1,28 +1,18 @@
+import { Tag } from "@/types/tag";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-export interface Tag {
-  name: string,
-  color: string
-}
-
 export interface UserTags {
-  userId: string | null
-  tags: Tag[]
+  tags: Tag[],
 }
 
 const initialState: UserTags = {
-  userId: null,
-  tags: []
-
+  tags: [],
 }
 
 const tagsSlice = createSlice({
   name: "tags",
   initialState,
   reducers: {
-    setUserId: (state, action: PayloadAction<string>) => {
-      state.userId = action.payload;
-    },
     setWholeTags: (state, action: PayloadAction<Tag[]>) => {
       state.tags = [...action.payload];
     },
@@ -36,9 +26,10 @@ const tagsSlice = createSlice({
 
       const { tagName, newColor } = action.payload;
 
-      state.tags = state.tags.map(tag => tag.name === tagName ? {...tag, color: newColor} : tag);
+      state.tags = state.tags.map(tag => tag.name === tagName ? { ...tag, color: newColor } : tag);
+    }
   }
-}})
+})
 
-export const { setWholeTags,setUserId, addTag, removeTag, editColor } = tagsSlice.actions;
+export const { setWholeTags, addTag, removeTag, editColor } = tagsSlice.actions;
 export default tagsSlice.reducer;

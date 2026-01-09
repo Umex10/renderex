@@ -6,7 +6,7 @@ import { createNote, deleteNote, editNote } from "@/actions/notes";
 import { useDispatch } from "react-redux";
 import { addNote, removeNote, setActiveNote, setNotes, changeNote } from "../../redux/slices/notesSlice";
 import { AppDispatch } from "../../redux/store";
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 import { auth } from "@/lib/firebase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 /**

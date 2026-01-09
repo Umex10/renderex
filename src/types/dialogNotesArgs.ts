@@ -1,4 +1,4 @@
-import { Tag } from "../../redux/slices/tags/tagsSlice";
+import { Tag } from "../types/tag";
 import { NotesArgs } from "./notesArgs";
 
 /**

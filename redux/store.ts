@@ -3,6 +3,8 @@ import notesSlice from "./slices/notesSlice";
 import formatSlice from "./slices/formatSlice";
 import tagsSlice from "./slices/tags/tagsSlice";
 import sandboxSlice from "./slices/sandboxSlice";
+import userSlice from "./slices/userSlice";
+import { combineReducers } from "@reduxjs/toolkit";
 /**
  * The Redux store configuration.
  * Combines reducers and sets up the store for the application.
@@ -13,9 +15,18 @@ export const store = configureStore({
     notesState: notesSlice,
     formState: formatSlice,
     tagsState: tagsSlice,
-    sandboxState: sandboxSlice
+    sandboxState: sandboxSlice,
+    userState: userSlice
   }
 })
+
+export const rootReducer = combineReducers({
+  notesState: notesSlice,
+  formState: formatSlice,
+  tagsState: tagsSlice,
+  sandboxState: sandboxSlice,
+  userState: userSlice
+});
 
 /**
  * Type definition for the root state of the application.
