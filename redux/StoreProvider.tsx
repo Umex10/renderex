@@ -16,7 +16,6 @@ interface StoreProviderProps {
   preloadedState?: Partial<RootState>; 
 }
 
-
 /**
  * A wrapper component that provides the Redux store to the application.
  * Should be used at the root of the application or where Redux state access is needed.

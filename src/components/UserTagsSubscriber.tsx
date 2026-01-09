@@ -1,30 +1,26 @@
 "use client"
 
-import { useDispatch, useSelector } from "react-redux";
-import { setWholeTags } from "../../redux/slices/tags/tagsSlice";
-import { AppDispatch, RootState } from "../../redux/store";
+import { useDispatch } from "react-redux";
+import { setLoadingTags, setWholeTags } from "../../redux/slices/tags/tagsSlice";
+import { AppDispatch } from "../../redux/store";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase/config";
 import { doc, onSnapshot } from "firebase/firestore";
- 
 
- export function UserTagsSubscriber() {
+
+export function UserTagsSubscriber() {
   const dispatch = useDispatch<AppDispatch>();
   const [user, loading] = useAuthState(auth);
   // This will ensure, that we will not load the userTags uneccessarily since 
   // we are getting it from the server action already on mount
   const firstLoad = useRef(true);
-  const initialUserTags = useSelector((state: RootState) => state.tagsState.tags);
-
-  useEffect(() => {
-      // Fill the redux state on mount
-      dispatch(setWholeTags(initialUserTags));
-  }, [])
 
   useEffect(() => {
 
     if (loading || !user) return;
+
+    dispatch(setLoadingTags(true));
 
     const ref = doc(db, "userTags", user.uid);
 
@@ -35,26 +31,28 @@ import { doc, onSnapshot } from "firebase/firestore";
       // This will ensure we don't fetch the notes unnecessarily on the first load
       if (firstLoad.current) {
         firstLoad.current = false;
+        dispatch(setLoadingTags(false));
         return;
       }
-    
+
       if (!snap.exists()) {
         dispatch(setWholeTags([]));
+        dispatch(setLoadingTags(false));
         return;
       }
 
       const data = snap.data();
       dispatch(setWholeTags(data?.tags ?? []))
-     
+      dispatch(setLoadingTags(false));
+
     },
       (err) => {
         console.error("An error occurred while catching userTags:", err);
       })
 
-      return () => unsubscribe();
-  }, [user, loading])  
+    return () => unsubscribe();
+  }, [user, loading, dispatch])
 
   return null;
- }
- 
- 
+}
+

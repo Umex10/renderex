@@ -9,7 +9,6 @@ import { Tag } from "../types/tag";
  * @property {string} date - The creation or modification date of the note as a string.
  * @property {Tag[]} tags - An array of tags associated with the note.
  * @property {string} userId - The unique identifier of the user who owns the note.
- * @property {boolean} creatingNote - Only needed while creating a new note, so a noteId mismatch cannot come about
  */
 export interface NotesArgs {
   id: string,
@@ -18,5 +17,4 @@ export interface NotesArgs {
   date: string,
   tags: Tag[],
   userId: string,
-  creatingNote?: boolean 
 }

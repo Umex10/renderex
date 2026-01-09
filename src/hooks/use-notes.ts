@@ -4,7 +4,7 @@ import { NotesArgs } from "../types/notesArgs";
 
 import { createNote, deleteNote, editNote } from "@/actions/notes";
 import { useDispatch } from "react-redux";
-import { addNote, removeNote, setActiveNote, setNotes, changeNote } from "../../redux/slices/notesSlice";
+import { addNote, removeNote, setActiveNote, setNotes, changeNote, setCreatingNote, setDeletingNote } from "../../redux/slices/notesSlice";
 import { AppDispatch } from "../../redux/store";
 import { Tag } from "../types/tag";
 import { auth } from "@/lib/firebase/config";
@@ -46,6 +46,8 @@ export function useNotes(notes: NotesArgs[]) {
 
     e.stopPropagation();
 
+    dispatch(setDeletingNote({noteId: noteId, status: true}));
+
     // fallback array
     const oldNotes = [...notes];
 
@@ -59,6 +61,8 @@ export function useNotes(notes: NotesArgs[]) {
       if (!result.success) {
         dispatch(setNotes(oldNotes));
       }
+
+      dispatch(setDeletingNote({noteId: noteId, status: false}));
 
     } catch (err) {
       console.error("An error occured while deleting the note: ", err);
@@ -91,8 +95,9 @@ export function useNotes(notes: NotesArgs[]) {
       date: new Date().toISOString(),
       tags: data.tags,
       userId: user.uid,
-      creatingNote: true
     }
+
+    dispatch(setCreatingNote({noteId: customId, status: true}));
 
     // fallback array
     const oldNotes = [...notes];
@@ -106,13 +111,15 @@ export function useNotes(notes: NotesArgs[]) {
 
       if (!result.success) {
         setNotes(oldNotes);
+        dispatch(setCreatingNote({noteId: customId, status: false}));
       }
 
       if (result && result.id) {
 
         // Change id to the id which was given by firebase 
-        const editedNote = { ...newNote, id: result.id, creatingNote: false };
-
+        const editedNote = { ...newNote, id: result.id };
+        
+        dispatch(setCreatingNote({noteId: customId, status: false}));
         dispatch(changeNote({editedNote, customId}));
         dispatch(setActiveNote(result.id));
       }

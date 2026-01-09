@@ -47,8 +47,17 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
     const preloadedState: Partial<RootState> = {
       notesState: {
-        activeNote: "",
-        notes: initialNotes
+        activeNote: null,
+        notes: initialNotes,
+        loadingNotes: false,
+        creatingNote: {
+          noteId: "",
+          status: false
+        },
+        deletingNote: {
+          noteId: "",
+          status: false
+        }
       },
       tagsState: {
         tags: initialUserTags.tags

@@ -92,7 +92,7 @@ export function AppSidebar() {
   useResize({ isDragging, setTopHeight });
 
   // NOTES HOOK
-  const notes = useSelector((state: RootState) => state.notesState.notes);
+  const {notes, loadingNotes, creatingNote, deletingNote} = useSelector((state: RootState) => state.notesState);
   const {handleCreateNote, handleDeleteNote, handleEditNote } = useNotes(notes);
   const activeNote = useSelector((state: RootState) => state.notesState.activeNote);
 
@@ -106,16 +106,17 @@ export function AppSidebar() {
 
   // USER-TAGS HOOKS/STATES
 
-  const userTags = useSelector((state: RootState) => state.tagsState.tags);
+  const {tags: userTags, loadingTags} = useSelector((state: RootState) => state.tagsState);
 
-  // This will hold the last deleted User tag, to ensure notes have also deleted that tag
+  // This will hold the last deleted User tag, to ensure notes have also deleted that tag and have 
+  // a reference to that tag as well
   const [deletedUserTag, setDeletedUserTag] = useState<Tag | null>(null);
 
   const { handleCreateUserTag, handleDeleteUserTag, handleEditUserTag } = useUserTags({ setDeletedUserTag });
 
   
   // Ensures that these objects are sorted, and matched with other states, to ensure the same data
-  const { loadingTags, refactoredNotes, sortedUserTags } = useMatchedTags({
+  const { refactoredNotes, sortedUserTags } = useMatchedTags({
     notes, userTags, handleEditNote,
     sortAfter, isDescending, selectedTags, deletedUserTag, setDeletedUserTag
   }
@@ -242,22 +243,31 @@ export function AppSidebar() {
             {/* NOTES SECTION */}
             <div className="flex flex-col gap-4 mt-2">
 
-              {notes.length === 0 && (
-                <span className="text-center">It{"'"}s not very noisy here...</span>
+              {refactoredNotes.length === 0 && loadingNotes && (
+                <p className="text-center">Loading Notes...</p>
               )}
 
-              {refactoredNotes && refactoredNotes.map(note => (
+              {refactoredNotes.length === 0 && !loadingNotes && (
+                <p className="text-center">No notes set yet, waiting...</p>
+              )}
+
+              {refactoredNotes.length !== 0 && refactoredNotes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                   transform-all ease-out duration-300 cursor-pointer"
                   onClick={() => {
-                    if (!note.creatingNote || activeNote !== note.id) {
+                    if (!creatingNote.status || activeNote !== note.id) {
                       dispatch(setActiveNote(note.id));
                       router.push(`/dashboard/note/${note.id}`)
                     }
                   }}>
-                  {note.creatingNote ? (
+                  {creatingNote.noteId === note.id ? (
                     <CardHeader className="px-4 py-0">
                       <h2>Creating note...</h2>
+                    </CardHeader>
+
+                  ) : deletingNote.noteId === note.id ? (
+                    <CardHeader className="px-4 py-0">
+                      <h2>Deleting note...</h2>
                     </CardHeader>
 
                   ) : (

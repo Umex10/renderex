@@ -3,10 +3,12 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserTags {
   tags: Tag[],
+  loadingTags?: boolean
 }
 
 const initialState: UserTags = {
   tags: [],
+  loadingTags: false
 }
 
 const tagsSlice = createSlice({
@@ -27,9 +29,12 @@ const tagsSlice = createSlice({
       const { tagName, newColor } = action.payload;
 
       state.tags = state.tags.map(tag => tag.name === tagName ? { ...tag, color: newColor } : tag);
-    }
+    },
+    setLoadingTags: (state, action: PayloadAction<boolean>) => {
+      state.loadingTags = action.payload;
+    },
   }
 })
 
-export const { setWholeTags, addTag, removeTag, editColor } = tagsSlice.actions;
+export const { setWholeTags, addTag, removeTag, editColor, setLoadingTags } = tagsSlice.actions;
 export default tagsSlice.reducer;

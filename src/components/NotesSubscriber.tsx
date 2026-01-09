@@ -4,27 +4,27 @@ import { useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { setNotes } from "../../redux/slices/notesSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
+import { setLoadingNotes, setNotes } from "../../redux/slices/notesSlice";
 import { NotesArgs } from "@/types/notesArgs";
-
 
 export function NotesSubscriber() {
  
   const [user, loading] = useAuthState(auth);
   const firstLoad = useRef(true);
   const dispatch = useDispatch<AppDispatch>();
-  const initialNotes = useSelector((state: RootState) => state.notesState.notes);
   
     useEffect(() => {
   
       if (loading || !user) return;
+
+      dispatch(setLoadingNotes(true));
   
       // This will ensure we don't fetch the notes unnecessarily on the first load
       if (firstLoad.current) {
         firstLoad.current = false;
-        dispatch(setNotes(initialNotes))
+        dispatch(setLoadingNotes(false));
         return;
       }
   
@@ -41,13 +41,14 @@ export function NotesSubscriber() {
           ...(doc.data() as Omit<NotesArgs, "id">)
         }));
         dispatch(setNotes(notesData))
+        dispatch(setLoadingNotes(false));
       },
         (error) => {
           console.error("Firestore error while catching all notes: ", error);
         })
   
       return () => unsubscribe()
-    }, [user, loading])
+    }, [user, loading, dispatch])
 
   return null; // rendert nichts, nur Hook Side Effects
 }

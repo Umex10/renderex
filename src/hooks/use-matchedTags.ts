@@ -1,7 +1,7 @@
 "use client"
 
 import { NotesArgs } from "@/types/notesArgs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Tag } from "../types/tag";
 
 /**
@@ -32,18 +32,9 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
   const { notes, userTags, handleEditNote, sortAfter,
     isDescending, selectedTags, deletedUserTag, setDeletedUserTag } = data;
 
-  const [loadingTags, setLoadingTags] = useState(true);
-
   const sortedUserTags = useMemo(() => {
     return [...userTags].sort((a, b) => a.name.localeCompare(b.name));
   }, [userTags]);
-
-  useEffect(() => {
-    function handleLoadingTags() {
-      setLoadingTags(false);
-    }
-    handleLoadingTags();
-  }, [sortedUserTags.length])
 
   // This will ensure, that a note doesn't contain tags, that are not in user tags.
   const matchedTagsNotes = useMemo(() => {
@@ -75,7 +66,7 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
         handleEditNote(note, note.id);
       }
     });
-    // set it to null, since we don't want any sideEffects with it
+    // set it deletedUserTag reference to null, since we don't want any sideEffects with it
     setDeletedUserTag(null);
   }, [matchedTagsNotes, deletedUserTag]);
 
@@ -130,5 +121,5 @@ export const useMatchedTags = (data: UseMatchedTagsArgs) => {
 
   }, [notes, sortAfter, isDescending, selectedTags, userTags])
 
-  return { loadingTags, refactoredNotes, sortedUserTags }
+  return {refactoredNotes, sortedUserTags }
 }
