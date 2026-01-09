@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Sparkles, X, GripVertical, Redo2 } from 'lucide-react';
+import { Sparkles, X, GripVertical, Redo2, CheckCircle,Box } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { Button } from './ui/button';
 import LiveRenderer from './LiveRenderer';
@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { setIsTransferActive, setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
 import { Undo2 } from 'lucide-react';
+import { AI_STATE } from '../../constants/loadingStates/AiState';
 
 
 const Sandbox = () => {
@@ -19,17 +20,20 @@ const Sandbox = () => {
   // We will decide when dragging is allowed
   const dragControls = useDragControls();
 
-  const { sandboxContent, showSandbox, isSandboxActive,
+  const { showSandbox, isSandboxActive,
     sandboxHistory
-   } =
+  } =
     useSelector((state: RootState) => state.sandboxState);
   const dispatch = useDispatch<AppDispatch>();
 
   const length = useRef(sandboxHistory.length > 0 ? sandboxHistory.length - 1 : 0);
   const [index, setIndex] = useState(sandboxHistory.length > 0 ? sandboxHistory.length - 1 : 0)
 
+  const aiState = useSelector((state: RootState) => state.aiState.status);
+
   useEffect(() => {
     function setter() {
+      // This will ubdate the index variable, so that we always can access defiend values inside it
       if (length.current === sandboxHistory.length) return;
       length.current = sandboxHistory.length - 1;
       setIndex(length.current);
@@ -65,7 +69,7 @@ const Sandbox = () => {
       */}
       <div
         ref={constraintsRef}
-        className="fixed inset-0 pointer-events-none z-50"
+        className="fixed inset-0 pointer-events-none z-50 mx-4"
       >
         <AnimatePresence>
           {showSandbox && (
@@ -79,9 +83,11 @@ const Sandbox = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               /* pointer-events-auto is crucial here so the window stays clickable */
-              className="pointer-events-auto absolute top-20 left-20 w-80 md:w-[800px] h-[500px] md:h-[800px]
+              className="pointer-events-auto absolute top-20 left-20 w-full
+              md:px-0  min-w-[300px] md:min-w-[800px]
+              min-h-[600px] md:min-h-[800px] max-w-[1200px]
               bg-white rounded-xl shadow-2xl border border-orange-200 overflow-hidden flex flex-col
-               min-w-[500px] min-h-[300px] resize both"
+               resize both"
             >
               {/* Header (Drag Handle) */}
               <div className="bg-violet-500 p-4 text-white flex justify-between items-center
@@ -99,35 +105,70 @@ const Sandbox = () => {
               </div>
 
               {/* Body */}
-              <div className="flex-1 p-4 bg-gray-50 flex items-start gap-2 
-              justify-center overflow-hidden">
+              <div className="flex-1 p-4 bg-gray-50 flex flex-col 
+              md:flex-row items-center justify-start md:items-start gap-2
+               md:justify-between overflow-hidden">
                 {/* LIVE */}
-                <LiveRenderer classes='w-full h-full' content={sandboxHistory[index]}></LiveRenderer>
-                <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
-                disabled = {index === 0}
-                onClick={() => {
-                  setIndex(index - 1);
-                  }}>
-                  <Undo2 className='w-auto h-auto'></Undo2>
-                </Button>
-                <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
-                disabled = {index === sandboxHistory.length - 1}
-                onClick={() => {
-                  setIndex(index + 1);
-                  }}>
-                  <Redo2 className='w-auto h-auto'></Redo2>
-                </Button>
+                <LiveRenderer classes='flex-1 w-full max-w-none order-2 md:order-1' content={sandboxHistory[index]}></LiveRenderer>
+                <div className='flex flex-row gap-1 order-1 md:order-2 justify-end'>
+                  <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
+                    disabled={index === 0}
+                    onClick={() => {
+                      setIndex(index - 1);
+                    }}>
+                    <Undo2 className='w-auto h-auto'></Undo2>
+                  </Button>
+                  <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
+                    disabled={index === sandboxHistory.length - 1}
+                    onClick={() => {
+                      setIndex(index + 1);
+                    }}>
+                    <Redo2 className='w-auto h-auto'></Redo2>
+                  </Button>
+                </div>
               </div>
 
               {/* Footer */}
-              <div className='p-4  flex flex-row gap-1'>
-                <Button onClick={() => dispatch(setIsTransferActive(true))}>
-                  Transfer into Note
-                </Button>
+              <div className='w-full p-4 pt-0 md:pt-4 flex flex-col items-center 
+              md:flex-row md:justify-between gap-2'>
+                {/* GENERATE STATES */}
+                <div className='order-1 md:order-2'>
+                  {aiState === AI_STATE.IDLE && (
+                     <div className="flex items-center gap-2 text-muted-foreground">
+                      <Box className="h-4 w-4" />
+                      <span>Start generating!</span>
+                    </div>
+                  )}
 
-                <Button className='bg-violet-500' onClick={() => dispatch(setIsTryAgainActive(true))}>
-                  Try again
-                </Button>
+                  {aiState === AI_STATE.GENERATING && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Sparkles className="h-4 w-4 animate-spin" />
+                      <span>AI is generating</span>
+                    </div>
+
+                  )}
+                  {aiState === AI_STATE.FINISHED && (
+                    <div className="w-full flex items-center gap-1 text-green-600 flex-nowrap">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>AI Finished Generating</span>
+                    </div>
+                  )}
+
+                  {aiState === AI_STATE.ERROR && (
+                    <span className="text-red-600">AI Generation failed</span>
+                  )}
+                </div>
+
+                <div className='order-2 md:order-1 flex flex-row gap-1 justify-center
+                 md:justify-start'>
+                  <Button onClick={() => dispatch(setIsTransferActive(true))}>
+                    Transfer into Note
+                  </Button>
+
+                  <Button className='bg-violet-500' onClick={() => dispatch(setIsTryAgainActive(true))}>
+                    Try again
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}

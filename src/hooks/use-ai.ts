@@ -1,19 +1,19 @@
 "use client"
 
 import { aiDo } from "@/actions/ai";
-import { AI_STATE } from "../../constants/loadingStates/AiState";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
+import { setAiState } from "../../redux/slices/aiSlice";
 
-interface UseAiArgs {
-  setAiState: React.Dispatch<React.SetStateAction<typeof AI_STATE[keyof typeof AI_STATE]>>
-}
+export const useAi = () => {
 
-export const useAi = ({ setAiState }: UseAiArgs) => {
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSummarize = async (content: string, activeMode: string, isTryAgainActive: boolean,
     sandboxContent: string
   ) => {
 
-    setAiState("generating");
+    dispatch(setAiState("generating"));
 
     const res = await aiDo(`
     Summarize the following markdown content into a concise, well-structured note based on the mode.
@@ -56,16 +56,18 @@ export const useAi = ({ setAiState }: UseAiArgs) => {
     };
 
 
-    setAiState("finished");
 
-    setTimeout(() => setAiState("idle"), 1500);
+     dispatch(setAiState("finished"));
+
+    setTimeout(() => dispatch(setAiState("idle")), 1500);
 
     return res;
   }
 
   const handleStructure = async (content: string, activeMode: string, isTryAgainActive: boolean,
     sandboxContent: string) => {
-    setAiState("generating");
+
+    dispatch(setAiState("generating"));
 
     const res = await aiDo(`
     Restructure the following markdown content to improve clarity, organization, and readability.
@@ -106,9 +108,9 @@ export const useAi = ({ setAiState }: UseAiArgs) => {
       return;
     };
 
-    setAiState("finished");
-
-    setTimeout(() => setAiState("idle"), 1500);
+     dispatch(setAiState("finished"));
+  
+    setTimeout(() => dispatch(setAiState("idle")), 1500);
     return res;
   }
 

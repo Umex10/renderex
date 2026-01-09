@@ -4,6 +4,7 @@ import formatSlice from "./slices/formatSlice";
 import tagsSlice from "./slices/tags/tagsSlice";
 import sandboxSlice from "./slices/sandboxSlice";
 import userSlice from "./slices/userSlice";
+import aiSlice from "./slices/aiSlice";
 import { combineReducers } from "@reduxjs/toolkit";
 /**
  * The Redux store configuration.
@@ -16,7 +17,8 @@ export const store = configureStore({
     formState: formatSlice,
     tagsState: tagsSlice,
     sandboxState: sandboxSlice,
-    userState: userSlice
+    userState: userSlice,
+    aiState: aiSlice
   }
 })
 
@@ -25,7 +27,8 @@ export const rootReducer = combineReducers({
   formState: formatSlice,
   tagsState: tagsSlice,
   sandboxState: sandboxSlice,
-  userState: userSlice
+  userState: userSlice,
+  aiState: aiSlice
 });
 
 /**

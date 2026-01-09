@@ -1,11 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 
-interface formatState {
+interface FormatState {
   format: string
 }
 
-const initialState: formatState = {
+const initialState: FormatState = {
   format: ""
 }
 

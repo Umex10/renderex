@@ -4,7 +4,6 @@ import { AppDispatch, RootState } from "../../redux/store";
 import { setActiveNote } from "../../redux/slices/notesSlice";
 import { useEffect, useRef, useState } from "react";
 import { CONTENT_STATE } from "../../constants/loadingStates/ContentState";
-import { AI_STATE } from "../../constants/loadingStates/AiState";
 import { useAi } from "./use-ai";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
@@ -40,10 +39,9 @@ export const useNote = (noteId: string) => {
     >(CONTENT_STATE.IDLE);
 
     // Will set states based on the ai generation for the note
-    const [aiState, setAiState] = useState<
-      typeof AI_STATE[keyof typeof AI_STATE]>(AI_STATE.IDLE);
+    const aiState = useSelector((state: RootState) => state.aiState.status);
 
-    const { handleSummarize, handleStructure } = useAi({ setAiState });
+    const { handleSummarize, handleStructure } = useAi();
 
     const [summaryActive, setSummaryActive] = useState(true);
     const [structureActive, setStructureAtive] = useState(false);

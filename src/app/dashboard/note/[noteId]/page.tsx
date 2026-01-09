@@ -20,13 +20,13 @@ const Note = ({
   const unwrappedParams = use(params);
   const noteId = unwrappedParams.noteId;
 
-  const {note, content, setContent, saveState, aiState,
+  const {note, content, setContent, saveState,
     summaryActive, structureActive, handleSummarizeSelection, 
     handleStructureSelection, handleGenerate
   } = useNote(noteId);
 
   if (!note) {
-    return <h2>Loading note</h2>
+    return <h2>Loading note...</h2>
   }
 
   return (
@@ -42,7 +42,7 @@ const Note = ({
 
         {/* EDITOR */}
         <EditorActions content={content} setContent={setContent}
-          saveState={saveState} aiState={aiState} 
+          saveState={saveState}
           summaryActive={summaryActive} structureActive={structureActive}
           handleSummarizeSelection={handleSummarizeSelection}
           handleStructureSelection={handleStructureSelection}
@@ -79,7 +79,7 @@ const Note = ({
             {/* EDITOR */}
             <EditorActions content={content} setContent={setContent}
               saveState={saveState}
-              aiState={aiState} summaryActive={summaryActive}
+               summaryActive={summaryActive}
               structureActive={structureActive}
               handleSummarizeSelection={handleSummarizeSelection}
               handleStructureSelection={handleStructureSelection}

@@ -7,14 +7,15 @@ import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import Sandbox from './Sandbox';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import InfoTool from './InfoTool';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface EditorActionsArgs {
   content: string,
   setContent: Dispatch<SetStateAction<string>>,
   saveState: string,
-  aiState: string,
   summaryActive: boolean,
   structureActive: boolean,
   handleSummarizeSelection: (value: string) => void;
@@ -25,9 +26,11 @@ interface EditorActionsArgs {
 const EditorActions = (data: EditorActionsArgs) => {
 
   const { content, setContent, saveState,
-    aiState, summaryActive, structureActive,
+    summaryActive, structureActive,
     handleSummarizeSelection, handleStructureSelection, handleGenerate
   } = data;
+
+  const aiState = useSelector((state: RootState) => state.aiState.status);
 
   return (
     <div className='min-w-0'>
