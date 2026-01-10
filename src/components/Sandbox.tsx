@@ -8,7 +8,7 @@ import LiveRenderer from './LiveRenderer';
 import InfoTool from './InfoTool';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { setContent, setContentOfSandbox, setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
+import { setContentOfActiveSandbox, setContentOfSandboxIndex, setIsTransferActive, setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
 import { Undo2 } from 'lucide-react';
 import { AI_STATE } from '../../constants/loadingStates/AiState';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -82,12 +82,14 @@ const Sandbox = () => {
               dragListener={false} // Will ignore default event
               dragControls={dragControls} // We will decide when dragging is allowed
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: 1, scale: 1}}
               exit={{ opacity: 0, scale: 0.8 }}
               /* pointer-events-auto is crucial here so the window stays clickable */
-              className="pointer-events-auto absolute top-20 left-20 w-full
-              md:px-0  min-w-[300px] md:min-w-[800px]
-              min-h-[600px] md:min-h-[800px] max-w-[1200px]
+              className="pointer-events-auto w-full
+              absolute top-1/2 left-1/2 -translate-x-1/2 
+              -translate-y-1/2
+              md:px-0 min-w-[300px] md:min-w-[800px]
+              min-h-[600px] md:min-h-[800px] max-w-[1000px]
               bg-white rounded-xl shadow-2xl border border-orange-200 overflow-hidden flex flex-col
                resize both"
             >
@@ -133,10 +135,12 @@ const Sandbox = () => {
 
                       <Editor
                         value={sandboxHistory[index]}
-                        onChange={(val) => {dispatch(setContentOfSandbox({
-                          index: index,
-                          content: val
-                        }))}}
+                        onChange={(val) => {
+                          dispatch(setContentOfSandboxIndex({
+                            index: index,
+                            content: val
+                          }))
+                        }}
                       />
 
                     </TabsContent>
@@ -200,7 +204,10 @@ const Sandbox = () => {
 
                 <div className='order-2 md:order-1 flex flex-row gap-1 justify-center
                  md:justify-start'>
-                  <Button onClick={() => dispatch(setContent(sandboxHistory[index]))}>
+                  <Button onClick={() => {
+                    dispatch(setContentOfActiveSandbox(sandboxHistory[index]))
+                    dispatch(setIsTransferActive(true));
+                  }}>
                     Transfer into Note
                   </Button>
 

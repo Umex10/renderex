@@ -10,19 +10,16 @@ import LiveRenderer from '@/components/LiveRenderer';
 import EditorActions from '@/components/EditorActions';
 import { useNote } from '@/hooks/use-note';
 import { use } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../../redux/store";
 
 const Note = ({
   params
 }: {
-  params: Promise<{ noteId: string }> // 2. Ändere den Typ zu Promise
+  params: Promise<{ noteId: string }> 
 }) => {
-  // 3. Nutze React.use(), um die ID zu extrahieren
   const unwrappedParams = use(params);
   const noteId = unwrappedParams.noteId;
 
-  const {note, saveState, content,
+  const {note, saveState, content, setContent,
     summaryActive, structureActive, handleSummarizeSelection, 
     handleStructureSelection, handleGenerate
   } = useNote(noteId);
@@ -43,8 +40,8 @@ const Note = ({
       <div className='w-full hidden 2xl:grid grid-cols-2 gap-2'>
 
         {/* EDITOR */}
-        <EditorActions 
-          saveState={saveState}
+        <EditorActions content={content} setContent={setContent}
+          saveState={saveState} 
           summaryActive={summaryActive} structureActive={structureActive}
           handleSummarizeSelection={handleSummarizeSelection}
           handleStructureSelection={handleStructureSelection}
@@ -79,7 +76,7 @@ const Note = ({
 
 
             {/* EDITOR */}
-            <EditorActions 
+            <EditorActions  content={content} setContent={setContent}
               saveState={saveState}
                summaryActive={summaryActive}
               structureActive={structureActive}

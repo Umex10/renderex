@@ -8,7 +8,7 @@ import { useAi } from "./use-ai";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { NotesArgs } from "@/types/notesArgs";
-import { setShowSandbox, setIsSandboxActive, setIsTryAgainActive, addToSandboxHistory, setContent }
+import { setShowSandbox, setIsSandboxActive, setIsTryAgainActive, addToSandboxHistory, setIsTransferActive }
   from "../../redux/slices/sandboxSlice";
 
 export const useNote = (noteId: string) => {
@@ -24,7 +24,7 @@ export const useNote = (noteId: string) => {
   }, [activeNote, noteId])
 
   const [note, setNote] = useState<NotesArgs | null>(null);
- const content = useSelector((state: RootState) => state.sandboxState.content)
+  const [content, setContent] = useState<string>(note?.content || "");
 
   // Ensures that content isn't rewritten uneccessarily onto firebase
   const lastSavedContent = useRef(note?.content || "")
@@ -50,7 +50,7 @@ export const useNote = (noteId: string) => {
 
   const [activeMode, setActiveMode] = useState(startMode);
 
-  const { isTryAgainActive, sandboxContent
+  const { isTryAgainActive, isTransferActive, activeSandboxContent
   } = useSelector((state: RootState) => state.sandboxState);
 
   function handleSummarizeSelection(value: string) {
@@ -90,9 +90,9 @@ export const useNote = (noteId: string) => {
     if (isSandboxActive) dispatch(setShowSandbox(true));
 
     if (summaryActive) {
-      res = await handleSummarize(content, activeMode, isTryAgainActive, sandboxContent);
+      res = await handleSummarize(content, activeMode, isTryAgainActive, activeSandboxContent);
     } else {
-      res = await handleStructure(content, activeMode, isTryAgainActive, sandboxContent)
+      res = await handleStructure(content, activeMode, isTryAgainActive, activeSandboxContent)
     }
 
     if (!res) return;
@@ -100,7 +100,7 @@ export const useNote = (noteId: string) => {
     if (isSandboxActive) {
       dispatch(addToSandboxHistory(res));
     } else {
-      dispatch(setContent(res));
+      setContent(res);
     }
   }
 
@@ -116,6 +116,17 @@ export const useNote = (noteId: string) => {
 
     generateAgain();
   }, [isTryAgainActive])
+
+  useEffect(() => {
+    function transferIntoNote() {
+      if (isTransferActive) {
+        setContent(activeSandboxContent);
+        dispatch(setIsTransferActive(false));
+      }
+    }
+
+    transferIntoNote();
+  }, [isTransferActive])
 
   useEffect(() => {
 
@@ -179,7 +190,7 @@ export const useNote = (noteId: string) => {
   }, [content, note, aiState])
 
   return {
-    note, content, saveState, aiState,
+    note, content, setContent, saveState, aiState,
     summaryActive, structureActive, handleSummarizeSelection,
     handleStructureSelection, handleGenerate
   }

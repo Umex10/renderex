@@ -8,11 +8,14 @@ import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import Sandbox from './Sandbox';
 import InfoTool from './InfoTool';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
-import { setContent } from '../../redux/slices/sandboxSlice';
+import {  useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+
+import { Dispatch, SetStateAction } from 'react';
 
 interface EditorActionsArgs {
+  content: string,
+  setContent: Dispatch<SetStateAction<string>>,
   saveState: string,
   summaryActive: boolean,
   structureActive: boolean,
@@ -23,26 +26,23 @@ interface EditorActionsArgs {
 
 const EditorActions = (data: EditorActionsArgs) => {
 
-  const { saveState,
+  const { saveState, content, setContent,
     summaryActive, structureActive,
     handleSummarizeSelection, handleStructureSelection, handleGenerate
   } = data;
 
-  const content = useSelector((state: RootState) => state.sandboxState.content);
-
   const aiState = useSelector((state: RootState) => state.aiState.status);
-
-  const dispatch = useDispatch<AppDispatch>();
 
   return (
     <div className='min-w-0'>
-      <Editor
+       <Editor
         value={content}
-        onChange={(val) =>  dispatch(setContent(val))}
+        onChange={(val) => setContent(val)}
       />
 
       {/* SELECT + BUTTONS | SAVE/GENERATE STATE */}
-      <div className='flex justify-center md:justify-between items-start mt-2'>
+      <div className='flex w-full flex-col gap-2 justify-center md:flex-row 
+       md:justify-between md:items-start mt-2'>
 
         {/* SELECTIONS + RESET SELECTION | GENERATE CONTAINER */}
         <div className='flex flex-col items-center
@@ -51,9 +51,7 @@ const EditorActions = (data: EditorActionsArgs) => {
           {/* SELECTIONS + RESET SELECTION */}
           <div className='flex flex-row gap-3'>
 
-
             {/* Summarize */}
-
             <Select
               defaultValue="summarize-replace"
               onValueChange={(value) => handleSummarizeSelection(value)}
@@ -119,8 +117,9 @@ const EditorActions = (data: EditorActionsArgs) => {
           </Button>
         </div>
 
-        {/* SAVING | GENERATING STATES */}
-        <div className='flex flex-row gap-4 mt-2'>
+            {/* SAVING | GENERATING STATES */}
+        <div className='flex flex-row justify-center md:justify-end
+        items-start gap-4 mt-2'>
           {/* SAVING STATES */}
           <div className={`${saveState === CONTENT_STATE.IDLE ? "hidden" : ""}`}>
             {saveState === CONTENT_STATE.SAVING && (

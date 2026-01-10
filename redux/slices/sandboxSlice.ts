@@ -2,20 +2,20 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 
 interface SandboxState {
-  content: string,
-  sandboxContent: string,
+  activeSandboxContent: string,
   showSandbox: boolean,
   isSandboxActive: boolean,
   isTryAgainActive: boolean,
+  isTransferActive: boolean,
   sandboxHistory: string[]
 }
 
 const initialState: SandboxState = {
-  content: "",
-  sandboxContent: "",
+  activeSandboxContent: "",
   showSandbox: false,
   isSandboxActive: false,
   isTryAgainActive: false,
+  isTransferActive: false,
   sandboxHistory: [],
 }
 
@@ -23,8 +23,8 @@ const sandboxSlice = createSlice({
   name: "sandbox",
   initialState,
   reducers: {
-     setContent: (state, action: PayloadAction<string>) => {
-      state.content = action.payload
+    setContentOfActiveSandbox: (state, action: PayloadAction<string>) => {
+      state.activeSandboxContent = action.payload
     },
     setShowSandbox: (state, action: PayloadAction<boolean>) => {
       state.showSandbox = action.payload
@@ -35,10 +35,13 @@ const sandboxSlice = createSlice({
     setIsTryAgainActive: (state, action: PayloadAction<boolean>) => {
       state.isTryAgainActive = action.payload
     },
+    setIsTransferActive: (state, action: PayloadAction<boolean>) => {
+      state.isTransferActive = action.payload
+    },
     addToSandboxHistory: (state, action: PayloadAction<string>) => {
       state.sandboxHistory.push(action.payload)
     },
-    setContentOfSandbox: (state, action: PayloadAction<{
+    setContentOfSandboxIndex: (state, action: PayloadAction<{
       index: number,
       content: string
     }>) => {
@@ -48,8 +51,8 @@ const sandboxSlice = createSlice({
   }
 })
 
-export const {setContent, setShowSandbox, setIsSandboxActive,
-  setIsTryAgainActive, addToSandboxHistory,
-  setContentOfSandbox
+export const {setContentOfActiveSandbox, setShowSandbox, setIsSandboxActive,
+  setIsTryAgainActive, setIsTransferActive, addToSandboxHistory,
+  setContentOfSandboxIndex
 } = sandboxSlice.actions;
 export default sandboxSlice.reducer;
