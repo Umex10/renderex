@@ -17,25 +17,27 @@ const Header = async () => {
   const user = cookieStore.get("userId")?.value;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
+    <header className="sticky top-0 z-50 w-full
+  bg-transparent backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
         {/* Logo */}
-        <Link href='#hero'>
+        <Link href='#hero' className='md:w-1/5'>
           <Logo classnames="w-auto h-auto"></Logo>
         </Link>
 
         {/* Nav items for Landing page */}
         <div className="block md:hidden">
-            <MobileNav user={user}/>
+          <MobileNav user={user} />
         </div>
 
-         <div className="hidden md:block">
-            <DesktopNav />
+        <div className="hidden md:block w-full flex-1">
+          <DesktopNav />
         </div>
 
         {/* Buttons for Dekstop */}
-        <nav className="hidden md:flex flex-row items-center justify-end gap-1">
-          
+        <nav className="hidden md:flex flex-row items-center justify-start gap-1
+        md:w-1/5">
+
           {!user ? (
             /* Sign in */
             <Button asChild className='hidden md:block bg-main text-main-foreground rounded-2xl shadow-lg
@@ -51,10 +53,10 @@ const Header = async () => {
             </Button>
 
           )}
-            <div className='hidden md:block'>
-               <DarkModeToggle></DarkModeToggle>
-            </div>
-         
+          <div className='hidden md:block'>
+            <DarkModeToggle></DarkModeToggle>
+          </div>
+
         </nav>
       </div>
     </header>
