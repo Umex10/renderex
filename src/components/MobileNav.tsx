@@ -11,7 +11,11 @@ import { navItems } from "@/content/header/header";
  * Mobile navigation menu using a sheet/drawer.
  * Renders navigation links and closes the sheet when a link is selected.
  */
-export default function MobileNavbar() {
+
+interface MobileNav {
+  user: string | undefined
+}
+export default function MobileNav({user}: MobileNav) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -24,8 +28,10 @@ export default function MobileNavbar() {
 
       <SheetContent side="right" className="w-[250px]">
         <nav className="flex flex-col gap-4 mt-8">
-          {navItems.map((item, index) => (
-            <Link
+
+          {navItems.map((item, index) => {
+
+            return <Link
               key={index}
               onClick={(_e) => {
                 setOpen(false);
@@ -35,7 +41,31 @@ export default function MobileNavbar() {
             >
               {item.text}
             </Link>
-          ))}
+          })}
+
+          {user ? (
+            <Link
+              key="dashboard"
+              onClick={(_e) => {
+                setOpen(false);
+              }}
+              href={"/dashboard"}
+              className="text-lg hover:underline"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              key="sign-in"
+              onClick={(_e) => {
+                setOpen(false);
+              }}
+              href={"/sign-in"}
+              className="text-lg hover:underline"
+            >
+              Sign-In
+            </Link>
+          )}
         </nav>
       </SheetContent>
     </Sheet>

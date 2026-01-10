@@ -1,3 +1,6 @@
+export const SIGNIN = "signin";
+export const DASHBOARD = "dashboard";
+
 export const navItems = [
   {
     text: "Hero",
@@ -14,5 +17,5 @@ export const navItems = [
   {
     text: "About",
     href: "#about"
-  }
+  },
 ]
