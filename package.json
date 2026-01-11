@@ -43,6 +43,7 @@
     "react-hook-form": "^7.69.0",
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
+    "react-scroll-parallax": "^3.5.0",
     "redux": "^5.0.1",
     "redux-toolkit": "^1.1.2",
     "rehype-highlight": "^7.0.2",

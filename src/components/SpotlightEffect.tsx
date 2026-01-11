@@ -2,10 +2,25 @@
 import React from "react";
 import { Spotlight } from "@/components/ui/spotlight-new";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card"
+
+import { Bot, Loader, FileType, FileDown } from 'lucide-react';
+
 
 export function SpotlightEffect() {
   const isMobile = useIsMobile();
+
+  const { scrollY } = useScroll();
+
+  const yRange = useTransform(scrollY, [0, 1000], [0, -100]);
+  const y = useSpring(yRange, { stiffness: 40, damping: 5 });
 
   return (
     // Outer container: Covers full screen width with background color and grid
@@ -42,10 +57,11 @@ export function SpotlightEffect() {
         {/* HERO CONTENT */}
         {/* ANIMATED HERO CONTENT */}
         <motion.div
-          className="relative z-10 w-full flex flex-col items-center justify-center pt-20 md:pt-0 md:pb-96"
+          className="relative z-10 w-full flex flex-col items-center justify-center pt-20 
+          md:pt-0 md:pb-[35rem]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 2 }} // Fade-In dauert 2 Sekunden
+          transition={{ duration: 2 }}
         >
           <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent
    bg-gradient-to-b from-purple-50 to-purple-400 bg-opacity-50 leading-tight">
@@ -53,12 +69,63 @@ export function SpotlightEffect() {
           </h1>
 
           <p className="mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto">
-            A focused note editor with smart assistance. Capture thoughts, refine ideas,
+            A focused markdown note editor with smart assistance. Capture thoughts, refine ideas,
             and let AI help you structure what matters.
           </p>
         </motion.div>
 
-      </div>
+        <motion.div
+          style={{ y }}
+          className="absolute top-1/2 left-3/5 p-4 rounded-xl 
+          text-white shadow-xl"
+        >
+          <Card className="w-full min-w-[250px] flex flex-row items-center p-4 justify-between gap-4 
+  bg-white/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
+          <CardHeader className="p-0">
+            <Bot className="w-14 h-14 text-violet-400"></Bot>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 flex flex-col gap-1 items-start">
+            <h2 className="text-sm font-extrabold">AI Markdown generation</h2>
+            <div className="flex gap-1 items-center">
+              <h3 className="font-extralight opacity-30 text-sm">Try again?</h3>
+              <Loader className="w-4 h-4 text-violet-400"></Loader>
+            </div>
+
+          </CardContent>
+          <CardFooter className="p-0 flex gap-1 items-center">
+
+          </CardFooter>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        style={{ y }}
+        className="absolute top-2/3 left-1/5 p-4 rounded-xl 
+          text-white shadow-xl"
+      >
+        <Card className="w-full min-w-[250px] flex flex-row items-center p-4
+          justify-between gap-4 ">
+          <CardHeader className="p-0">
+            <FileDown className="w-14 h-14 text-violet-400"></FileDown>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 flex flex-col gap-1 items-start">
+            <h2 className="text-sm font-extrabold">AI Markdown generation</h2>
+            <div className="flex gap-1 items-center">
+              <h3 className="font-extralight opacity-30 text-sm">Selected type: {" "}
+                <span className="font-extrabold ">
+                  .md
+                </span>
+              </h3>
+              <FileType className="w-4 h-4 text-violet-400"></FileType>
+            </div>
+
+          </CardContent>
+          <CardFooter className="p-0 flex gap-1 items-center">
+
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
+    </div >
   );
 }
