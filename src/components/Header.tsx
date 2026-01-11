@@ -22,7 +22,7 @@ const Header = async () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
         {/* Logo */}
         <Link href='#hero' className='md:w-1/5'>
-          <Logo classnames="w-auto h-auto"></Logo>
+          <Logo classnames="w-40 h-10 md:w-auto md:h-auto"></Logo>
         </Link>
 
         {/* Nav items for Landing page */}
