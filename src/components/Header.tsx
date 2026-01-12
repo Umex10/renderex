@@ -19,7 +19,7 @@ const Header = async () => {
   return (
     <header className="sticky top-0 z-50 w-full
   bg-transparent backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
+      <div className="mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
         {/* Logo */}
         <Link href='#hero' className='md:w-1/5'>
           <Logo classnames="w-40 h-10 md:w-auto md:h-auto"></Logo>
@@ -35,8 +35,7 @@ const Header = async () => {
         </div>
 
         {/* Buttons for Dekstop */}
-        <nav className="hidden md:flex flex-row items-center justify-start gap-1
-        md:w-1/5">
+        <nav className="hidden md:flex flex-row items-center justify-end gap-1 md:w-1/5">
 
           {!user ? (
             /* Sign in */
@@ -48,7 +47,7 @@ const Header = async () => {
           ) : (
 
             /* Dashboard */
-            <Button asChild variant="link">
+            <Button asChild variant="link" className='p-4 bg-violet-400'>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
 

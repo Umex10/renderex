@@ -23,6 +23,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-pdf/renderer": "^4.3.1",
+    "@react-three/fiber": "^9.0.0-alpha.8",
     "@reduxjs/toolkit": "^2.11.2",
     "@studio-freight/lenis": "^1.0.42",
     "@uiw/react-codemirror": "^4.25.4",
@@ -54,6 +55,7 @@
     "strip-markdown": "^6.0.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.182.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {
@@ -63,6 +65,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.182.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",

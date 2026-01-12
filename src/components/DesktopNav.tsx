@@ -18,16 +18,18 @@ export function DesktopNav() {
   return (
     <div className="w-full flex justify-center items-center gap-4">
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList className="w-full space-x-0">
           {navItems.map((item, index) => {
 
             return (
-              <NavigationMenuItem key={index}>
+              <NavigationMenuItem key={index} className="px-0 gap-0">
                 <NavigationMenuLink
                   asChild
-                  className={navigationMenuTriggerStyle()}
+                  className={navigationMenuTriggerStyle({
+                    className: "px-10 py-4",
+                  })}
                 >
-                  <Link href={item.href}>
+                  <Link href={item.href} className="bg-transparent hover:bg-violet-400/20">
                     {item.text}
                   </Link>
                 </NavigationMenuLink>

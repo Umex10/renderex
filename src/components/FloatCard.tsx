@@ -23,14 +23,17 @@ const FloatCard = ({ Icon, title, subTitle, SubIcon, absoluteClasses }: FloatCar
 
   const { scrollY } = useScroll();
 
-  const yRange = useTransform(scrollY, [0, 1000], [0, -100]);
-  const y = useSpring(yRange, { stiffness: 40, damping: 5 });
-  
+  const yRange = useTransform(scrollY, [0, 200], [0, -200]);
+  const y = useSpring(yRange, { stiffness: 10, damping: 10 }); // how fast the animation is
+  // and how smooth it slows down
 
   return (
     <motion.div
       style={{ y }}
-      className={`hidden md:block absolute ${absoluteClasses} p-4 rounded-xl 
+      initial={{ opacity: 0, translateY: 20 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className={`w-full hidden md:block absolute ${absoluteClasses} p-4 rounded-xl 
           text-white shadow-xl`}
     >
 
