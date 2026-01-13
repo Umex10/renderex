@@ -58,6 +58,15 @@ const config = {
         xl: "var(--radius-xl)",
         "2xl": "var(--radius-2xl)",
       },
+      minHeight: {
+        'screen-header': "calc(100vh - 77px)"
+      },
+      headings: {
+        "main-heading": `min-h-screen-header text-4xl md:text-7xl font-bold text-center bg-clip-text
+        text-transparent bg-gradient-to-b from-purple-50 to-purple-400
+         bg-opacity-50 leading-tight`,
+        "sub-context": "mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto"
+      }
   },
 
 },

@@ -35,18 +35,21 @@ const SpotlightEffect = () => {
       {/* HERO CONTENT */}
       {/* ANIMATED HERO CONTENT */}
       <motion.div
-        className="z-10 w-full flex flex-col items-center justify-center pt-14
-              md:-mt-[32rem]"
+        className="relative z-10 w-full flex flex-col items-center justify-center pt-14"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2 }}
       >
-        <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent
-       bg-gradient-to-b from-purple-50 to-purple-400 bg-opacity-50 leading-tight">
+        {/* <div className="hidden md:block absolute inset-0 z-0 
+  bg-[radial-gradient(circle,_rgba(0,0,0,0.9)_60%,_rgba(0,0,0,0.3)_80%,_rgba(0,0,0,0)_100%)]
+  rounded-2xl"></div> */}
+
+
+        <h1 className="relative main-heading z-20">
           Write once. <br /> Think clearer.
         </h1>
 
-        <p className="mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto">
+        <p className="sub-context z-20">
           A focused markdown note editor with smart assistance. Capture thoughts, refine ideas,
           and let AI help you structure what matters.
         </p>
@@ -56,3 +59,5 @@ const SpotlightEffect = () => {
 }
 
 export default SpotlightEffect
+
+
