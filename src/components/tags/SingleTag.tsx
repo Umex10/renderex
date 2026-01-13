@@ -2,10 +2,10 @@
 
 import { LucideIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { Button } from './ui/button'
-import ColorChanger from './ui/colorChanger'
-import { Tag } from "../types/tag";
-import { Badge } from './ui/badge'
+import { Button } from './../ui/button'
+import ColorChanger from './../ui/colorChanger'
+import { Tag } from "../../types/tag";
+import { Badge } from './../ui/badge'
 
 interface TagArgs {
   tag: Tag,

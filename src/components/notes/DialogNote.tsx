@@ -4,10 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { Plus, PlusCircle, Syringe, X } from 'lucide-react'
-import { Field, FieldError, FieldLabel } from './ui/field'
-import { Input } from './ui/input'
+import { Field, FieldError, FieldLabel } from '../ui/field'
+import { Input } from '../ui/input'
 
 import {
   Dialog,
@@ -21,11 +21,11 @@ import {
 
 import { DialogNoteArgs } from '@/types/dialogNotesArgs';
 import { useSelector } from 'react-redux';
-import {  RootState } from '../../redux/store';
+import {  RootState } from '../../../redux/store';
 
-import { getRandomHexColor } from '@/utils/getRandomHexColor';
-import SingleTag from './SingleTag';
-import { useDialog } from '@/hooks/use-dialog';
+import { getRandomHexColor } from '@/utils/color/getRandomHexColor';
+import SingleTag from '../tags/SingleTag';
+import { useDialog } from '@/hooks/notes/use-dialog';
 
 // DIALOG FORM SCHEMA
 const tagSchema = z.object({

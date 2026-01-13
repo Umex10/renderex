@@ -1,12 +1,12 @@
 "use client"
 
-import { NotesArgs } from "../types/notesArgs";
+import { NotesArgs } from "../../types/notesArgs";
 
 import { createNote, deleteNote, editNote } from "@/actions/notes";
 import { useDispatch } from "react-redux";
-import { addNote, removeNote, setActiveNote, setNotes, changeNote, setCreatingNote, setDeletingNote } from "../../redux/slices/notesSlice";
-import { AppDispatch } from "../../redux/store";
-import { Tag } from "../types/tag";
+import { addNote, removeNote, setActiveNote, setNotes, changeNote, setCreatingNote, setDeletingNote } from "../../../redux/slices/notesSlice";
+import { AppDispatch } from "../../../redux/store";
+import { Tag } from "../../types/tag";
 import { auth } from "@/lib/firebase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 /**
@@ -20,7 +20,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
  * @property {boolean} loading - The loading state of the user authentication.
  * @property {Function} handleNew - Function to handle the creation of a new note.
  * @property {Function} handleDelete - Function to handle the deletion of a note.
- * @property {Function} handleEdit - Function to handle the editing of a note.
+ * @property {Function} handleEdit - Function to handle the eSting of a note.
  */
 export function useNotes(notes: NotesArgs[]) {
 

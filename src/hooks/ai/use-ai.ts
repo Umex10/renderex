@@ -2,8 +2,8 @@
 
 import { aiDo } from "@/actions/ai";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { setAiState } from "../../redux/slices/aiSlice";
+import { AppDispatch } from "../../../redux/store";
+import { setAiState } from "../../../redux/slices/aiSlice";
 
 export const useAi = () => {
 

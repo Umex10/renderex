@@ -9,15 +9,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
-import { setFormatState } from '../../redux/slices/formatSlice';
-import { FORMAT } from '../../constants/Format';
-import { Button } from './ui/button';
+import { AppDispatch, RootState } from '../../../redux/store';
+import { setFormatState } from '../../../redux/slices/formatSlice';
+import { FORMAT } from '../../../constants/Format';
+import { Button } from '../ui/button';
 import { Download } from 'lucide-react';
 import { NotesArgs } from '@/types/notesArgs';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
-import { useFormat } from '@/hooks/use-format';
+import { useFormat } from '@/hooks/format/use-format';
 
 const SelectFormat = () => {
 

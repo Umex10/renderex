@@ -1,8 +1,8 @@
 "use client"
 
 import { useDispatch } from "react-redux";
-import { setLoadingTags, setWholeTags } from "../../redux/slices/tags/tagsSlice";
-import { AppDispatch } from "../../redux/store";
+import { setLoadingTags, setWholeTags } from "../../../redux/slices/tags/tagsSlice";
+import { AppDispatch } from "../../../redux/store";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase/config";

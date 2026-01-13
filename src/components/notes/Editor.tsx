@@ -6,7 +6,7 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { useTheme } from 'next-themes';
 import { EditorView } from "@codemirror/view";
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/shared/use-mobile';
 
 interface EditorProps {
   value: string;

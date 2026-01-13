@@ -2,7 +2,7 @@
 
 import { NotesArgs } from "@/types/notesArgs";
 import { useEffect, useMemo } from "react";
-import { Tag } from "../types/tag";
+import { Tag } from "../../types/tag";
 
 /**
  * Arguments for the useMatchedTags hook.

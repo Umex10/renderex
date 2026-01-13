@@ -1,8 +1,8 @@
 "use client"
 
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { FORMAT } from "../../constants/Format";
+import { RootState } from "../../../redux/store";
+import { FORMAT } from "../../../constants/Format";
 import { getDOCX, getPDF, getTXT } from "@/actions/format";
 import { triggerDownload } from "@/utils/download/triggerDownload";
 import { NotesArgs } from "@/types/notesArgs";

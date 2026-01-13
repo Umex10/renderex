@@ -3,7 +3,7 @@ import MobileNav from './MobileNav'
 import DesktopNav from './DesktopNav'
 import Link from 'next/link'
 import Logo from './Logo'
-import { Button } from './ui/button'
+import { Button } from './../ui/button'
 import { DarkModeToggle } from './DarkModeToggle'
 import { cookies } from 'next/headers'
 

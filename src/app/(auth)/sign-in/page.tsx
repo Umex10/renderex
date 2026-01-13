@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useEffect } from "react"
-import Logo from "@/components/Logo"
+import Logo from "@/components/layout/Logo"
 
 const formSchema = z
   .object({

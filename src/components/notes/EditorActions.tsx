@@ -1,15 +1,15 @@
 "use client"
 
-import Editor from '@/components/Editor';
-import { Button } from './ui/button';
+import Editor from '@/components/notes/Editor';
+import { Button } from '../ui/button';
 import { CheckCircle, Loader2, Sparkles } from 'lucide-react';
-import { AI_STATE } from '../../constants/loadingStates/AiState';
-import { CONTENT_STATE } from '../../constants/loadingStates/ContentState';
+import { AI_STATE } from '../../../constants/loading-states/AiState';
+import { CONTENT_STATE } from '../../../constants/loading-states/ContentState';
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import Sandbox from './Sandbox';
-import InfoTool from './InfoTool';
+import InfoTool from '../shared/InfoTool';
 import {  useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { RootState } from '../../../redux/store';
 
 import { Dispatch, SetStateAction } from 'react';
 

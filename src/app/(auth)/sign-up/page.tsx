@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import Logo from "@/components/Logo"
+import Logo from "@/components/layout/Logo"
 import { doc, serverTimestamp, setDoc } from "firebase/firestore"
 
 const formSchema = z

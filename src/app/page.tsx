@@ -1,5 +1,5 @@
-import Header from "@/components/Header";
-import Main from "@/components/Main";
+import Header from "@/components/layout/Header";
+import Main from "@/components/landing/Main";
 
 /**
  * Public home page that renders the main header/navigation.

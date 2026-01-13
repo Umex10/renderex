@@ -9,7 +9,7 @@ import {
   SidebarHeader,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import Logo from "./Logo"
+import Logo from "../layout/Logo"
 import Link from "next/link";
 import { ArrowDown, ArrowUp, BadgeInfo, Camera, LogOut, Trash2, X } from 'lucide-react';
 import {
@@ -20,28 +20,28 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { getAuth, signOut } from "firebase/auth"
 import { useRouter } from "next/navigation";
-import { AppDispatch, RootState } from "../../redux/store"
+import { AppDispatch, RootState } from "../../../redux/store"
 import { useDispatch, useSelector } from "react-redux"
-import { Badge } from "./ui/badge"
+import { Badge } from "../ui/badge"
 import DialogNote from "./DialogNote"
-import { useNotes } from "@/hooks/use-notes";
-import { setActiveNote } from "../../redux/slices/notesSlice";
-import { formatDate } from "@/utils/formatDate";
-import { Input } from "./ui/input";
+import { useNotes } from "@/hooks/notes/use-notes";
+import { setActiveNote } from "../../../redux/slices/notesSlice";
+import { formatDate } from "@/utils/date/formatDate";
+import { Input } from "../ui/input";
 import { useState, useRef, useEffect } from "react"; // useRef & useEffect hinzugefügt
-import { Tag } from "../types/tag";
-import InfoTool from "./InfoTool";
+import { Tag } from "../../types/tag";
+import InfoTool from "../shared/InfoTool";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MultiSelect } from "./ui/multi-select";
-import { getRandomHexColor } from "@/utils/getRandomHexColor";
-import SingleTag from "./SingleTag";
-import { useUserTags } from "@/hooks/use-userTags";
-import { useMatchedTags } from "@/hooks/use-matchedTags";
+import { MultiSelect } from "../ui/multi-select";
+import { getRandomHexColor } from "@/utils/color/getRandomHexColor";
+import SingleTag from "../tags/SingleTag";
+import { useUserTags } from "@/hooks/tags/use-userTags";
+import { useMatchedTags } from "@/hooks/tags/use-matchedTags";
 import { User } from "@/types/user";
-import { useResize } from "@/hooks/use-resize";
+import { useResize } from "@/hooks/shared/use-resize";
 import { getInitialUser } from "@/actions/user";
 
 

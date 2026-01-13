@@ -6,9 +6,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import LiveRenderer from '@/components/LiveRenderer';
-import EditorActions from '@/components/EditorActions';
-import { useNote } from '@/hooks/use-note';
+import LiveRenderer from '@/components/notes/LiveRenderer';
+import EditorActions from '@/components/notes/EditorActions';
+import { useNote } from '@/hooks/notes/use-note';
 import { use } from "react";
 
 const Note = ({

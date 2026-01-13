@@ -1,9 +1,9 @@
 "use client"
 
 import {useMemo } from "react";
-import { Tag } from "../types/tag";
+import { Tag } from "../../types/tag";
 import { UseFormReturn } from "react-hook-form";
-import { FormSchema } from "@/components/DialogNote";
+import { FormSchema } from "@/components/notes/DialogNote";
 
 /**
  * Arguments for the useDialog hook.

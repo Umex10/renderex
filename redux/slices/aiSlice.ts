@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { AI_STATE } from "../../constants/loadingStates/AiState";
+import { AI_STATE } from "../../constants/loading-states/AiState";
 
 interface AiState{
   status: typeof AI_STATE[keyof typeof AI_STATE]

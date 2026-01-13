@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { DialogClose } from '@radix-ui/react-dialog'
 import { User } from '@/types/user'
-import { useUser } from '@/hooks/use-user'
+import { useUser } from '@/hooks/user/use-user'
 import { useRouter } from 'next/navigation'
 
 // --- SEPARATE SCHEMAS ---

@@ -5,8 +5,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase/config";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { setLoadingNotes, setNotes } from "../../redux/slices/notesSlice";
+import { AppDispatch } from "../../../redux/store";
+import { setLoadingNotes, setNotes } from "../../../redux/slices/notesSlice";
 import { NotesArgs } from "@/types/notesArgs";
 
 export function NotesSubscriber() {

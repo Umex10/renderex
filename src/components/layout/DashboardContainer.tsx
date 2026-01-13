@@ -3,10 +3,10 @@
 import React from 'react'
 
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { UserTagsSubscriber } from './UserTagsSubscriber'
-import { NotesSubscriber } from './NotesSubscriber'
-import { AppSidebar } from './Sidebar'
-import SelectFormat from './SelectFormat'
+import { UserTagsSubscriber } from '../subscribers/UserTagsSubscriber'
+import { NotesSubscriber } from '../subscribers/NotesSubscriber'
+import { AppSidebar } from '../notes/Sidebar'
+import SelectFormat from '../notes/SelectFormat'
 
 const DashboardContainer = ({ children }: {children: React.ReactNode}) => {
   return (

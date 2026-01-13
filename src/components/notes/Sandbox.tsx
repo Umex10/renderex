@@ -3,15 +3,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Sparkles, X, GripVertical, Redo2, CheckCircle, Box } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import LiveRenderer from './LiveRenderer';
-import InfoTool from './InfoTool';
+import InfoTool from '../shared/InfoTool';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
-import { setContentOfActiveSandbox, setContentOfSandboxIndex, setIsTransferActive, setIsTryAgainActive, setShowSandbox } from '../../redux/slices/sandboxSlice';
+import { AppDispatch, RootState } from '../../../redux/store';
+import { setContentOfActiveSandbox, setContentOfSandboxIndex, setIsTransferActive, setIsTryAgainActive, setShowSandbox } from '../../../redux/slices/sandboxSlice';
 import { Undo2 } from 'lucide-react';
-import { AI_STATE } from '../../constants/loadingStates/AiState';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { AI_STATE } from '../../../constants/loading-states/AiState';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import Editor from './Editor';
 
 

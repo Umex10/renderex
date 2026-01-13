@@ -2,12 +2,12 @@
 import StoreProvider from "../../../redux/StoreProvider";
 import { getInitialNotes } from "../../actions/notes";
 import { NotesArgs } from "../../types/notesArgs";
-import { AuthSetter } from "@/components/AuthSetter";
+import { AuthSetter } from "@/components/auth/AuthSetter";
 import { getInitialUserTags } from "@/actions/tags";
 import { UserTags } from "../../../redux/slices/tags/tagsSlice";
 import { getInitialUser } from "@/actions/user";
 import { User } from "@/types/user";
-import DashboardContainer from "@/components/DashboardContainer";
+import DashboardContainer from "@/components/layout/DashboardContainer";
 import { RootState } from "../../../redux/store";
 
 /**

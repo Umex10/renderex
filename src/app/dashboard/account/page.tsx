@@ -1,7 +1,7 @@
 "use server"
 
 import { getInitialUser } from '@/actions/user';
-import Account from '@/components/Account';
+import Account from '@/components/auth/Account';
 import { User } from '@/types/user';
 import { cookies } from 'next/headers';
 

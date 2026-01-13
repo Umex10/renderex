@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Spotlight } from "@/components/ui/spotlight-new";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/shared/use-mobile";
 import { motion } from "framer-motion";
 
 const SpotlightEffect = () => {

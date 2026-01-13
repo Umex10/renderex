@@ -1,15 +1,15 @@
 "use client"
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { setActiveNote } from "../../redux/slices/notesSlice";
+import { AppDispatch, RootState } from "../../../redux/store";
+import { setActiveNote } from "../../../redux/slices/notesSlice";
 import { useEffect, useRef, useState } from "react";
-import { CONTENT_STATE } from "../../constants/loadingStates/ContentState";
-import { useAi } from "./use-ai";
+import { CONTENT_STATE } from "../../../constants/loading-states/ContentState";
+import { useAi } from "../ai/use-ai";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { NotesArgs } from "@/types/notesArgs";
 import { setShowSandbox, setIsSandboxActive, setIsTryAgainActive, addToSandboxHistory, setIsTransferActive }
-  from "../../redux/slices/sandboxSlice";
+  from "../../../redux/slices/sandboxSlice";
 
 export const useNote = (noteId: string) => {
 
