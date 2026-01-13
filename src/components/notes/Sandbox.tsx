@@ -53,7 +53,7 @@ const Sandbox = () => {
         you will see here the live view">
           <Button
             onClick={() => dispatch(setShowSandbox(!showSandbox))}
-            className={`flex items-center gap-2 bg-violet-500 hover:bg-violet-600
+            className={`flex items-center gap-2 bg-main hover:bg-main/90
           p-3 rounded-full shadow-lg transition-all active:scale-95
           `}
             disabled={!isSandboxActive}
@@ -90,11 +90,11 @@ const Sandbox = () => {
               -translate-y-1/2
               md:px-0 min-w-[300px] md:min-w-[800px]
               min-h-[600px] md:min-h-[800px] max-w-[1000px]
-              bg-white rounded-xl shadow-2xl border border-orange-200 overflow-hidden flex flex-col
+              bg-background rounded-xl shadow-2xl border border-border overflow-hidden flex flex-col
                resize both"
             >
               {/* Header (Drag Handle) */}
-              <div className="bg-violet-500 p-4 text-white flex justify-between items-center
+              <div className="bg-main p-4 text-white flex justify-between items-center
                   cursor-move select-none"
                 onMouseDown={(e: never) => dragControls.start(e)}
                 onTouchStart={(e: never) => dragControls.start(e)}>
@@ -103,13 +103,13 @@ const Sandbox = () => {
                   <span className="font-semibold">Sandbox</span>
                 </div>
                 <Button variant={"secondary"}
-                  onClick={() => dispatch(setShowSandbox(false))} className="hover:bg-orange-600 rounded">
+                  onClick={() => dispatch(setShowSandbox(false))} className="hover:bg-destructive/90 rounded">
                   <X size={20} />
                 </Button>
               </div>
 
               {/* Body */}
-              <div className="flex-1 p-4 bg-gray-50 flex flex-col 
+              <div className="flex-1 p-4 bg-muted/30 flex flex-col 
               md:flex-row items-center justify-start md:items-start gap-2
                md:justify-between overflow-hidden">
                 {/* LIVE */}
@@ -154,14 +154,14 @@ const Sandbox = () => {
                 </Tabs>
 
                 <div className='flex flex-row gap-1 order-1 md:order-2 justify-end'>
-                  <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
+                  <Button className='bg-main hover:bg-main/90 px-2 py-1 w-10 h-10'
                     disabled={index === 0}
                     onClick={() => {
                       setIndex(index - 1);
                     }}>
                     <Undo2 className='w-auto h-auto'></Undo2>
                   </Button>
-                  <Button className='bg-violet-500 px-2 py-1 w-10 h-10'
+                  <Button className='bg-main hover:bg-main/90 px-2 py-1 w-10 h-10'
                     disabled={index === sandboxHistory.length - 1}
                     onClick={() => {
                       setIndex(index + 1);
@@ -211,7 +211,7 @@ const Sandbox = () => {
                     Transfer into Note
                   </Button>
 
-                  <Button className='bg-violet-500' onClick={() => dispatch(setIsTryAgainActive(true))}>
+                  <Button className='bg-main hover:bg-main/90' onClick={() => dispatch(setIsTryAgainActive(true))}>
                     Try again
                   </Button>
                 </div>

@@ -58,10 +58,11 @@ const EditorActions = (data: EditorActionsArgs) => {
             >
               <InfoTool desc="Here you can generate a summary with different modes">
                 <SelectTrigger
-                  className={`px-1 border-2 ${summaryActive
-                    ? "border-violet-500 bg-violet-50"
-                    : "border-gray-400 bg-white opacity-50"
-                    }`}
+                  className={`px-1 border-2 ${
+                    summaryActive
+                      ? "border-main bg-main/10 dark:bg-main/20"
+                      : "border-border bg-background opacity-50"
+                  }`}
                 >
                   <span className='px-2'>AI Summary</span>
                 </SelectTrigger>
@@ -90,10 +91,11 @@ const EditorActions = (data: EditorActionsArgs) => {
             >
               <InfoTool desc="Here you can generate a better structure with different modes">
                 <SelectTrigger
-                  className={`px-1 border-2 ${structureActive
-                    ? "border-violet-500 bg-violet-50"
-                    : "border-gray-400 bg-white opacity-50"
-                    }`}
+                  className={`px-1 border-2 ${
+                    structureActive
+                      ? "border-main bg-main/10 dark:bg-main/20"
+                      : "border-border bg-background opacity-50"
+                  }`}
                 >
                   <span className='px-2'>AI Structure</span>
                 </SelectTrigger>
@@ -112,7 +114,8 @@ const EditorActions = (data: EditorActionsArgs) => {
             {/* Sandbox */}
             <Sandbox></Sandbox>
           </div>
-          <Button onClick={() => handleGenerate()}>
+          <Button onClick={() => handleGenerate()} className='bg-black dark:bg-gray-300 text-white
+           dark:text-black hover:bg-gray-800 duration-300 ease'>
             {`Generate ${summaryActive ? "Summary" : "Structure"}`}
           </Button>
         </div>

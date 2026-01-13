@@ -12,7 +12,7 @@ interface LiveRendererArgs {
 
 const LiveRenderer = ({content, classes}: LiveRendererArgs) => {
   return (
-    <div className={`prose prose-slate overflow-y-scroll border-2
+    <div className={`prose prose-slate dark:prose-invert overflow-y-scroll border-2 border-border
     ${classes}`}>
                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                    {content !== "" ? content : "Write something down in order to see it live"}

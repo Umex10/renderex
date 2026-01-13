@@ -47,7 +47,7 @@ const Header = async () => {
           ) : (
 
             /* Dashboard */
-            <Button asChild variant="link" className='p-4 bg-violet-400'>
+            <Button asChild variant="link" className='p-4'>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
 

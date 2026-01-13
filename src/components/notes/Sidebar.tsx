@@ -158,7 +158,7 @@ export function AppSidebar() {
         {/* ADD + | SORT SECTION - dynamic height */}
         <div style={{ height: topHeight, minHeight: '190px' }} className="flex flex-col">
           <SidebarGroup className="overflow-y-auto flex-1">
-            <SidebarGroupLabel className="border-b border-black rounded-none px-0 cursor-pointer"
+            <SidebarGroupLabel className="border-b border-border rounded-none px-0 cursor-pointer"
               onClick={() => router.push("/dashboard")}>
               <span className="text-xl font-bold">Notes</span>
             </SidebarGroupLabel>
@@ -179,8 +179,7 @@ export function AppSidebar() {
                   onValueChange={(value) => setSortAfter(value)}
                 >
                   <SelectTrigger
-                    className={`max-w-[70px] px-1 border-2
-                    border-gray-400/50`}
+                    className={`max-w-[70px] px-1 border-2 border-border`}
                     defaultValue="date"
                   ><SelectValue />
                   </SelectTrigger>
@@ -208,7 +207,7 @@ export function AppSidebar() {
                 </Select>
                 <ArrowDown
                   className={`w-8 h-8 cursor-pointer
-                ${isDescending ? "text-violet-400" : ""} `}
+                ${isDescending ? "text-main" : ""} `}
                   onClick={() => {
                     setIsDescending(!isDescending);
                     setIsAscending(!isAscending);
@@ -217,7 +216,7 @@ export function AppSidebar() {
                 ></ArrowDown>
                 <ArrowUp
                   className={`w-8 h-8 cursor-pointer
-                ${isAscending ? "text-violet-400" : ""} `}
+                ${isAscending ? "text-main" : ""} `}
                   onClick={() => {
                     setIsAscending(!isAscending);
                     setIsDescending(!isDescending);
@@ -307,7 +306,7 @@ export function AppSidebar() {
                         ))}
                       </CardContent>
                       <CardFooter className="px-4 py-0">
-                        <span className="text-xs text-gray-400">Edited: <span>
+                        <span className="text-xs text-muted-foreground">Edited: <span>
                           {formatDate(note.date)}</span></span>
                       </CardFooter>
                     </>
@@ -322,7 +321,7 @@ export function AppSidebar() {
         {/* RESIZE HANDLE */}
         {/* The divider between the notes and tags, which is dragable */}
         <div
-          className="h-1.5 cursor-row-resize bg-gray-200 hover:bg-violet-400 transition-colors duration-150"
+          className="h-1.5 cursor-row-resize bg-border hover:bg-main transition-colors duration-150"
           onMouseDown={() => {
             isDragging.current = true;
             document.body.style.cursor = "row-resize";
@@ -331,7 +330,7 @@ export function AppSidebar() {
 
         {/* USER-TAGS SECTION */}
         <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden">
-          <SidebarGroupLabel className="border-b border-black rounded-none px-0 cursor-pointer"
+          <SidebarGroupLabel className="border-b border-border rounded-none px-0 cursor-pointer"
             onClick={() => router.push("/dashboard")}>
             <span className="text-xl font-bold">Tags</span>
           </SidebarGroupLabel>
@@ -416,7 +415,7 @@ export function AppSidebar() {
               >
               </Image>
             ) : (
-              <Camera size={28} className="text-gray-400" />
+              <Camera size={28} className="text-muted-foreground" />
             )}
           </CardHeader>
 
@@ -434,7 +433,7 @@ export function AppSidebar() {
 
         </Card>
         {/* LOGOUT */}
-        <Button className="w-full hover:bg-red-500"
+        <Button className="w-full bg-black text-white hover:bg-red-500"
           onClick={() => signOut(auth)}>
           <LogOut></LogOut>
           <span>Logout</span>

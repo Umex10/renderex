@@ -177,20 +177,20 @@ const Account = ({ initialUser }: AccountProps) => {
 
   return (
     <div className='flex flex-col h-full md:justify-center py-8'>
-      <div className="max-w-[425px] w-full mx-auto p-6 bg-white rounded-lg shadow-sm border space-y-8">
+      <div className="max-w-[425px] w-full mx-auto p-6 bg-card dark:bg-card rounded-lg shadow-sm border border-border space-y-8">
 
         <div>
-          <h2 className="text-xl font-semibold">Account Settings</h2>
-          <p className="text-sm text-gray-500">Manage your account and security.</p>
+          <h2 className="text-xl font-semibold text-foreground">Account Settings</h2>
+          <p className="text-sm text-muted-foreground">Manage your account and security.</p>
         </div>
 
         {/* --- SECTION 1: PROFILE PICTURE --- */}
         <section className="space-y-4">
-          <h3 className="text-sm font-medium uppercase text-gray-400 tracking-wider">Profile Picture</h3>
+          <h3 className="text-sm font-medium uppercase text-muted-foreground tracking-wider">Profile Picture</h3>
           <form onSubmit={imageForm.handleSubmit(onSubmit)} className="flex flex-col items-center gap-3">
             <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
             <div
-              className="w-24 h-24 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden cursor-pointer relative group"
+              className="w-24 h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center overflow-hidden cursor-pointer relative group"
               onClick={() => fileInputRef.current?.click()}
             >
               {imageView ? (
@@ -198,7 +198,7 @@ const Account = ({ initialUser }: AccountProps) => {
                   className="w-full h-full object-cover"
                   width={100} height={100} />
               ) : (
-                <Camera size={28} className="text-gray-400" />
+                <Camera size={28} className="text-muted-foreground" />
               )}
               {/* <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <Camera size={20} className="text-white" />
@@ -223,7 +223,7 @@ const Account = ({ initialUser }: AccountProps) => {
 
         {/* --- SECTION 2: USERNAME --- */}
         <section className="space-y-4">
-          <h3 className="text-sm font-medium uppercase text-gray-400 tracking-wider">Public Identity</h3>
+          <h3 className="text-sm font-medium uppercase text-muted-foreground tracking-wider">Public Identity</h3>
           <form onSubmit={usernameForm.handleSubmit(onSubmit)}>
             <Controller
               name="username"
@@ -244,7 +244,7 @@ const Account = ({ initialUser }: AccountProps) => {
 
         {/* --- SECTION 3: EMAIL --- */}
         <section className="space-y-4">
-          <h3 className="text-sm font-medium uppercase text-gray-400 tracking-wider">Email Settings</h3>
+          <h3 className="text-sm font-medium uppercase text-muted-foreground tracking-wider">Email Settings</h3>
           <form onSubmit={emailForm.handleSubmit(onSubmit)}>
             <div className='grid gap-4'>
               <Controller
@@ -279,7 +279,7 @@ const Account = ({ initialUser }: AccountProps) => {
 
         {/* --- SECTION 4: SECURITY (KEY) --- */}
         <section className="space-y-4">
-          <h3 className="text-sm font-medium uppercase text-gray-400 tracking-wider">Security</h3>
+          <h3 className="text-sm font-medium uppercase text-muted-foreground tracking-wider">Security</h3>
           <form onSubmit={keyForm.handleSubmit(onSubmit)}>
             <div className="grid gap-4">
               <Controller

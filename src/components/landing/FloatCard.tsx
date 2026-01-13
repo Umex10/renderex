@@ -40,13 +40,13 @@ const FloatCard = ({ Icon, title, subTitle, SubIcon, absoluteClasses }: FloatCar
       <Card className="w-full w-[250px] flex flex-row items-center p-4 justify-between gap-4 
   bg-white/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
         <CardHeader className="p-0">
-          <Icon className="w-14 h-14 text-violet-400"></Icon>
+          <Icon className="w-14 h-14 text-main"></Icon>
         </CardHeader>
         <CardContent className="p-0 flex-1 flex flex-col gap-1 items-start">
-          <h2 className="text-sm font-extrabold">{title}</h2>
+          <h2 className="text-white text-sm font-extrabold">{title}</h2>
           <div className="flex gap-1 items-center">
-            <h3 className="font-extralight opacity-30 text-sm text-nowrap">{subTitle}</h3>
-            <SubIcon className="w-4 h-4 text-violet-400"></SubIcon>
+            <h3 className="text-white font-extralight opacity-30 text-sm text-nowrap">{subTitle}</h3>
+            <SubIcon className="w-4 h-4 text-main"></SubIcon>
           </div>
 
         </CardContent>
