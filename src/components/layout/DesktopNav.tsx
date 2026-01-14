@@ -29,7 +29,8 @@ export function DesktopNav() {
                     className: "px-10 py-4",
                   })}
                 >
-                  <Link href={item.href} className="bg-transparent hover:bg-main/20">
+                  <Link href={item.href} className="bg-transparent hover:bg-main/20
+                  active:bg-main/50">
                     {item.text}
                   </Link>
                 </NavigationMenuLink>
