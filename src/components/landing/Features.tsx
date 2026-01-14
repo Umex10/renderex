@@ -2,9 +2,14 @@ import React from 'react'
 
 const Features = () => {
   return (
-    <section id="#features" className='h-full w-full flex items-center justify-center
+    <section id="#features" className='relative h-full w-full flex items-center justify-center
      min-h-screen-header'>
-      <div>
+       <span
+          className="absolute inset-[-400px] md:inset-[-230px] rounded-full
+      bg-black/90 blur-xl"
+          aria-hidden
+        />
+      <div className='z-10'>
         <h2 className="main-heading">
           Generative AI
         </h2>

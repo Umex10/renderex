@@ -34,7 +34,7 @@ const FloatCard = ({ Icon, title, subTitle, SubIcon, absoluteClasses }: FloatCar
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className={`w-full hidden md:block absolute ${absoluteClasses} p-4 rounded-xl 
-          text-white shadow-xl`}
+          text-white`}
     >
 
       <Card className="w-full w-[250px] flex flex-row items-center p-4 justify-between gap-4 
