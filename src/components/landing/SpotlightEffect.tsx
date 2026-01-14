@@ -9,16 +9,14 @@ const SpotlightEffect = () => {
   const isMobile = useIsMobile();
 
   return (
-    <>
+    <div className='z-10'>
       {/* MAIN SPOTLIGHT 
-            - Mobile: Light is moved more to the edge (xOffset: 150)
-            - Desktop: Stronger violet color and more central positioning
-        */}
+       - Mobile: Light is moved more to the edge (xOffset: 150 | 300)
+       */}
       <Spotlight
         xOffset={isMobile ? 150 : 300}
         translateY={isMobile ? -100 : -300}
         duration={isMobile ? 8 : 6}
-      // Stronger violet for desktop (0.35 opacity), subtle for mobile (0.2)
       />
 
       {/* SECONDARY SPOTLIGHT (Desktop Only)
@@ -50,7 +48,7 @@ const SpotlightEffect = () => {
           and let AI help you structure what matters.
         </p>
       </motion.div>
-    </>
+    </div>
   )
 }
 

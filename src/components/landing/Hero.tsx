@@ -12,21 +12,23 @@ export function Hero() {
   const isMobile = useIsMobile();
 
   return (
-    // Outer container: Covers full screen width with background color and grid
+    // Outer container: Covers full vw and vh
     <section id="hero"
       className="h-full w-full flex items-center justify-center
      min-h-screen-header">
 
       {/* Inner container: This limits the Spotlight's reach. 
           Everything inside this box is constrained to 1280px (max-w-7xl).
+          The Floating Cards are assigned with absolute to this div relative div.
       */}
       <div className="relative w-full max-w-7xl h-full min-h-screen 
       overflow-visible mx-auto flex flex-col md:items-center md:justify-center">
 
         <SpotlightEffect></SpotlightEffect>
 
+        {/* Image Rotation and Animation */}
         <motion.div
-          className=" flex justify-center perspective-[2000px]"
+          className="z-0 flex justify-center perspective-[2000px]"
           initial={{
             opacity: 0,        // start fully transparent
             x: 40,             // start 40px to the right
@@ -60,10 +62,11 @@ export function Hero() {
             className="transform 
                 translate-x-[40px] translate-z-[1000px] 
                 md:translate-x-[0px] md:translate-z-[500px]
-               shadow-2xl shadow-[0_10px_20px_rgba(160,50,200,0.4)] rounded-lg"
+               shadow-[0_10px_20px_rgba(160,50,200,0.4)] rounded-lg"
           />
         </motion.div>
 
+        {/* Floating Cards with absolute relation */}
         <FloatCard Icon={Bot} title="AI generation"
           subTitle="Try again?" SubIcon={Loader}
           absoluteClasses="top-2/6 left-3/5"></FloatCard>

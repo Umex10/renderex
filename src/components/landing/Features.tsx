@@ -5,7 +5,7 @@ const Features = () => {
     <section id="#features" className='relative h-full w-full flex items-center justify-center
      min-h-screen-header'>
        <span
-          className="absolute inset-[-400px] md:inset-[-230px] rounded-full
+          className="absolute inset-[-350px] md:inset-[-230px] rounded-full
       bg-black/90 blur-xl"
           aria-hidden
         />
