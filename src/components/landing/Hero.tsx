@@ -62,14 +62,14 @@ export function Hero() {
             className="transform 
                 translate-x-[40px] translate-z-[1000px] 
                 md:translate-x-[0px] md:translate-z-[500px]
-               shadow-[0_10px_20px_rgba(160,50,200,0.4)] rounded-lg"
+               shadow-[0_10px_60px_rgba(160,50,200,0.4)] rounded-lg"
           />
         </motion.div>
 
         {/* Floating Cards with absolute relation */}
         <FloatCard Icon={Bot} title="AI generation"
           subTitle="Try again?" SubIcon={Loader}
-          absoluteClasses="top-2/6 left-3/5"></FloatCard>
+          absoluteClasses="top-3/6 left-3/5"></FloatCard>
 
         <FloatCard Icon={FileDown} title="Download note"
           subTitle="Type: .md" SubIcon={Loader}

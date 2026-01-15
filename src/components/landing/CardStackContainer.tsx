@@ -16,7 +16,7 @@ const CardStackContainer = () => {
   const cardContent = [
     { id: 'summary', title: 'Summary Mode', color: 'text-yellow-500', icon: Sparkles, main: 'Generates a concise summary...', footer: 'Perfect for quick understanding' },
     { id: 'structure', title: 'Structure Mode', color: 'text-red-500', icon: ListTree, main: 'Generates a concise structure...', footer: 'Designed for clarity & readability' },
-    { id: 'sandbox', title: 'Sandbox Mode', color: 'text-green-500', icon: FlaskConical, main: 'Try the AI Sandbox...', footer: 'Explore ideas without limits' }
+    { id: 'sandbox', title: 'Sandbox Mode', color: 'text-violet-500', icon: FlaskConical, main: 'Try the AI Sandbox...', footer: 'Explore ideas without limits' }
   ];
 
   // Static Positions: Only the styles
@@ -24,7 +24,7 @@ const CardStackContainer = () => {
   const positions = [
     {
       // FRONT CARD: No blur, full opacity, special shadow, NO hover effect needed
-      classes: 'translate-x-0 translate-y-0 translate-z-0 opacity-100 shadow-2xl shadow-green-500/20 border-green-500/50 z-30'
+      classes: 'translate-x-0 translate-y-0 translate-z-0 opacity-100 shadow-2xl shadow-violet-500/20 border-violet-500/50 z-30'
     },
     {
       // MIDDLE CARD: Slight blur, half opacity

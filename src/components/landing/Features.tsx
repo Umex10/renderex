@@ -3,8 +3,8 @@ import React from 'react'
 import Image from 'next/image'
 import CardStackContainer from './CardStackContainer'
 import FeatureCard from './FeatureCard'
-
-
+import { motion } from "framer-motion";
+import SandboxReduced from "./SanboxReduced"
 
 const Features = () => {
   return (
@@ -26,19 +26,36 @@ const Features = () => {
 
         <div className='max-w-[1000px] p-4 flex flex-col z-10'>
           <div className='grid grid-cols-1 md:grid-cols-2'>
-              <FeatureCard  headerTitle='Note Overview'
+            <FeatureCard headerTitle='Note Overview'
               mainContent='Each note in the sidebar shows its title, last edited date, and content snippet.
                 Notes can be created, edited, or deleted, and each note has tags, which can be added or removed.
                 Clicking a note opens the full Markdown editor for easy editing.'
-              footerContent={<div className='flex justify-center'>
-                      <div className='relative'>
-                  <Image
-                    src="/notes2.png"
-                    width={300}
-                    height={150}
-                    alt='Notes'
-                    className='rounded-xl'>
-                  </Image>
+              footerContent={<div className='w-full flex justify-center'>
+                <div className='relative'>
+                  <motion.div
+                    animate={{
+                      boxShadow: [
+                        "0 0 20px rgba(180,70,230,0.3)",
+                        "0 0 50px rgba(180,70,230,0.5)",
+                        "0 0 20px rgba(180,70,230,0.3)",
+                      ],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="inline-block rounded-lg"
+                  >
+                    <Image
+                      src="/notes2.png"
+                      width={300}
+                      height={150}
+                      alt="Notes"
+                      className="rounded-lg"
+                    />
+                  </motion.div>
+
 
                   <span
                     className="absolute -top-10 bottom-0 -right-10 w-42 rounded-full
@@ -51,22 +68,22 @@ const Features = () => {
                     aria-hidden
                   />
                 </div>
-                  </div>
-            }></FeatureCard>
+              </div>
+              }></FeatureCard>
             <FeatureCard headerTitle='AI-Driven Modes'
-            mainContent='Each note comes with multiple AI modes – for example, the Summary Mode
+              mainContent='Each note comes with multiple AI modes – for example, the Summary Mode
                 automatically generates a concise overview, the Structure Mode organizes your
                 content clearly, and the Sandbox Mode lets you try out multiple AI
                 generations.'
-                footerContent={<CardStackContainer></CardStackContainer>}></FeatureCard>
+              footerContent={<CardStackContainer></CardStackContainer>}></FeatureCard>
           </div>
 
-          <FeatureCard headerTitle='AI Sandbox with History' 
-          mainContent='The AI Sandbox lets you experiment with your note’s content safely.
+          <FeatureCard headerTitle='AI Sandbox with History'
+            mainContent='The AI Sandbox lets you try out your note’s content safely.
               You can generate better outcomes, regenerate if the result isn’t right,
               and even go back to a later version at any step.
               Once satisfied, the updated content can be transferred back to the main note seamlessly.'
-          footerContent=""></FeatureCard>
+            footerContent={<SandboxReduced></SandboxReduced>}></FeatureCard>
         </div>
       </div>
 
