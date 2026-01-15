@@ -1,14 +1,10 @@
 "use client"
 import React from 'react'
-
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import Image from 'next/image'
+import CardStackContainer from './CardStackContainer'
+import FeatureCard from './FeatureCard'
+
+
 
 const Features = () => {
   return (
@@ -29,17 +25,13 @@ const Features = () => {
         </div>
 
         <div className='max-w-[1000px] p-4 flex flex-col z-10'>
-          <div className='grid grid-cols-2'>
-            <Card className='p-4 bg-black'>
-              <CardHeader>
-                <CardTitle>Note Overview</CardTitle>
-              </CardHeader>
-              <CardContent>Each note in the sidebar shows its title, last edited date, and content snippet.
+          <div className='grid grid-cols-1 md:grid-cols-2'>
+              <FeatureCard  headerTitle='Note Overview'
+              mainContent='Each note in the sidebar shows its title, last edited date, and content snippet.
                 Notes can be created, edited, or deleted, and each note has tags, which can be added or removed.
-                Clicking a note opens the full Markdown editor for easy editing.
-              </CardContent>
-              <CardFooter className='flex justify-center'>
-                <div className='relative'>
+                Clicking a note opens the full Markdown editor for easy editing.'
+              footerContent={<div className='flex justify-center'>
+                      <div className='relative'>
                   <Image
                     src="/notes2.png"
                     width={300}
@@ -50,40 +42,31 @@ const Features = () => {
 
                   <span
                     className="absolute -top-10 bottom-0 -right-10 w-42 rounded-full
-    bg-gradient-to-l from-black/100 via-black/70 to-black/30 blur-xl"
+    bg-gradient-to-l from-black/100 via-black/70 to-black/40 blur-xl"
                     aria-hidden
                   />
                   <span
-                    className="absolute -bottom-5 -left-10 -right-10 h-50 rounded-full
-    bg-gradient-to-t from-black/100 via-black/70 to-black/30 blur-xl"
+                    className="absolute -bottom-5 -left-10 -right-10 h-90
+    bg-gradient-to-t from-black/100 via-black/60 to-black/30 blur-sm"
                     aria-hidden
                   />
                 </div>
-
-              </CardFooter>
-            </Card>
-            <Card className='p-4'>
-              <CardHeader>
-                <CardTitle>Saving/Generating states</CardTitle>
-              </CardHeader>
-              <CardContent>When the AI is processing a note, a clear loading state appears, e.g., “Generating…”,
-                so you always know it’s working. Similarly, saving changes to a note shows a
-                “Saving…” state, keeping your workflow smooth and transparent.
-              </CardContent>
-              <CardFooter></CardFooter>
-            </Card>
+                  </div>
+            }></FeatureCard>
+            <FeatureCard headerTitle='AI-Driven Modes'
+            mainContent='Each note comes with multiple AI modes – for example, the Summary Mode
+                automatically generates a concise overview, the Structure Mode organizes your
+                content clearly, and the Sandbox Mode lets you try out multiple AI
+                generations.'
+                footerContent={<CardStackContainer></CardStackContainer>}></FeatureCard>
           </div>
-          <Card className='w-full p-4'>
-            <CardHeader>
-              <CardTitle>AI Sandbox with History</CardTitle>
-            </CardHeader>
-            <CardContent>The AI Sandbox lets you experiment with your note’s content safely.
+
+          <FeatureCard headerTitle='AI Sandbox with History' 
+          mainContent='The AI Sandbox lets you experiment with your note’s content safely.
               You can generate better outcomes, regenerate if the result isn’t right,
               and even go back to a later version at any step.
-              Once satisfied, the updated content can be transferred back to the main note seamlessly.
-            </CardContent>
-            <CardFooter></CardFooter>
-          </Card>
+              Once satisfied, the updated content can be transferred back to the main note seamlessly.'
+          footerContent=""></FeatureCard>
         </div>
       </div>
 
