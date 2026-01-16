@@ -38,6 +38,8 @@ const EditorActions = (data: EditorActionsArgs) => {
        <Editor
         value={content}
         onChange={(val) => setContent(val)}
+        heightForDesktop='650px'
+        heightForMobile='600px'
       />
 
       {/* SELECT + BUTTONS | SAVE/GENERATE STATE */}

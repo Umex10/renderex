@@ -6,7 +6,7 @@ import Editor from '../notes/Editor';
 import LiveRenderer from '../notes/LiveRenderer';
 import { motion } from "framer-motion";
 
-const demoText = `# ✨ Welcome to Renderex
+const demoText = `#  ✨ Welcome to Renderex
 
 > **Renderex** lets you write once — and see everything rendered **live**.  
 > No reloads. No delays. Just pure magic 🪄
@@ -79,7 +79,6 @@ const SanboxReduced = () => {
           <TabsTrigger value="markdown" onClick={() => setHasClickedLive(false)}>Markdown</TabsTrigger>
           <TabsTrigger value="live" className="relative" onClick={() => {
             setHasClickedLive(true)
-            console.log(true)
           }}>
             <motion.div
               className="absolute inset-0 rounded-lg"
@@ -111,13 +110,15 @@ const SanboxReduced = () => {
             onChange={(val) => {
               setValue(val)
             }}
+            heightForMobile='500px'
+            heightForDesktop='560px'
           />
 
         </TabsContent>
         {/* LIVE VIEW */}
         <TabsContent value="live">
-          <LiveRenderer classes='max-w-none order-2 md:order-1 h-[500px] md:h-[650px]
-          p-4'
+          <LiveRenderer classes='max-w-none order-2 md:order-1 h-[500px] lg:h-[560px]
+          p-4 md:overflow-y-hidden' 
             content={value}></LiveRenderer>
         </TabsContent>
 

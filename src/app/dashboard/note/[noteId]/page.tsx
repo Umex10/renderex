@@ -49,7 +49,7 @@ const Note = ({
           ></EditorActions>
 
         {/* LIVE */}
-        <LiveRenderer classes="max-w-none h-[650px]" content={content}></LiveRenderer>
+        <LiveRenderer classes="max-w-none h-[600px] md:h-[650px]" content={content}></LiveRenderer>
       </div>
 
       {/* TABS - MOBILE ONLY */}

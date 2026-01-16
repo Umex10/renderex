@@ -11,17 +11,20 @@ import { useIsMobile } from '@/hooks/shared/use-mobile';
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
+    heightForMobile: string
+  heightForDesktop: string,
+
 }
 
-const Editor = ({ value, onChange }: EditorProps) => {
+const Editor = ({ value, onChange, heightForMobile, heightForDesktop  }: EditorProps) => {
 
   const { resolvedTheme } = useTheme();
-
   const isMobile = useIsMobile();
+
   return (
     <CodeMirror
       value={value}
-      height={isMobile ? "500px" : "650px"}
+      height={isMobile ? heightForMobile : heightForDesktop}
       extensions={[
         markdown({ base: markdownLanguage, codeLanguages: languages }),
         EditorView.lineWrapping

@@ -43,7 +43,7 @@ const FeatureCard = ({headerTitle, mainContent, footerContent}: FeatureCardArgs)
           {mainContent}
         </CardContent>
 
-        <CardFooter className="h-[400px] md:h-[500px]">
+        <CardFooter className="md:h-[580px]">
           {footerContent}
         </CardFooter>
       </Card>

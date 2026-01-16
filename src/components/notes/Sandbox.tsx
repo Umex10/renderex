@@ -141,6 +141,8 @@ const Sandbox = () => {
                             content: val
                           }))
                         }}
+                        heightForMobile='500px'
+                        heightForDesktop='650px'
                       />
 
                     </TabsContent>
