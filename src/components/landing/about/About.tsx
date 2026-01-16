@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import Image from 'next/image'
 import AttributesCard from './AttributesCard'
+import {Stack} from './Stack'
 
 const About = () => {
 
@@ -29,13 +30,13 @@ const About = () => {
           </p>
         </div>
 
-        <div className='mt-10 w-[700px] h-[800px] relative z-0'
+        <div className='w-full mt-10 flex flex-row gap-1'>
+            <div className='w-1/2 h-[800px] relative z-0'
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}>
           <Image
             src="/image.jpg"
-            width={1000}
-            height={800}
+            fill
             alt="Notes"
             className={`absolute inset-0 rounded-lg z-0 ${isHovering ? "blur" : ""}`}
           />
@@ -71,6 +72,41 @@ const About = () => {
             </div>
           )}
         </div>
+
+        <div className='w-1/2 h-[800px] flex flex-col gap-1'>
+          <div className='w-full relative h-2/3 z-0'>
+           <Image
+            src="/stack.png"
+            fill
+            alt="Notes"
+            className={`object-cover  absolute inset-0 rounded-lg z-0`}
+          />
+                <Card className={`z-10 bg-transparent w-full h-full
+        flex flex-col items-center`}>
+            <CardHeader className='mt-8 w-full text-center max-w-[300px] px-1 py-3
+  bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl'>
+              <CardTitle>Renderex - Tool Stack</CardTitle>
+            </CardHeader>
+
+            <CardFooter className="reltative mt-auto z-10 w-full flex flex-col gap-1">
+                <Stack></Stack>
+                 <Stack></Stack>
+            </CardFooter>
+          </Card>
+          </div>
+
+           <div className='w-full h-1/3 flex flex-row gap-1'>
+                <div className='w-1/2 text-center'>
+                  Hello
+                </div>
+
+                <div className='w-1/2 text-center'>
+                  hello
+                </div>
+          </div>
+        </div>
+        </div>
+      
       </div>
 
 

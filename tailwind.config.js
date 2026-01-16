@@ -66,7 +66,18 @@ const config = {
         text-transparent bg-gradient-to-b from-purple-50 to-purple-400
          bg-opacity-50 leading-tight`,
         "sub-context": "mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto"
-      }
+      },
+       animation: {
+        ["infinite-slider"]: "infiniteSlider 20s linear infinite",
+      },
+      keyframes: {
+        infiniteSlider: {
+          "0%": { transform: "translateX(0)" },
+          "100%": {
+            transform: "translateX(calc(-250px * 5))",
+          },
+        },
+      },
   },
 
 },
