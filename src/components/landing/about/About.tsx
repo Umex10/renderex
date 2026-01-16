@@ -12,12 +12,13 @@ import {
 import Image from 'next/image'
 import AttributesCard from './AttributesCard'
 import { Stack } from './Stack'
-import { ExternalLinkIcon } from 'lucide-react'
+import { ExternalLinkIcon, Github } from 'lucide-react'
 import { motion } from "framer-motion";
 
 const About = () => {
 
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHoveringImage, setIsHoveringImage] = useState(false);
+  const [isHoveringGithub, setIsHoveringGithub] = useState(false);
 
   return (
     <section id="about" className='mt-10 relative w-full h-full min-h-screen-header'>
@@ -52,8 +53,8 @@ const About = () => {
             }}
             className='w-full md:w-2/5 h-[500px] md:h-full relative z-0 cursor-pointer
             rounded-xl'
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
+            onMouseEnter={() => setIsHoveringImage(true)}
+            onMouseLeave={() => setIsHoveringImage(false)}
             onClick={() => window.open("https://dev-resume-sigma.vercel.app", "_blank")}
           >
 
@@ -61,11 +62,11 @@ const About = () => {
               src="/image.jpg"
               fill
               alt="Notes"
-              className={`absolute inset-0 rounded-lg z-0 ${isHovering ? "blur" : ""}`}
+              className={`absolute inset-0 rounded-lg z-0 ${isHoveringImage ? "blur" : ""}`}
             />
             {/* Text Content on the image card */}
             <Card className={`z-10 bg-transparent w-full h-full
-        flex flex-col items-center ${isHovering ? "blur" : ""}`}>
+        flex flex-col items-center ${isHoveringImage ? "blur" : ""}`}>
               <CardHeader className='mt-8 w-full text-center max-w-[350px] md:max-w-[400px] px-1 py-2 md:p-3
   bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl'>
                 <CardTitle>Umejr Dzinovic — Software Devotee</CardTitle>
@@ -87,7 +88,7 @@ const About = () => {
               </CardFooter>
             </Card>
 
-            {isHovering && (
+            {isHoveringImage && (
               <div className='z-10 absolute top-1/2 left-1/2 -translate-x-1/2
           -translate-y-1/2 pointer-events-none'>
 
@@ -102,7 +103,7 @@ const About = () => {
           {/* Container of Tool-stack, github and */}
 
           <div className='w-full md:w-3/5 h-[600px] md:h-[800px] flex flex-col gap-4'>
-          {/* Toolstack */}
+            {/* Toolstack */}
             <div className='w-full relative h-1/2 z-0'>
               <Image
                 src="/stack.png"
@@ -137,18 +138,21 @@ const About = () => {
 
 
             {/* Github and ... */}
-            <div className='w-full h-1/2 flex flex-row gap-1'>
-            {/* Github */}
-              <div className='w-1/2 h-full text-center cursor-pointer'
-              onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
-                <Card className="z-10 bg-transparent w-full h-full flex flex-col items-center">
+            <div className='w-full md:h-1/2 flex flex-col md:flex-row gap-1'>
+              {/* Github */}
+              <div className='relative w-full md:w-1/2 h-full text-center cursor-pointer'
+                onMouseEnter={() => setIsHoveringGithub(true)}
+                onMouseLeave={() => setIsHoveringGithub(false)}
+                onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
+                <Card className={`z-10 bg-transparent w-full h-full flex flex-col items-center
+                ${isHoveringGithub ? "blur" : ""}`}>
                   <CardHeader className="mt-8 w-full text-center max-w-[250px] px-1 py-3
     bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
                     <CardTitle>Renderex — GitHub</CardTitle>
                   </CardHeader>
 
                   <CardContent className="text-sm text-white/80 text-center mt-auto px-4">
-                    The full source code behind Renderex — built, tested, 
+                    The full source code behind <strong>Renderex</strong> — built, tested,
                     and evolved as a real-world project.
                   </CardContent>
 
@@ -158,18 +162,46 @@ const About = () => {
                     </span>
                   </CardFooter>
                 </Card>
+
+                {isHoveringGithub && (
+                  <div className='z-10 absolute top-1/2 left-1/2 -translate-x-1/2
+          -translate-y-1/2 pointer-events-none'>
+
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                      <Github className=" w-10 h-10" />
+                    </h3>
+                  </div>
+                )}
               </div>
 
               {/* And.. */}
-              <div className='w-1/2 text-center'>
-                hello
+
+              <div className='relative w-full md:w-1/2 h-full text-center cursor-pointer'
+                onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
+                <Card className={`z-10 bg-transparent w-full h-full flex flex-col items-center`}>
+                  <CardHeader className="mt-8 w-full text-center max-w-[250px] px-1 py-3
+    bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
+                    <CardTitle>Renderex — Motivation</CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="text-sm text-white/80 text-center mt-auto px-4">
+                    Renderex began as a learning project and gradually grew into a software for
+                    applying theory in practice, helping build real-world experience for a
+                    future career in software development.
+                  </CardContent>
+
+                  <CardFooter className="relative mt-auto z-10 w-full flex flex-col items-center gap-2 pb-6">
+                    <span className="text-xs uppercase tracking-widest text-white/50">
+                      View on GitHub
+                    </span>
+                  </CardFooter>
+                </Card>
+
               </div>
             </div>
           </div>
         </div>
-
       </div>
-
 
     </section>
   )
