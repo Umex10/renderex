@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import Editor from '../notes/Editor';
 import LiveRenderer from '../notes/LiveRenderer';
@@ -27,7 +27,12 @@ const SanboxReduced = () => {
 
   const [value, setValue] = useState("");
   const [hasClickedLive, setHasClickedLive] = useState(false);
+   const ref = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+
   useEffect(() => {
+    if (!isVisible) return;
     let i = 0;
     const interval = setInterval(() => {
       setValue(prev => prev + demoText[i]);
@@ -36,10 +41,33 @@ const SanboxReduced = () => {
     }, 40);
 
     return () => clearInterval(interval);
+  }, [isVisible]);
+
+  // This will help to not start the animation, unless the user sees the animation on his device
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.3,
+      }
+    );
+
+    observer.observe(ref.current);
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   return (
-    <Tabs defaultValue="markdown" className="flex-1 w-full ">
+    <Tabs defaultValue="markdown" className="flex-1 w-full"
+    ref={ref}>
 
       <div className="w-full flex flex-col gap-4 md:flex-row justify-between items-center md:items-end">
 
@@ -88,7 +116,8 @@ const SanboxReduced = () => {
         </TabsContent>
         {/* LIVE VIEW */}
         <TabsContent value="live">
-          <LiveRenderer classes='max-w-none order-2 md:order-1 h-[500px] md:h-[650px]'
+          <LiveRenderer classes='max-w-none order-2 md:order-1 h-[500px] md:h-[650px]
+          p-4'
             content={value}></LiveRenderer>
         </TabsContent>
 

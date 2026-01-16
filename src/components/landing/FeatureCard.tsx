@@ -32,6 +32,7 @@ const FeatureCard = ({headerTitle, mainContent, footerContent}: FeatureCardArgs)
         duration: 0.5,
         ease: "easeOut",
       }}
+      className=""
     >
       <Card className="p-4 bg-black">
         <CardHeader>
@@ -42,7 +43,7 @@ const FeatureCard = ({headerTitle, mainContent, footerContent}: FeatureCardArgs)
           {mainContent}
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="h-[400px] md:h-[500px]">
           {footerContent}
         </CardFooter>
       </Card>

@@ -24,7 +24,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className='max-w-[1000px] p-4 flex flex-col z-10'>
+        <div className='max-w-[1000px] p-4 flex flex-col gap-2 z-10'>
           <div className='grid grid-cols-1 md:grid-cols-2'>
             <FeatureCard headerTitle='Note Overview'
               mainContent='Each note in the sidebar shows its title, last edited date, and content snippet.
@@ -63,7 +63,7 @@ const Features = () => {
                     aria-hidden
                   />
                   <span
-                    className="absolute -bottom-5 -left-10 -right-10 h-90
+                    className="absolute  -bottom-5 -left-10 -right-10 h-90
     bg-gradient-to-t from-black/100 via-black/60 to-black/30 blur-sm"
                     aria-hidden
                   />
