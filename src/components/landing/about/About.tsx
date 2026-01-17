@@ -14,6 +14,7 @@ import AttributesCard from './AttributesCard'
 import { Stack } from './Stack'
 import { ExternalLinkIcon, Github } from 'lucide-react'
 import { motion } from "framer-motion";
+import { Workflow } from './Workflow'
 
 const About = () => {
 
@@ -136,7 +137,6 @@ const About = () => {
               </Card>
             </div>
 
-
             {/* Github and ... */}
             <div className='w-full md:h-1/2 flex flex-col md:flex-row gap-1'>
               {/* Github */}
@@ -144,30 +144,15 @@ const About = () => {
                 onMouseEnter={() => setIsHoveringGithub(true)}
                 onMouseLeave={() => setIsHoveringGithub(false)}
                 onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
-                <Card className={`z-10 bg-transparent w-full h-full flex flex-col items-center
-                ${isHoveringGithub ? "blur" : ""}`}>
-                  <CardHeader className="mt-8 w-full text-center max-w-[250px] px-1 py-3
-    bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
-                    <CardTitle>Renderex — GitHub</CardTitle>
-                  </CardHeader>
-
-                  <CardContent className="text-sm text-white/80 text-center mt-auto px-4">
-                    The full source code behind <strong>Renderex</strong> — built, tested,
-                    and evolved as a real-world project.
-                  </CardContent>
-
-                  <CardFooter className="relative mt-auto z-10 w-full flex flex-col items-center gap-2 pb-6">
-                    <span className="text-xs uppercase tracking-widest text-white/50">
-                      View on GitHub
-                    </span>
-                  </CardFooter>
-                </Card>
-
+        
+                  <Workflow isHoveringGithub={isHoveringGithub}></Workflow>
+          
                 {isHoveringGithub && (
                   <div className='z-10 absolute top-1/2 left-1/2 -translate-x-1/2
           -translate-y-1/2 pointer-events-none'>
 
                     <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                      View My
                       <Github className=" w-10 h-10" />
                     </h3>
                   </div>
