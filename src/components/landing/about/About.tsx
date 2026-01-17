@@ -22,7 +22,7 @@ const About = () => {
   const [isHoveringGithub, setIsHoveringGithub] = useState(false);
 
   return (
-    <section id="about" className='mt-10 relative w-full h-full min-h-screen-header'>
+    <section id="about" className='mt-10 lg:mt-42 relative w-full h-full min-h-screen-header'>
 
       <div className='w-full max-w-[1400px] h-full min-h-screen 
       overflow-visible mx-auto'>

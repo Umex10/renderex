@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 const demoText = `#  ✨ Welcome to Renderex
 
 > **Renderex** lets you write once — and see everything rendered **live**.  
-> No reloads. No delays. Just pure magic 🪄
+> No reloads. No delays. Just fantastic 🪄
 
 ---
 

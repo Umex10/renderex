@@ -23,7 +23,7 @@ const CardStackElement = ({ headerTitle, titleColor, Icon, mainContent,
   return (
       <Card className={`absolute transform transition-all duration-500 
     rotate-y-[35deg] rotate-x-[-10deg] backface-visibility-hidden transform-gpu ${uniqueClasses}
-    min-w-[300px] md:min-w-[400px] md:h-42`}>
+    min-w-[300px] lg:min-w-[400px] md:h-42`}>
         <CardHeader>
           <CardTitle className={`flex items-center gap-2 ${titleColor}`}>
             <Icon className="h-5 w-5" />

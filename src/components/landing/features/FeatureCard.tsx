@@ -1,6 +1,3 @@
-"use client"
-
-import { motion } from "framer-motion"
 import {
   Card,
   CardHeader,
@@ -13,28 +10,14 @@ interface FeatureCardArgs {
   headerTitle: string,
   mainContent: string,
   footerContent: string | React.ReactNode,
+  classes?: string
 }
 
-const FeatureCard = ({headerTitle, mainContent, footerContent}: FeatureCardArgs) => {
+const FeatureCard = ({headerTitle, mainContent, footerContent, classes}: FeatureCardArgs) => {
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: 30,
-        scale: 0.98,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        scale: 1,
-      }}
-      transition={{
-        duration: 0.5,
-        ease: "easeOut",
-      }}
-      className=""
-    >
-      <Card className="p-4 bg-black">
+   
+      <Card className={`h-full p-4 bg-black flex flex-col items-center
+       ${classes ? classes : ""}`}>
         <CardHeader>
           <CardTitle>{headerTitle}</CardTitle>
         </CardHeader>
@@ -43,11 +26,10 @@ const FeatureCard = ({headerTitle, mainContent, footerContent}: FeatureCardArgs)
           {mainContent}
         </CardContent>
 
-        <CardFooter className="md:h-[580px]">
+        <CardFooter className="flex-1">
           {footerContent}
         </CardFooter>
       </Card>
-    </motion.div>
   )
 }
 

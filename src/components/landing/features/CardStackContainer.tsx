@@ -46,8 +46,9 @@ const CardStackContainer = () => {
   }, [isMobile]);
 
   return (
-    <div className="relative h-[300px] md:h-[500px] transform translate-x-[35px]
-     md:translate-x-[60px] w-full flex items-center justify-center perspective-[1500px]">
+    <div className="relative h-[300px] md:h-[350px] transform translate-x-[35px]
+    md:translate-x-[50px]
+     lg:translate-x-[60px] w-full flex items-center justify-center perspective-[1500px]">
       {cardContent.map((content, i) => {
         // This math ensures that the "content" rotates through the fixed "positions"
         const posIdx = (i + currentIndex) % cardContent.length;

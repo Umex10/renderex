@@ -7,12 +7,12 @@ export const navItems = [
     href: "#hero"
   },
   {
-    text: "Usage",
-    href: "#usage"
-  },
-  {
     text: "Features",
     href: "#features"
+  },
+  {
+    text: "Usage",
+    href: "#usage"
   },
   {
     text: "About",
