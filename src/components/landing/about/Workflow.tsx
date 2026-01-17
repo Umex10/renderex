@@ -24,7 +24,7 @@ interface WorkflowArgs {
 
 export function Workflow({isHoveringGithub}: WorkflowArgs) {
   return (
-    <Card className={`h-full max-w-sm w-full mx-auto md:mt-auto lg:pb-4 rounded-xl border 
+    <Card className={`h-full max-w-sm w-full mx-auto p-4 lg:p-0 lg:pb-4 rounded-xl border 
     border-[rgba(255,255,255,0.10)] dark:bg-[rgba(40,40,40,0.70)] 
     bg-gray-100 shadow-[2px_4px_16px_0px_rgba(248,248,248,0.06)_inset] group
     ${isHoveringGithub ? "blur" : ""}`}>
@@ -32,7 +32,7 @@ export function Workflow({isHoveringGithub}: WorkflowArgs) {
         <Skeleton />
       </CardSkeletonContainer>
       <CardHeader className="p-0">
-        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white py-2">
+        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
           How the code is built
         </CardTitle>
       </CardHeader>

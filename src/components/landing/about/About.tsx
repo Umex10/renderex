@@ -28,7 +28,7 @@ const About = () => {
       overflow-visible mx-auto'>
         <div className='z-10'>
           <h2 className="main-heading">
-            Renderex about
+            About Renderex
           </h2>
           <p className="sub-context">
             Renderex is a solo-built project created to gain real-world experience by building real software.
@@ -141,15 +141,15 @@ const About = () => {
             </div>
 
             {/* Github and ... */}
-            <div className='w-full h-full lg:h-1/2 flex flex-col md:flex-row gap-1'>
+            <div className='w-full h-full lg:h-1/2 flex flex-col md:flex-row gap-2'>
               {/* Github */}
               <div className='relative w-full md:w-1/2 h-full text-center cursor-pointer'
                 onMouseEnter={() => setIsHoveringGithub(true)}
                 onMouseLeave={() => setIsHoveringGithub(false)}
                 onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
-        
-                  <Workflow isHoveringGithub={isHoveringGithub}></Workflow>
-          
+
+                <Workflow isHoveringGithub={isHoveringGithub}></Workflow>
+
                 {isHoveringGithub && (
                   <div className='z-10 absolute top-1/2 left-1/2 -translate-x-1/2
           -translate-y-1/2 pointer-events-none'>
@@ -164,26 +164,73 @@ const About = () => {
 
               {/* And.. */}
 
-              <div className='relative w-full md:w-1/2 h-full text-center cursor-pointer'
-                onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
+              <div className='relative w-full md:w-1/2 h-full text-center'>
                 <Card className={`z-10 bg-transparent w-full h-full flex flex-col
-                  gap-2 items-center`}>
-                  <CardHeader className="mt-8 w-full text-center max-w-[250px] px-1 py-3
-    bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
-                    <CardTitle>Renderex — Motivation</CardTitle>
-                  </CardHeader>
+                items-center gap-0 p-4
+                    border border-violet-400/20`}>
 
-                  <CardContent className="text-sm text-white/80 text-center mt-auto px-4">
-                    Renderex began as a learning project and gradually grew into a software for
-                    applying theory in practice, helping build real-world experience for a
-                    future career in software development.
+                  <CardContent className="h-full p-0 text-sm text-white/80 text-center
+                  flex items-center gap-0">
+
+                    <blockquote className="
+                        relative
+                        max-w-[350px]
+                        mx-auto
+                        flex flex-col gap-0
+                        items-center
+                        px-6
+                        rounded-2xl
+                        bg-violet-500/5
+                        shadow-[0_0_40px_rgba(139,92,246,0.15)]
+                      ">
+                      {/* Quote Icon */}
+                      <svg
+                        className="w-10 h-10 text-violet-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M10 11V8a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1Zm0 0v2a4 4 0 0 1-4 4H5m14-6V8a1 1 0 0 0-1-1h-3a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1Zm0 0v2a4 4 0 0 1-4 4h-1"
+                        />
+                      </svg>
+
+                      {/* Main Quote */}
+                      <p className="
+                          text-base
+                          text-white/85
+                          leading-relaxed
+                          font-medium
+                        ">
+                        Renderex began as a learning app and gradually grew into a software for
+                        applying theory in practice, helping build real-world experience for a
+                        future career in software development.
+                      </p>
+
+                      {/* Divider */}
+                      <div className="my-4 h-px w-full bg-gradient-to-r from-transparent 
+                      via-violet-400/30 to-transparent" />
+
+                      {/* Motivation Line */}
+                      <span className="
+                            block
+                            text-xs
+                            uppercase
+                            tracking-[0.35em]
+                            text-violet-300/80
+                            text-center
+                            font-mono
+                          ">
+                        Levels...
+                      </span>
+                    </blockquote>
+
                   </CardContent>
-
-                  <CardFooter className="relative mt-auto z-10 w-full flex flex-col items-center gap-2 pb-6">
-                    <span className="text-xs uppercase tracking-widest text-white/50">
-                      View on GitHub
-                    </span>
-                  </CardFooter>
                 </Card>
 
               </div>
