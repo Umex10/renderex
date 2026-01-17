@@ -36,7 +36,8 @@ const About = () => {
         </div>
 
         {/* ABOUT - Container */}
-        <div className='w-full mt-10 flex md:h-[700px] flex-col md:flex-row gap-30 md:gap-1
+        <div className='w-full mt-10 flex lg:h-[700px] items-center flex-col lg:flex-row
+         lg:items-center gap-3 
         rounded-xl'>
           {/* My Image */}
           <motion.div
@@ -52,7 +53,8 @@ const About = () => {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className='w-full md:w-2/5 h-[500px] md:h-full relative z-0 cursor-pointer
+            className='w-full max-w-[400px] lg:max-w-none lg:w-2/5 
+            h-[500px] lg:h-[550px] xl:h-[700px] 2xl:h-full relative z-0 cursor-pointer
             rounded-xl'
             onMouseEnter={() => setIsHoveringImage(true)}
             onMouseLeave={() => setIsHoveringImage(false)}
@@ -62,19 +64,20 @@ const About = () => {
             <Image
               src="/image.jpg"
               fill
-              alt="Notes"
+              alt="Image of the builder"
               className={`absolute inset-0 rounded-lg z-0 ${isHoveringImage ? "blur" : ""}`}
             />
             {/* Text Content on the image card */}
             <Card className={`z-10 bg-transparent w-full h-full
         flex flex-col items-center ${isHoveringImage ? "blur" : ""}`}>
-              <CardHeader className='mt-8 w-full text-center max-w-[350px] md:max-w-[400px] px-1 py-2 md:p-3
-  bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl'>
+              <CardHeader className='mt-2 w-full text-center max-w-[350px] md:max-w-[400px] 
+              p-2  bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl 
+              rounded-2xl'>
                 <CardTitle>Umejr Dzinovic — Software Devotee</CardTitle>
               </CardHeader>
 
-              <CardFooter className="mt-auto -mb-24 z-10 w-full flex flex-col
-          gap-1 items-center p-4 md:p-0
+              <CardFooter className="mt-auto -mb-24 md:-mb-16 z-10 w-full flex flex-col
+          gap-1 items-center p-4
  backdrop-blur-md">
 
                 <AttributesCard date='2025 - now'
@@ -103,7 +106,7 @@ const About = () => {
 
           {/* Container of Tool-stack, github and */}
 
-          <div className='w-full md:w-3/5 h-[600px] md:h-[800px] flex flex-col gap-4'>
+          <div className='mt-20 lg:mt-0 w-full md:w-4/5 lg:w-3/5  lg:h-[700px] flex flex-col gap-4'>
             {/* Toolstack */}
             <div className='w-full relative h-1/2 z-0'>
               <Image
@@ -125,20 +128,20 @@ const About = () => {
                 aria-hidden
               />
               <Card className={`z-10 bg-transparent w-full h-full
-        flex flex-col items-center`}>
+        flex flex-col items-center gap-2`}>
                 <CardHeader className='mt-8 w-full text-center max-w-[250px] px-1 py-3
   bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl'>
                   <CardTitle>Renderex — Tool Stack</CardTitle>
                 </CardHeader>
 
-                <CardFooter className="reltative mt-auto z-10 w-full flex flex-col gap-1">
+                <CardFooter className="relative mt-auto z-10 w-full">
                   <Stack></Stack>
                 </CardFooter>
               </Card>
             </div>
 
             {/* Github and ... */}
-            <div className='w-full md:h-1/2 flex flex-col md:flex-row gap-1'>
+            <div className='w-full h-full lg:h-1/2 flex flex-col md:flex-row gap-1'>
               {/* Github */}
               <div className='relative w-full md:w-1/2 h-full text-center cursor-pointer'
                 onMouseEnter={() => setIsHoveringGithub(true)}
@@ -163,7 +166,8 @@ const About = () => {
 
               <div className='relative w-full md:w-1/2 h-full text-center cursor-pointer'
                 onClick={() => window.open("https://github.com/Umex10/renderex", "_blank")}>
-                <Card className={`z-10 bg-transparent w-full h-full flex flex-col items-center`}>
+                <Card className={`z-10 bg-transparent w-full h-full flex flex-col
+                  gap-2 items-center`}>
                   <CardHeader className="mt-8 w-full text-center max-w-[250px] px-1 py-3
     bg-violet-400/10 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
                     <CardTitle>Renderex — Motivation</CardTitle>

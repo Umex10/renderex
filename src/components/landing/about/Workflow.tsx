@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/purity */
 "use client";
-import { animate, motion, useAnimate } from "motion/react";
+import { motion, useAnimate } from "motion/react";
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ interface WorkflowArgs {
 
 export function Workflow({isHoveringGithub}: WorkflowArgs) {
   return (
-    <Card className={`h-full max-w-sm w-full mx-auto p-8 rounded-xl border 
+    <Card className={`h-full max-w-sm w-full mx-auto md:mt-auto lg:pb-4 rounded-xl border 
     border-[rgba(255,255,255,0.10)] dark:bg-[rgba(40,40,40,0.70)] 
     bg-gray-100 shadow-[2px_4px_16px_0px_rgba(248,248,248,0.06)_inset] group
     ${isHoveringGithub ? "blur" : ""}`}>
@@ -68,7 +68,8 @@ const Skeleton = () => {
 
   return (
     /* HIER war der Fehler: Das ref={scope} hat gefehlt! */
-    <div ref={scope} className="p-8 overflow-hidden h-full relative flex items-center justify-center">
+    <div ref={scope} className="p-4 overflow-hidden h-full relative flex items-center 
+    justify-center">
       <div className="flex flex-row shrink-0 justify-center items-center gap-2">
         <Container className="h-8 w-8 circle-1">
           <TbBrandNextjs className="h-4 w-4" />
@@ -88,7 +89,8 @@ const Skeleton = () => {
       </div>
 
       {/* violet line */}
-      <div className="h-40 w-px absolute top-0 md:top-10 m-auto z-40 bg-gradient-to-b from-transparent via-violet-500 to-transparent animate-move">
+      <div className="h-40 w-px absolute top-0 md:top-10 m-auto z-40 bg-gradient-to-b 
+      from-transparent via-violet-500 to-transparent animate-move">
         <div className="w-10 h-32 top-1/2 -translate-y-1/2 absolute -left-10">
           <Sparkles />
         </div>
