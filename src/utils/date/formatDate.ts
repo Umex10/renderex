@@ -1,3 +1,5 @@
+import { DATE_LABELS } from "../../../constants/dateFormats";
+
 /**
  * Formats an ISO date string as a human-readable relative time.
  *
@@ -12,7 +14,7 @@ export function formatDate(isoString: string): string {
 
   // Time difference in milliseconds
   const diffMs = now.getTime() - date.getTime();
-  
+
   // Conversions
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
@@ -22,13 +24,43 @@ export function formatDate(isoString: string): string {
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 
+  // Outputs
+  const {
+    JUST_NOW, MINUTE, MINUTES, HOUR, HOURS,
+    DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS,
+    YEAR, YEARS
+  } = DATE_LABELS;
+
   // Output logic
-  if (diffSeconds < 60) return "just now";
-  if (diffMinutes < 60) return diffMinutes === 1 ? "1 minute ago" : `${diffMinutes} minutes ago`;
-  if (diffHours < 24)   return diffHours === 1 ? "about 1 hour ago" : `about ${diffHours} hours ago`;
-  if (diffDays < 7)     return diffDays === 1 ? "about 1 day ago" : `about ${diffDays} days ago`;
-  if (diffWeeks < 4)    return diffWeeks === 1 ? "about 1 week ago" : `about ${diffWeeks} weeks ago`;
-  if (diffMonths < 12)  return diffMonths === 1 ? "about 1 month ago" : `about ${diffMonths} months ago`;
-  
-  return diffYears === 1 ? "about 1 year ago" : `about ${diffYears} years ago`;
+  if (diffSeconds < 60) return JUST_NOW;
+
+  if (diffMinutes < 60) {
+    return diffMinutes === 1
+      ? `1 ${MINUTE}`
+      : `${diffMinutes} ${MINUTES}`;
+  }
+
+  if (diffHours < 24) {
+    const label = diffHours === 1 ? HOUR : HOURS;
+    return `about ${diffHours} ${label}`;
+  }
+
+  if (diffDays < 7) {
+    const label = diffDays === 1 ? DAY : DAYS;
+    return `about ${diffDays} ${label}`;
+  }
+
+  if (diffWeeks < 4) {
+    const label = diffWeeks === 1 ? WEEK : WEEKS;
+    return `about ${diffWeeks} ${label}`;
+  }
+
+  if (diffMonths < 12) {
+    const label = diffMonths === 1 ? MONTH : MONTHS;
+    return `about ${diffMonths} ${label}`;
+  }
+
+  const label = diffYears === 1 ? YEAR : YEARS;
+  return `about ${diffYears} ${label}`;
+
 }

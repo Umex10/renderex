@@ -12,6 +12,14 @@ const customJestConfig = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
+    collectCoverage: true,
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx,js,jsx}", 
+    "!src/**/*.d.ts",           
+    "!src/**/index.{ts,tsx}",   
+  ],
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov"], 
 };
 
 export default createJestConfig(customJestConfig);
