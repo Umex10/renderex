@@ -27,7 +27,7 @@ describe("format Date", () => {
       seconds: new Date(new Date(date).setSeconds(date.getSeconds() - 1)).toISOString(),
     };
 
-      // Substract some values by one to ensure f.e: i>1 days and not "day" return
+    // Substract some values by one to ensure f.e: i>1 days and not "day" return
     const minusDatesByMore: MinusDates = {
       year: new Date(new Date(date).setFullYear(date.getFullYear() - 4)).toISOString(),
       month: new Date(new Date(date).setMonth(date.getMonth() - 4)).toISOString(),
@@ -38,14 +38,15 @@ describe("format Date", () => {
       seconds: new Date(new Date(date).setSeconds(date.getSeconds() - 5)).toISOString(),
     };
 
-    const keys = Object.keys(DATE_LABELS);
+    const labels = Object.values(DATE_LABELS);
 
     for (const array of [minusDatesByOne, minusDatesByMore]) {
       for (const value of Object.values(array)) {
         const formattedDate = formatDate(value);
-        expect(keys.some(key =>
-          formattedDate.includes(key)
-        ))
+
+        const isValid = labels.some(label => formattedDate.includes(label));
+
+        expect(isValid).toBe(true);
       }
     }
 
