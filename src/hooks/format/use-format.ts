@@ -55,6 +55,8 @@ export function useFormat() {
           const txtContent = await getTXT(note);
           triggerDownload(txtContent, `${fileName}.txt`, "text/plain");
           break;
+        default:
+          throw new Error(`Can not use format: ${format}`);
       }
     } catch (err) {
       console.error("An error occurred while downloading the file:", err);

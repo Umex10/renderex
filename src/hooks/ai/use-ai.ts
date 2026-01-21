@@ -50,12 +50,8 @@ export const useAi = () => {
 `);
 
     if (!res) {
-      console.error("There was a error with ai")
-      setAiState("error");
-      return;
+       handleError();
     };
-
-
 
      dispatch(setAiState("finished"));
 
@@ -103,15 +99,18 @@ export const useAi = () => {
 `);
 
     if (!res) {
-      console.error("There was a error with ai")
-      setAiState("error");
-      return;
+      handleError();
     };
 
      dispatch(setAiState("finished"));
   
     setTimeout(() => dispatch(setAiState("idle")), 1500);
     return res;
+  }
+
+  function handleError() {
+      dispatch(setAiState("error"));
+      throw new Error("AI res was empty or failed");
   }
 
   return { handleSummarize, handleStructure };
