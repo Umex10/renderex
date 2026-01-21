@@ -1,6 +1,6 @@
 # 🚀 Renderex
 
-> **The Next-Generation Note-Taking Website with AI-Driven Intelligence**
+> **An Note-Taking Website with AI-Driven Intelligence**
 
 Renderex is a modern, full-stack note-taking app that revolutionizes how you write, organize, and interact with your notes. Built with cutting-edge technologies, it combines real-time markdown editing, AI assistance, advanced formatting capabilities, and seamless export options into one powerful platform.
 
