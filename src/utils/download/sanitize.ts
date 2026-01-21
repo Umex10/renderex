@@ -8,5 +8,9 @@
  */
 export function sanitize(name: string) {
 
-  return name.replace(/[<>:"/\\|?*]+/g, "").trim()
+  const sanitized = name.replace(/[<>:"/\\|?*]+/g, "").
+  replace(/\s+/g, " ")
+  .trim()
+
+  return sanitized || "unnamed_file";
 }
