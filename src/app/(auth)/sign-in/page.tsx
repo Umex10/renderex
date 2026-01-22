@@ -128,6 +128,7 @@ export default function SignIn() {
                   <Input
                     {...field}
                     id="email"
+                    data-testid="email"
                     aria-invalid={fieldState.invalid}
                     placeholder="john10@gmail.com"
                     autoComplete="email"
@@ -149,6 +150,7 @@ export default function SignIn() {
                   <Input
                     {...field}
                     id="key"
+                    data-testid="key"
                     type="password"
                     aria-invalid={fieldState.invalid}
                     placeholder="******"
@@ -165,7 +167,8 @@ export default function SignIn() {
       </CardContent>
       <CardFooter>
         <Field orientation="vertical">
-          <Button type="submit" form="sign-in" disabled={loading}>
+          <Button type="submit"
+          data-testid="sign-in" form="sign-in" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </Button>
           {error && (

@@ -401,6 +401,7 @@ export function AppSidebar() {
         {/* ACCOUNT */}
         <Card className="w-full flex flex-row items-center justify-start
             gap-2 px-4 py-4 cursor-pointer"
+            data-testid="user-card"
           onClick={() => router.push("/dashboard/account")}>
 
           <CardHeader className="p-0">
@@ -421,13 +422,17 @@ export function AppSidebar() {
 
           {user ? (
             <CardContent className="w-full flex flex-col items-start p-0">
-              <span className="text-sm font-bold">{user.username}</span>
-              <span className="text-xs">{user.email}</span>
+              <span className="text-sm font-bold"
+              data-testid="user-username">{user.username}</span>
+              <span className="text-xs"
+              data-testid="user-email">{user.email}</span>
             </CardContent>
           ) : (
             <CardContent className="w-full flex flex-col items-start p-0">
-              <span className="text-sm font-bold">{loadedUser?.username}</span>
-              <span className="text-xs">{loadedUser?.email}</span>
+              <span className="text-sm font-bold"
+              data-testid="user-username">{loadedUser?.username}</span>
+              <span className="text-xs"
+              data-testid="user-email">{loadedUser?.email}</span>
             </CardContent>
           )}
 
