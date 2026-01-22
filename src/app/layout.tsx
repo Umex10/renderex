@@ -24,7 +24,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${jetbrainsMono.variable}`}
+    suppressHydrationWarning>
       <body className="font-(family-name:--font-jetbrains-mono)">
           <ThemeProvider
             attribute="class"

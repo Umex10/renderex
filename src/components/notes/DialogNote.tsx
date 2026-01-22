@@ -112,10 +112,13 @@ const DialogNote = (data: DialogNoteArgs) => {
 
   return (
     <Dialog>
-      <DialogTrigger asChild onClick={() => form.reset()}>
+      <DialogTrigger asChild onClick={() => form.reset()}
+        data-testid={`${edit ? "edit-button" : "add-button"}`}
+        type='button'>
         <div className="flex items-center gap-2 cursor-pointer">
-          <span className="text-lg">{edit ? "" : "Add"}</span>
-          <Button variant="default" className={`w-6 h-7`}>
+          <span className="text-lg"
+          >{edit ? "" : "Add"}</span>
+          <Button variant="default" className={`w-6 h-7`} type='button'>
             {edit ? (
               <Syringe></Syringe>
             ) : (
@@ -141,6 +144,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                   <Input
                     {...field}
                     id="title"
+                    data-testid="note-title"
                     placeholder="Title"
                     aria-invalid={fieldState.invalid}
                   />
@@ -159,6 +163,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                   <Input
                     {...field}
                     id="tags"
+                    data-testid="note-tags"
                     placeholder="Java, draw"
                     value={tagInput}
                     onChange={e => {
@@ -207,13 +212,13 @@ const DialogNote = (data: DialogNoteArgs) => {
                       <span>Active: </span>
                       {field.value.map(tag => {
                         if (!userTags.some(userTag => userTag.name === tag.name)) {
-                          return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
+                          return <SingleTag tag={tag} Icon={X} key={`new-active-${tag.name}`}
                             handleDeleteUserTag={removeTag}
                             handleEditUserTag={handleEditUserTag}
                             handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
                         }
                         // If it is an User Tag already, user can't change the color it's color
-                          return <SingleTag tag={tag} Icon={X} key={tag.name + " container"}
+                          return <SingleTag tag={tag} Icon={X} key={`matched-active-${tag.name}`}
                             handleDeleteUserTag={removeTag} noColorChange={true}
                             handleEditUserTag={handleEditUserTag}
                             handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
@@ -224,7 +229,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                     <div className="flex flex-wrap gap-1">
                       <span>Recommended: </span>
                       {suggestedTags.map(suggestedTag => (
-                        <SingleTag tag={suggestedTag} Icon={PlusCircle} key={suggestedTag.name + " container"}
+                        <SingleTag tag={suggestedTag} Icon={PlusCircle} key={`suggested-${suggestedTag.name}`}
                           handleDeleteUserTag={addSuggestedUserTag} noColorChange={true}
                           handleEditUserTag={handleEditUserTag}
                             handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
@@ -241,7 +246,8 @@ const DialogNote = (data: DialogNoteArgs) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <DialogClose asChild>
+            <DialogClose asChild
+            data-testid={`${edit ? "edit-button" : "create-button"}`}>
               <Button type="submit" form="note">
                 {edit ? "Edit" : "Create"}
               </Button>

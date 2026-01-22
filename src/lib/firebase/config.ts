@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { browserLocalPersistence, getAuth, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 
@@ -35,7 +35,11 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
  * Firebase Authentication instance.
  * Used for handling user sign-in, sign-out, and auth state changes on the client.
  */
-const auth = getAuth(app);
+// const auth = getAuth(app);
+
+const auth = initializeAuth(app, {
+  persistence: browserLocalPersistence
+});
 
 /**
  * Firestore Database instance.

@@ -261,12 +261,12 @@ export function AppSidebar() {
                   }}>
                   {creatingNote.noteId === note.id ? (
                     <CardHeader className="px-4 py-0">
-                      <h2>Creating note...</h2>
+                      <h2 data-testid="creating-note-status">Creating note...</h2>
                     </CardHeader>
 
                   ) : deletingNote.noteId === note.id ? (
                     <CardHeader className="px-4 py-0">
-                      <h2>Deleting note...</h2>
+                      <h2 data-testid="deleting-note-status">Deleting note...</h2>
                     </CardHeader>
 
                   ) : (
@@ -287,7 +287,8 @@ export function AppSidebar() {
                               handleEditedColorNotes={handleEditedColorNotes}></DialogNote>
                             {/* DELETE NOTE */}
                             <Button variant="secondary" className="w-8 h-8 p-0
-                        hover:scale-105"
+                        hover:scale-105" type="button" 
+                        data-testid="delete-button"
                               onClick={(e) => {
                                 handleDeleteNote(e, note.id);
                               }}>
@@ -379,8 +380,9 @@ export function AppSidebar() {
 
           {/* USER-TAGS */}
           <div className="flex flex-wrap gap-1 mt-3">
-            {sortedUserTags.length !== 0 && sortedUserTags.map(sortedUserTag => (
-              <SingleTag tag={sortedUserTag} Icon={X} key={sortedUserTag.name + " container"}
+            {sortedUserTags.length !== 0 && sortedUserTags.map((sortedUserTag, index) => (
+              <SingleTag tag={sortedUserTag} Icon={X}
+              key={`${sortedUserTag.name}-${sortedUserTag.color}-${index}`}
                 handleDeleteUserTag={handleDeleteUserTag}
                 handleEditUserTag={handleEditUserTag}
                 handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
