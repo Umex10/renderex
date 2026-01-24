@@ -549,6 +549,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Built with motivation using Next.js, TypeScript, and Firebase**
 
-[⭐ Star this repo](https://github.com/yourusername/renderex) | [🐛 Report Bug](https://github.com/yourusername/renderex/issues) | [✨ Request Feature](https://github.com/yourusername/renderex/issues)
+[✅Like](https://github.com/yourusername/renderex) | [🐛Bug](https://github.com/yourusername/renderex/issues) | [👽 Request Feature](https://github.com/yourusername/renderex/issues)
 
 </div>
