@@ -253,6 +253,7 @@ export function AppSidebar() {
               {refactoredNotes.length !== 0 && refactoredNotes.map(note => (
                 <Card key={note.id} className="flex flex-col gap-2 py-2 hover:scale-105
                   transform-all ease-out duration-300 cursor-pointer"
+                  data-testid="note-card"
                   onClick={() => {
                     if (!creatingNote.status || activeNote !== note.id) {
                       dispatch(setActiveNote(note.id));
@@ -260,13 +261,15 @@ export function AppSidebar() {
                     }
                   }}>
                   {creatingNote.noteId === note.id ? (
-                    <CardHeader className="px-4 py-0">
-                      <h2 data-testid="creating-note-status">Creating note...</h2>
+                    <CardHeader className="px-4 py-0"
+                    data-testid="creating-note-status">
+                      <h2>Creating note: ${note.title}</h2>
                     </CardHeader>
 
                   ) : deletingNote.noteId === note.id ? (
-                    <CardHeader className="px-4 py-0">
-                      <h2 data-testid="deleting-note-status">Deleting note...</h2>
+                    <CardHeader className="px-4 py-0"
+                    data-testid="deleting-note-status">
+                      <h2>Deleting note: ${note.title}</h2>
                     </CardHeader>
 
                   ) : (
