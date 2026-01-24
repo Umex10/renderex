@@ -217,7 +217,7 @@ const DialogNote = (data: DialogNoteArgs) => {
                             handleEditUserTag={handleEditUserTag}
                             handleEditedColorNotes={handleEditedColorNotes}></SingleTag>
                         }
-                        // If it is an User Tag already, user can't change the color it's color
+                        // If it is an User Tag already, user can't change it's color
                           return <SingleTag tag={tag} Icon={X} key={`matched-active-${tag.name}`}
                             handleDeleteUserTag={removeTag} noColorChange={true}
                             handleEditUserTag={handleEditUserTag}

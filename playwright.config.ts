@@ -1,12 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '.env.local') });
+
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -20,7 +17,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 2: undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -32,68 +29,55 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
+
   /* Configure projects for major browsers */
-  projects: [
-
+ projects: [
+    // --- FIREFOX SETUP & PROJECT ---
     {
-      name: "setup",
-      // Only run this test during the setup
+      name: 'setup-firefox',
       testMatch: /auth\.setup\.ts/,
+      metadata: {
+        userEmail: 'test-user-firefox@test.com',
+        userKey: process.env.TEST_USER_KEY,
+        userName: 'Firefox'
+      },
     },
-
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'],
-        storageState: './__tests__/e2e/.auth/user.json',
-       },
-       dependencies: ['setup'],
+      name: 'firefox',
+      workers: 1,
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: './__tests__/e2e/.auth/firefox.json',
+        colorScheme: "light",
+      },
+      dependencies: ['setup-firefox'],
     },
 
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] ,
-    //     storageState: './__tests__/e2e/.auth/user.json',
-    //     colorScheme: "light"
-    //    },
-    //    dependencies: ['setup'],
-    // },
-
+    // --- WEBKIT SETUP & PROJECT ---
+    {
+      name: 'setup-webkit',
+      testMatch: /auth\.setup\.ts/,
+      metadata: {
+        userEmail: 'test-user-webkit@test.com',
+        userKey: process.env.TEST_USER_KEY,
+        userName: 'Webkit'
+      },
+    },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] ,
-            // Fill the cookies and localstorage with the user Data
-            // which the setup delivered
-        storageState: './__tests__/e2e/.auth/user.json',
-       },
-       // Wait for the setup before starting the tests
-       dependencies: ['setup'],
+      workers: 1,
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: './__tests__/e2e/.auth/webkit.json',
+      },
+      dependencies: ['setup-webkit'], 
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
 
   /* Run your local dev server before starting the tests */
-   webServer: {
-     command: 'npm run dev',
-     url: 'http://localhost:3000',
-     reuseExistingServer: !process.env.CI,
-   },
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
 });

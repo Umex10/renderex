@@ -19,6 +19,7 @@ const ColorChanger = ({color, handleColor}: ColorChangerArgs) => {
       <input
         type="color"
         value={color}
+        data-testid="color"
         onChange={(e) => handleColor(e.currentTarget.value)}
         className="absolute inset-0 opacity-0 cursor-pointer"
       />

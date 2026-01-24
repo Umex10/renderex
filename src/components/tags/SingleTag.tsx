@@ -40,11 +40,13 @@ const SingleTag = ({tag, Icon, handleDeleteUserTag, handleEditUserTag,
 
   return (
     <Badge key={tag.name} variant="outline" className={`flex gap-3`}
-                style={{ backgroundColor: tagColor }}>
+                style={{ backgroundColor: tagColor }}
+                data-testid="usertag">
                 <span className='text-sm'>{tag.name.charAt(0).toUpperCase() +
                   tag.name.slice(1,)}</span>
                 <Button className="w-4 h-4 p-2 rounded-full"
-                  onClick={() => handleDeleteUserTag(tag)}>
+                  onClick={() => handleDeleteUserTag(tag)}
+                  data-testid="delete-tag-button">
                   <Icon className='w-4 h-4'></Icon>
                 </Button>
 

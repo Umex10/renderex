@@ -157,7 +157,8 @@ export function AppSidebar() {
 
         {/* ADD + | SORT SECTION - dynamic height */}
         <div style={{ height: topHeight, minHeight: '190px' }} className="flex flex-col">
-          <SidebarGroup className="overflow-y-auto flex-1">
+          <SidebarGroup className="overflow-y-auto flex-1"
+          data-testid="notes-area">
             <SidebarGroupLabel className="border-b border-border rounded-none px-0 cursor-pointer"
               onClick={() => router.push("/dashboard")}>
               <span className="text-xl font-bold">Notes</span>
@@ -333,7 +334,8 @@ export function AppSidebar() {
         />
 
         {/* USER-TAGS SECTION */}
-        <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden">
+        <SidebarGroup className="overflow-y-auto flex-1 overflow-x-hidden"
+        data-testid="usertag-area">
           <SidebarGroupLabel className="border-b border-border rounded-none px-0 cursor-pointer"
             onClick={() => router.push("/dashboard")}>
             <span className="text-xl font-bold">Tags</span>
@@ -342,6 +344,7 @@ export function AppSidebar() {
           <div className="flex flex-row gap-1 items-center">
             <Input
               value={tagInput}
+              data-testid="usertag-input"
               onChange={e => {
                 const value = e.target.value;
 
