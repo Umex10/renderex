@@ -247,7 +247,7 @@ const DialogNote = (data: DialogNoteArgs) => {
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             <DialogClose asChild
-            data-testid={`${edit ? "edit-button" : "create-button"}`}>
+            data-testid={`${edit ? "edit-confirmation-button" : "create-confirmation-button"}`}>
               <Button type="submit" form="note">
                 {edit ? "Edit" : "Create"}
               </Button>
